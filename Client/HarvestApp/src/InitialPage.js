@@ -1,5 +1,6 @@
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import Auth0 from 'react-native-auth0';
 import React from 'react';
 import {Node} from 'react';
 import {
@@ -22,9 +23,20 @@ import {
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
 
+const auth0 = new Auth0({ domain: 'dev-q8h6rzir.us.auth0.com', clientId: 'M3DKab5D4L1TS1MvCwYf2I1dPfpKhlWV' });
+
 export default function InitialPage({navigation}) {
   const toLogin = () => {
-    navigation.navigate('LoginPage');
+    // navigation.navigate('LoginPage');
+    auth0
+    .webAuth
+    .authorize({scope: 'openid profile email'})
+    .then(credentials =>
+      // Successfully authenticated
+      // Store the accessToken
+      this.setState({ accessToken: credentials.accessToken })
+    )
+    .catch(error => console.log(error));
   };
 
   const toSignUp = () => {
