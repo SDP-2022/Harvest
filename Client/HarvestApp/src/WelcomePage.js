@@ -30,9 +30,10 @@ const auth0 = new Auth0({
 });
 
 export default function WelcomePage({navigation}) {
-  let [accessToken, setAccessToken] = useState(null);
-  let [idToken, setIDToken] = useState(null);
-  let [username, setUsername] = useState(null);
+  // let [accessToken, setAccessToken] = useState(null);
+  // let [idToken, setIDToken] = useState(null);
+  // let [username, setUsername] = useState(null);
+  let accessToken, idToken, username;
 
   // Keeping this function for later :)
   // const onLogout = () => {
@@ -47,32 +48,31 @@ export default function WelcomePage({navigation}) {
   //     });
   // };
 
-  const toGarden = () => {
+  const toGarden = async () => {
     navigation.navigate('GardenPage', {userIDToken: idToken, authUsername: username})
   }
 
   // This function gets the user profile from
   // Auth0 to get their username.
-  const getUserProfile = (accTok, _callback) => {
+  const getUserProfile = async (accTok, _callback) => {
     auth0.auth
       .userInfo({token: accTok})
       .then(Json => {
-        setUsername(String(Json['https://dev-q8h6rzir:us:auth0:com/username']))
+        username = String(Json['https://dev-q8h6rzir:us:auth0:com/username']);
         _callback();
       })
       .catch(console.error);
   }
 
   // Function to log in the user
-  const onLogin = async (_callback) => {
+  const onLogin = async(_callback) => {
     auth0.webAuth
       .authorize({
         scope: 'openid profile email',
       })
       .then(credentials => {
-        setAccessToken(credentials.accessToken);
-        setIDToken(credentials.idToken);
-        console.log("Completed Login")
+        accessToken = credentials.accessToken;
+        idToken = credentials.idToken;
         _callback();
       })
       .catch(error => console.log(error));
@@ -86,12 +86,14 @@ export default function WelcomePage({navigation}) {
       <View style={styles.buttonView}>
         <TouchableOpacity 
         onPress={async () => {
-          await onLogin(function(){
-            console.log(idToken);
+          await onLogin(async function() {
             console.log(accessToken);
-            getUserProfile(accessToken, function(){
-              toGarden();
+            console.log(idToken);
+            await getUserProfile(accessToken, async function() {
+              console.log(username);
+              await toGarden();
             })
+
           })
           } 
         }
