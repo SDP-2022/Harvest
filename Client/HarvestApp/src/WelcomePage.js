@@ -48,8 +48,8 @@ export default function WelcomePage({navigation}) {
   //     });
   // };
 
-  const toGarden = async () => {
-    navigation.navigate('GardenPage', {userIDToken: idToken, authUsername: username})
+  const toNavigation = async () => {
+    navigation.navigate('Navigation', {userIDToken: idToken, authUsername: username})
   }
 
   // This function gets the user profile from
@@ -87,11 +87,8 @@ export default function WelcomePage({navigation}) {
         <TouchableOpacity 
         onPress={async () => {
           await onLogin(async function() {
-            console.log(accessToken);
-            console.log(idToken);
             await getUserProfile(accessToken, async function() {
-              console.log(username);
-              await toGarden();
+              await toNavigation();
             })
 
           })

@@ -22,12 +22,10 @@ import {
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
 
-export default function GardenPage({navigation, route}) {
-    const {userIDToken, authUsername} = route.params;
-
+export default function AtlasPage({navigation}) {
   return (
     <SafeAreaView style={styles.body}>
-      <Text style={styles.text}>Hey {authUsername}, this is your garden!</Text>
+      <Text style={styles.text}>This is the Atlas!</Text>
     </SafeAreaView>
   );
 }
