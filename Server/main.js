@@ -7,8 +7,9 @@ const port = process.env.PORT
 const { auth } = require('express-oauth2-jwt-bearer');
 
 const checkJwt = auth({
-    audience: 'https://dev-q8h6rzir.us.auth0.com/api/v2/',
+    audience: 'https://harvest-stalkoverflow.herokuapp.com/',
     issuerBaseURL: 'https://harvest-stalkoverflow.herokuapp.com/',
+    algorithms: ['RS256']
 });
 
 // Start listening
