@@ -41,3 +41,8 @@ app.get('/', (req, res) => {
 app.post('/', (req, res) => {
     res.send('Got a POST request! ')
 })
+
+if (process.env.CI) {
+    console.log("Run in CI, let's stop listening and exit!")
+    process.exit()
+}
