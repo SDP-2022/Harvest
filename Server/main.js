@@ -1,7 +1,7 @@
 // Start Node + Express.js Server
 const express = require('express')
 const app = express()
-const port = process.env.PORT
+const port = process.env.PORT || 8080
 
 // Setup Auth0 Middleware Authentication
 const { auth } = require('express-oauth2-jwt-bearer');
