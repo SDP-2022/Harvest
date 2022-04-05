@@ -10,7 +10,6 @@ var jwtCheck = jwt({
     secret: jwks.expressJwtSecret({
         cache: true,
         rateLimit: false,
-        jwksRequestsPerMinute: 5,
         jwksUri: 'https://dev-q8h6rzir.us.auth0.com/.well-known/jwks.json'
   }),
   audience: 'https://harvest-stalkoverflow.herokuapp.com/',
@@ -18,11 +17,21 @@ var jwtCheck = jwt({
   algorithms: ['RS256']
 });
 
-app.use(jwtCheck);
+app.use('/api/private', jwtCheck, (err, req, res, next) => {
+    if (err.name === 'UnauthorizedError') {
+        res.status(401);
+        res.json({"error" : err.name + ": " + err.message});
+    }
+});
 
 // Auth0 authenticated API requests
 app.get('/api/private', function (req, res) {
     res.send('Authenticated');
+});
+
+// Non-authenticated, public requests
+app.get('/', function (req, res) {
+    res.send('Time to Harvest! \n I\'ve been running for ' + process.uptime() + ' seconds! :D');
 });
 
 // Start listening
