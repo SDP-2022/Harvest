@@ -5,6 +5,14 @@ const port = process.env.PORT || 8080
 var jwt = require('express-jwt');
 var jwks = require('jwks-rsa');
 
+if (process.env.CI) {
+    console.log("Run in CI, let's stop listening and exit!")
+    process.exit()
+}
+
+const Communicator = require('./communicator.js')
+const dbCom = new Communicator();
+
 // Setup Auth0 Middleware Authentication
 var jwtCheck = jwt({
     secret: jwks.expressJwtSecret({
@@ -32,14 +40,10 @@ app.get('/api/private', function (req, res) {
 // Non-authenticated, public requests
 app.get('/', function (req, res) {
     res.send('Time to Harvest! \n I\'ve been running for ' + process.uptime() + ' seconds! :D');
+    dbCom.addUser("John Johnson", "jj@jjcompany.com", "JJ69");
 });
 
 // Start listening
 app.listen(port, () => {
     console.log(`Harvest web app listening on port ${port}`)
 })
-
-if (process.env.CI) {
-    console.log("Run in CI, let's stop listening and exit!")
-    process.exit()
-}
