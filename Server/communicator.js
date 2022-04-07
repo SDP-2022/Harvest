@@ -25,7 +25,7 @@ addUser(username,email,userID){
   values.push(email);
   values.push(userID);
   client.query(text, values, (err, res) => {
-    await client.end();
+    client.end();
     if (err) {
       console.log(err.stack);
       return err.stack;
@@ -45,7 +45,7 @@ logUser(userID){
   const values = []
   values.push(userID);
   client.query(text, values, (err, res) => {
-    await client.end();
+    client.end();
     if (err) {
       console.log(err.stack);
       return err.stack;
@@ -66,7 +66,7 @@ getWeight(userID,food){
   values.push(userID);
   values.push(food);
   client.query(text, values, (err, res) => {
-    await client.end();
+    client.end();
     if (err) {
       console.log(err.stack);
       return err.stack
