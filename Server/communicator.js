@@ -27,13 +27,15 @@ addUser(username,email,userID){
   client.query(text, values, (err, res) => {
     if (err) {
       console.log(err.stack)
-      return err.stack
+      client.end();
+      return err.stack;
     } else {
       console.log(res.rows[0]);
       console.log('user added');
+      client.end();
       return res.rows;
     }
-    client.end();
+    
   }) 
 }
 
@@ -46,13 +48,15 @@ logUser(userID){
   client.query(text, values, (err, res) => {
     if (err) {
       console.log(err.stack)
-      return err.stack
+      client.end();
+      return err.stack;
     } else {
       console.log(res.rows[0]);
       console.log('ACCESS UPDATED');
+      client.end();
       return res.rows;
     }
-    client.end();
+    
   }) 
 }
 
@@ -66,14 +70,16 @@ getWeight(userID,food){
   client.query(text, values, (err, res) => {
     if (err) {
       console.log(err.stack)
+      client.end();
       return err.stack
     } else {
       console.log(res.rows[0]);
       console.log('food added');
+      client.end();
       return res.rows;
       
     }
-    client.end();
+    
   }) 
 }
 
