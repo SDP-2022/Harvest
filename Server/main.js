@@ -40,7 +40,7 @@ app.get('/api/private', function (req, res) {
 // Non-authenticated, public requests
 app.get('/', function (req, res) {
     res.send('Time to Harvest! \n I\'ve been running for ' + process.uptime() + ' seconds! :D');
-    dbCom.addUser("John Johnson", "jj@jjcompany.com", "JJ69");
+    res.send(dbCom.addUser("John Johnson", "jj@jjcompany.com", "JJ69"));
 });
 
 // Start listening
