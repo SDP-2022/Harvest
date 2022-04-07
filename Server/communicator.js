@@ -79,4 +79,4 @@ getWeight(userID,food){
 
 }
 
-export{communicator};
+module.exports=communicator;
