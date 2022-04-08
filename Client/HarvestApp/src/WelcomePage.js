@@ -1,6 +1,7 @@
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import Auth0 from 'react-native-auth0';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import React from 'react';
 import {Node, useState} from 'react';
 import {
@@ -12,6 +13,7 @@ import {
   useColorScheme,
   View,
   Alert,
+  ActivityIndicator,
   TouchableOpacity,
 } from 'react-native';
 
@@ -25,15 +27,15 @@ import {
 } from 'react-native/Libraries/NewAppScreen';
 
 const auth0 = new Auth0({
+  audience: "https://harvest-stalkoverflow.herokuapp.com/",
   domain: 'dev-q8h6rzir.us.auth0.com',
   clientId: 'M3DKab5D4L1TS1MvCwYf2I1dPfpKhlWV',
 });
 
+const ACCESS_TOKEN = '@save_token';
+
 export default function WelcomePage({navigation}) {
-  // let [accessToken, setAccessToken] = useState(null);
-  // let [idToken, setIDToken] = useState(null);
-  // let [username, setUsername] = useState(null);
-  let accessToken, idToken, username;
+  let accessToken, idToken, username, user_id;
 
   // Keeping this function for later :)
   // const onLogout = () => {
@@ -49,7 +51,7 @@ export default function WelcomePage({navigation}) {
   // };
 
   const toNavigation = async () => {
-    navigation.navigate('Navigation', {userIDToken: idToken, authUsername: username})
+    navigation.navigate('Navigation', {userIDToken: idToken, userAccessToken: accessToken, authUsername: username, userID : user_id})
   }
 
   // This function gets the user profile from
@@ -59,6 +61,7 @@ export default function WelcomePage({navigation}) {
       .userInfo({token: accTok})
       .then(Json => {
         username = String(Json['https://dev-q8h6rzir:us:auth0:com/username']);
+        user_id = String(Json['https://dev-q8h6rzir:us:auth0:com/user_id']);
         _callback();
       })
       .catch(console.error);

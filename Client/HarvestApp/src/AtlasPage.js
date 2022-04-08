@@ -22,7 +22,10 @@ import {
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
 
-export default function AtlasPage({navigation}) {
+
+export default function AtlasPage({navigation, route}) {
+  const {userIDToken, userAccessToken, authUsername, userID} = route.params;
+
   return (
     <SafeAreaView style={styles.body}>
       <Text style={styles.text}>This is the Atlas!</Text>
@@ -35,7 +38,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#fff'
+    backgroundColor: '#fff',
   },
   buttonView: {
     flex: 1,

@@ -10,6 +10,7 @@ import {
   StyleSheet,
   Text,
   useColorScheme,
+  Image,
   View,
   TouchableOpacity,
 } from 'react-native';
@@ -25,29 +26,89 @@ import {
 
 import AtlasPage from './AtlasPage';
 import GardenPage from './GardenPage';
+import AddPage from './AddPage';
 
 const Tab = createBottomTabNavigator();
 
 export default function Navigation({navigation, route}) {
-  const {userIDToken, authUsername} = route.params;
-  console.log(userIDToken);
-  console.log(authUsername);
+  const {userIDToken, userAccessToken, authUsername, userID} = route.params;
 
   return (
     <Tab.Navigator
     screenOptions={{
-        header: () => null
-      }}
+        header: () => null,
+        tabBarShowLabel: false,
+        tabBarStyle: {
+          position: 'absolute',
+          height: 80,
+          paddingBottom: 50
+        }
+      }
+    }
+  
     >
       <Tab.Screen
         name="GardenPage"
         component={GardenPage}
-        initialParams={{userIDToken: userIDToken, authUsername: authUsername}}
+        initialParams={{userIDToken: userIDToken, userAccessToken : userAccessToken, authUsername: authUsername, userID : userID}}
+        options={{
+          tabBarIcon: ({focused}) => (
+            <View style={{alignItems: 'center', justifyContent: 'center', top: 10}}>
+              <Image 
+                source={require('../assets/log-icon.png')} 
+                resizeMode='contain'
+                style={{
+                  width: 25,
+                  height: 25,
+                  tintColor: focused ? '#A1E8AF' : '#000'
+                }}
+              />
+              <Text style={{color: focused ? '#A1E8AF' : '#000', fontSize: 12, top: 5}}>GARDEN</Text>
+            </View>
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="AddPage"
+        component={AddPage}
+        initialParams={{userIDToken: userIDToken, userAccessToken: userAccessToken, authUsername: authUsername, userID : userID}}
+        options={{
+          tabBarIcon: ({focused}) => (
+            <View style={{alignItems: 'center', justifyContent: 'center', top: 10}}>
+              <Image 
+                source={require('../assets/add-icon.png')} 
+                resizeMode='contain'
+                style={{
+                  width: 25,
+                  height: 25,
+                  tintColor: focused ? '#A1E8AF' : '#000'
+                }}
+              />
+              <Text style={{color: focused ? '#A1E8AF' : '#000', fontSize: 12, top: 5}}>ADD</Text>
+            </View>
+          ),
+        }}
       />
       <Tab.Screen
         name="AtlasPage"
         component={AtlasPage}
-        initialParams={{userIDToken: userIDToken, authUsername: authUsername}}
+        initialParams={{userIDToken: userIDToken, userAccessToken: userAccessToken, authUsername: authUsername, userID : userID}}
+        options={{
+          tabBarIcon: ({focused}) => (
+            <View style={{alignItems: 'center', justifyContent: 'center', top: 10}}>
+              <Image 
+                source={require('../assets/atlas-icon.png')} 
+                resizeMode='contain'
+                style={{
+                  width: 25,
+                  height: 25,
+                  tintColor: focused ? '#A1E8AF' : '#000'
+                }}
+              />
+              <Text style={{color: focused ? '#A1E8AF' : '#000', fontSize: 12, top: 5}}>ATLAS</Text>
+            </View>
+          ),
+        }}
       />
     </Tab.Navigator>
   );
