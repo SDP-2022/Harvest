@@ -10,8 +10,7 @@ if (process.env.CI) {
     process.exit()
 }
 
-const Communicator = require('./communicator.js')
-const dbCom = new Communicator();
+const api = require('./stalkoverflow-api.js');
 
 // Setup Auth0 Middleware Authentication
 var jwtCheck = jwt({
@@ -32,15 +31,30 @@ app.use('/api/private', jwtCheck, (err, req, res, next) => {
     }
 });
 
+app.use(express.json())
+
 // Auth0 authenticated API requests
 app.get('/api/private', function (req, res) {
-    res.send('Authenticated');
+    api.parseGETRequest(req, res);
+});
+
+app.post('/api/private', function (req, res) {
+    api.parsePOSTRequest(req, res);
 });
 
 // Non-authenticated, public requests
 app.get('/', function (req, res) {
-    res.send('Time to Harvest! \n I\'ve been running for ' + process.uptime() + ' seconds! :D');
-    res.send(dbCom.addUser("John Johnson", "jj@jjcompany.com", "JJ69"));
+    //res.send('Time to Harvest! \n I\'ve been running for ' + process.uptime() + ' seconds! :D');
+    console.log(req.headers);
+    console.log(req.body);
+    api.parseGETRequest(req, res);
+});
+
+app.post('/', function (req, res) {
+    //res.send('Time to Harvest! \n I\'ve been running for ' + process.uptime() + ' seconds! :D');
+    console.log(req.headers);
+    console.log(req.body);
+    api.parsePOSTRequest(req, res);
 });
 
 // Start listening
