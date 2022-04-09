@@ -10,7 +10,6 @@ function stalkoverflow() {
 class StalkOverflowAPI {
     parsePOSTRequest(req, res) {
         var reqType = req.get('RequestType');
-
         console.log("Request Type:", reqType);
 
         switch(reqType) {
@@ -48,6 +47,7 @@ class StalkOverflowAPI {
         var username;
         var email;
 
+        // Validate Request Parameters
         try {
             if(!(userID = body.UserID)) throw new Error("UserID not found.");
             if(!(username = body.Username)) throw new Error("Username not found.");
@@ -63,10 +63,10 @@ class StalkOverflowAPI {
             return res.json({Error : err.message});
         }
 
+        // Send to database and check for errors
         try {
             var result = await dbCom.addUser(username, email, userID);
             console.log("Result:", result);
-
             res.status(201);
             res.send("Success");
         } catch (err) {
@@ -76,7 +76,7 @@ class StalkOverflowAPI {
         }
     }
 
-    #logUser(body, res) {
+    async #logUser(body, res) {
         var userID;
 
         try {
@@ -90,11 +90,17 @@ class StalkOverflowAPI {
             return res.json({Error : err.message});
         }
 
-        var result = dbCom.logUser(userID);
-        console.log("Result:", result);
-
-        res.status(201);
-        res.send("Success");
+        // Send to database and check for errors
+        try {
+            var result = await dbCom.logUser(userID);
+            console.log("Result:", result);
+            res.status(201);
+            res.send("Success");
+        } catch (err) {
+            console.log("Error:", result);
+            res.status(500);
+            return res.json({Error : err.detail});
+        }
     }
 }
 
