@@ -77,7 +77,22 @@ async getHarvestLogs(userID){
     throw err;
   }
 }
- 
+
+async addLog(userID,Food_Name,Weight){
+  const text = `INSERT INTO "log"("User_ID","Food_Name","Date_Logged","Weight") values($1,$2,CURRENT_DATE,$3) RETURNING *`;
+  const values = []
+  values.push(userID);
+  values.push(Food_Name);
+  values.push(Weight);
+  
+  
+  try{
+    var result=await client.query(text, values);
+    return result;
+  }catch(err){
+    throw err;
+  }
+}
 
 
 
