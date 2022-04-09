@@ -25,16 +25,17 @@ addUser(username,email,userID){
   values.push(username);
   values.push(email);
   values.push(userID);
+  var result;
   client.query(text, values, (err, res) => {
     if (err) {
       //console.log(err.stack);
-      return err;
+      result= err;
     } else {
       //console.log(res.rows[0]);
       //console.log('user added');
-      return res.rows;
+      result= res.rows;
     }
-    
+    return result;
   }) 
 }
 
