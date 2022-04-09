@@ -43,7 +43,7 @@ class StalkOverflowAPI {
         res.json({Error: "Unknown request type."});
     }
 
-    #addUser(body, res) {
+    async #addUser(body, res) {
         var userID;
         var username;
         var email;
@@ -63,7 +63,7 @@ class StalkOverflowAPI {
             return res.json({Error : err.message});
         }
 
-        var result = dbCom.addUser(username, email, userID);
+        var result = await dbCom.addUser(username, email, userID);
         console.log("Result:", result);
 
         res.status(201);
