@@ -126,7 +126,7 @@ class StalkOverflowAPI {
 
             if (!(typeof userID === 'string')) throw new Error("Invalid UserID format.");
             if (!(typeof foodName === 'string')) throw new Error("Invalid FoodName format.");
-            if (!(typeof weight === 'number')) throw new Error("Invalid Weight format.");
+            if (!(typeof weight === 'number') && !(weight === NaN)) throw new Error("Invalid Weight format.");
         } catch (err) {
             console.log(err.message);
             res.status(400);
