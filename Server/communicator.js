@@ -28,7 +28,7 @@ addUser(username,email,userID){
   client.query(text, values, (err, res) => {
     if (err) {
       console.log(err.stack);
-      return err.stack;
+      return err;
     } else {
       console.log(res.rows[0]);
       console.log('user added');
@@ -46,7 +46,7 @@ logUser(userID){
   client.query(text, values, (err, res) => {
     if (err) {
       console.log(err.stack);
-      return err.stack;
+      return err;
     } else {
       console.log(res.rows[0]);
       console.log('ACCESS UPDATED');
@@ -65,7 +65,7 @@ getWeight(userID,food){
   client.query(text, values, (err, res) => {
     if (err) {
       console.log(err.stack);
-      return err.stack
+      return err;
     } else {
       console.log(res.rows[0]);
       console.log('food added');
