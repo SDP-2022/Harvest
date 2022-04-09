@@ -63,11 +63,17 @@ class StalkOverflowAPI {
             return res.json({Error : err.message});
         }
 
-        var result = await dbCom.addUser(username, email, userID);
-        console.log("Result:", result);
+        try {
+            var result = await dbCom.addUser(username, email, userID);
+            console.log("Result:", result);
 
-        res.status(201);
-        res.send("Success");
+            res.status(201);
+            res.send("Success");
+        } catch (err) {
+            console.log("Error:", result);
+            res.status(500);
+            return res.json({Error : err.detail});
+        }
     }
 
     #logUser(body, res) {
