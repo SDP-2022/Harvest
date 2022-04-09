@@ -35,6 +35,7 @@ class StalkOverflowAPI {
             case 'GetHarvestLogs':
                 return;
             case 'GetFoodTotalWeight':
+                this.#getFoodTotalWeight(req, res);
                 return;
         }
 
@@ -42,6 +43,7 @@ class StalkOverflowAPI {
         res.json({Error: "Unknown request type."});
     }
 
+    // POST REQUESTS
     async #addUser(body, res) {
         var userID;
         var username;
@@ -97,10 +99,46 @@ class StalkOverflowAPI {
 
             if (result.rowCount == 0) {
                 res.status(418);
-                return res.json({Error : "No rows updated."});
+                return res.json({Error : "No rows found."});
             } else {
                 res.status(201);
                 res.send("Success");
+            }           
+        } catch (err) {
+            console.log("Error:", result);
+            res.status(500);
+            return res.json({Error : err.detail});
+        }
+    }
+
+    // GET REQUESTS
+    async #getFoodTotalWeight(req, res) {
+        var userID;
+        var foodName;
+
+        try {
+            if(!(userID = req.get("UserID"))) throw new Error("UserID param not found.");
+            if(!(foodName = req.get("FoodName"))) throw new Error("FoodName param not found.");
+
+            if (!(typeof userID === 'string')) throw new Error("Invalid UserID format.");
+            if (!(typeof foodName === 'string')) throw new Error("Invalid FoodName format.");
+        } catch (err) {
+            console.log(err.message);
+            res.status(400);
+            return res.json({Error : err.message});
+        }
+
+        // Send to database and check for errors
+        try {
+            var result = await dbCom.getWeight(userID, foodName);
+            console.log("Result:", result);
+
+            if (result.rowCount == 0) {
+                res.status(418);
+                return res.json({Error : "No rows found."});
+            } else {
+                res.status(201);
+                res.json(result.rows);
             }           
         } catch (err) {
             console.log("Error:", result);
