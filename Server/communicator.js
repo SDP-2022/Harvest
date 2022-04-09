@@ -31,7 +31,7 @@ async addUser(username,email,userID){
     var result=await client.query(text, values);
     return result;
   }catch(err){
-    return err
+    throw err;
   }
   
 }
