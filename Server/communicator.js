@@ -79,7 +79,7 @@ async getHarvestLogs(userID){
 }
 
 async addLog(userID,Food_Name,Weight){
-  const text = `INSERT INTO "log"("Log_No","User_ID","Food_Name","Date_Logged","Weight") values(AUTO_INCREMENT,$1,$2,CURRENT_DATE,$3) RETURNING *`;
+  const text = `INSERT INTO "log"("User_ID","Food_Name","Date_Logged","Weight") values($1,$2,CURRENT_DATE,$3) RETURNING *`;
   const values = []
   values.push(userID);
   values.push(Food_Name);
