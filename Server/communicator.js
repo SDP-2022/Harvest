@@ -66,7 +66,17 @@ async getWeight(userID,food){
   }
 }
 
-
+async getHarvestLogs(userID){
+  const text = `SELECT "Food_Name","Date_Logged","Weight" FROM "log" WHERE "User_ID" = $1`;
+  const values = []
+  values.push(userID);
+  try{
+    var result=await client.query(text, values);
+    return result;
+  }catch{
+    throw err;
+  }
+}
  
 
 
