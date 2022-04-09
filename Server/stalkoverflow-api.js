@@ -122,11 +122,9 @@ class StalkOverflowAPI {
             if(!(foodName = body.FoodName)) throw new Error("FoodName param not found.");
             if(!(weight = body.Weight)) throw new Error("Weight param not found.");
 
-            weight = validator.toFloat(weight);
-
             if (!(typeof userID === 'string')) throw new Error("Invalid UserID format.");
             if (!(typeof foodName === 'string')) throw new Error("Invalid FoodName format.");
-            if (!(typeof weight === 'number') && !(weight === NaN)) throw new Error("Invalid Weight format.");
+            if ( !(typeof weight === 'number') || (!isFloat(weight) && !Number.isInteger(weight)) ) throw new Error("Invalid Weight format.");
         } catch (err) {
             console.log(err.message);
             res.status(400);
@@ -195,3 +193,7 @@ class StalkOverflowAPI {
 }
 
 module.exports=stalkoverflow();
+
+function isFloat(n){
+    return Number(n) === n && n % 1 !== 0;
+}
