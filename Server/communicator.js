@@ -18,25 +18,22 @@ class communicator{
 
 
 //username String, email String, userID String
-addUser(username,email,userID){
+async addUser(username,email,userID){
   
   const text = `INSERT INTO "accounts"("Username","Email","User_ID","Date_Last_Accessed","Date_Joined") values($1,$2,$3,CURRENT_DATE,CURRENT_DATE) RETURNING *`;
   const values = []
   values.push(username);
   values.push(email);
   values.push(userID);
-  var result= client.query(text, values, (err, res) => {
-    if (err) {
-      //console.log(err.stack);
-      return err;
-    } else {
-      //console.log(res.rows[0]);
-      //console.log('user added');
-      return res;
-    }
-  }) 
   
-  return result;
+  
+  try{
+    var result=await client.query(text, values);
+    return result;
+  }catch(err){
+    return err
+  }
+  
 }
 
 //userID String
@@ -87,3 +84,6 @@ getWeight(userID,food){
 }
 
 module.exports=communicator;
+
+
+
