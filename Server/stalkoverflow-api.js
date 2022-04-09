@@ -64,7 +64,7 @@ class StalkOverflowAPI {
         }
 
         var result = dbCom.addUser(username, email, userID);
-        console.log(result);
+        console.log("Result:", result);
 
         res.status(201);
         res.send("Success");
@@ -83,6 +83,9 @@ class StalkOverflowAPI {
             res.status(400);
             return res.json({Error : err.message});
         }
+
+        var result = dbCom.logUser(userID);
+        console.log("Result:", result);
 
         res.status(201);
         res.send("Success");
