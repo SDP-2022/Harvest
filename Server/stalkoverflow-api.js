@@ -133,12 +133,17 @@ class StalkOverflowAPI {
             var result = await dbCom.getWeight(userID, foodName);
             console.log("Result:", result);
 
-            if (result.rowCount == 0) {
+            var weight = result.rows[0].sum;
+
+            if (weight == null) {
                 res.status(418);
                 return res.json({Error : "No rows found."});
             } else {
                 res.status(201);
-                res.json(result.rows);
+                res.json({
+                    FoodName : foodName,
+                    Weight : weight
+                });
             }           
         } catch (err) {
             console.log("Error:", result);
