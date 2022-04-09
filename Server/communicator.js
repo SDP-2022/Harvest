@@ -35,8 +35,8 @@ addUser(username,email,userID){
       //console.log('user added');
       result= res.rows;
     }
-    return result;
   }) 
+  return result;
 }
 
 //userID String
