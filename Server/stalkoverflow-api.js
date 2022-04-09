@@ -94,8 +94,14 @@ class StalkOverflowAPI {
         try {
             var result = await dbCom.logUser(userID);
             console.log("Result:", result);
-            res.status(201);
-            res.send("Success");
+
+            if (result.rowCount == 0) {
+                res.status(418);
+                return res.json({Error : "No rows updated."});
+            } else {
+                res.status(201);
+                res.send("Success");
+            }           
         } catch (err) {
             console.log("Error:", result);
             res.status(500);
