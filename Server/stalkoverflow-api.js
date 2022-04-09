@@ -73,7 +73,7 @@ class StalkOverflowAPI {
             res.status(201);
             res.send("Success");
         } catch (err) {
-            console.log("Error:", result);
+            console.log("Error:", error);
             res.status(500);
             return res.json({Error : err.detail});
         }
@@ -106,7 +106,7 @@ class StalkOverflowAPI {
                 res.send("Success");
             }           
         } catch (err) {
-            console.log("Error:", result);
+            console.log("Error:", error);
             res.status(500);
             return res.json({Error : err.detail});
         }
@@ -146,7 +146,7 @@ class StalkOverflowAPI {
                 res.send("Success");
             }           
         } catch (err) {
-            console.log("Error:", result);
+            console.log("Error:", error);
             res.status(500);
             return res.json({Error : err.detail});
         }
