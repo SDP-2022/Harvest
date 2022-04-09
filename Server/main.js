@@ -44,17 +44,17 @@ app.post('/api/private', function (req, res) {
 
 // Non-authenticated, public requests
 app.get('/', function (req, res) {
-    //res.send('Time to Harvest! \n I\'ve been running for ' + process.uptime() + ' seconds! :D');
     console.log(req.headers);
     console.log(req.body);
-    api.parseGETRequest(req, res);
+    res.send('Time to Harvest! \n I\'ve been running for ' + process.uptime() + ' seconds! :D');
+    //api.parseGETRequest(req, res);
 });
 
 app.post('/', function (req, res) {
-    //res.send('Time to Harvest! \n I\'ve been running for ' + process.uptime() + ' seconds! :D');
     console.log(req.headers);
     console.log(req.body);
-    api.parsePOSTRequest(req, res);
+    res.send('Time to Harvest! \n I\'ve been running for ' + process.uptime() + ' seconds! :D');
+    //api.parsePOSTRequest(req, res);
 });
 
 // Start listening
