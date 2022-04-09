@@ -37,41 +37,33 @@ async addUser(username,email,userID){
 }
 
 //userID String
-logUser(userID){
+async logUser(userID){
   const text = `UPDATE "accounts" SET "Date_Last_Accessed" = CURRENT_DATE WHERE "User_ID"= $1 RETURNING *`;
   const values = []
   values.push(userID);
-  client.query(text, values, (err, res) => {
-    if (err) {
-      //console.log(err.stack);
-      return err;
-    } else {
-      //console.log(res.rows[0]);
-      //console.log('ACCESS UPDATED');
-      return res.rows;
-    }
-    
-  }) 
+
+  try{
+    var result=await client.query(text, values);
+    return result;
+  }catch{
+    throw err;
+  }
+  
+   
 }
 
 //userID String, food String
-getWeight(userID,food){
+async getWeight(userID,food){
   const text = `SELECT SUM("Weight") FROM "log" WHERE "User_ID" = $1 AND "Food_Name" = $2`;
   const values = []
   values.push(userID);
   values.push(food);
-  client.query(text, values, (err, res) => {
-    if (err) {
-      //console.log(err.stack);
-      return err;
-    } else {
-      //onsole.log(res.rows[0]);
-      //console.log('food added');
-      return res.rows;
-      
-    }
-    
-  }) 
+  try{
+    var result=await client.query(text, values);
+    return result;
+  }catch{
+    throw err;
+  }
 }
 
 
