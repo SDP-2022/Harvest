@@ -27,11 +27,11 @@ addUser(username,email,userID){
   values.push(userID);
   client.query(text, values, (err, res) => {
     if (err) {
-      console.log(err.stack);
+      //console.log(err.stack);
       return err;
     } else {
-      console.log(res.rows[0]);
-      console.log('user added');
+      //console.log(res.rows[0]);
+      //console.log('user added');
       return res.rows;
     }
     
@@ -45,11 +45,11 @@ logUser(userID){
   values.push(userID);
   client.query(text, values, (err, res) => {
     if (err) {
-      console.log(err.stack);
+      //console.log(err.stack);
       return err;
     } else {
-      console.log(res.rows[0]);
-      console.log('ACCESS UPDATED');
+      //console.log(res.rows[0]);
+      //console.log('ACCESS UPDATED');
       return res.rows;
     }
     
@@ -64,11 +64,11 @@ getWeight(userID,food){
   values.push(food);
   client.query(text, values, (err, res) => {
     if (err) {
-      console.log(err.stack);
+      //console.log(err.stack);
       return err;
     } else {
-      console.log(res.rows[0]);
-      console.log('food added');
+      //onsole.log(res.rows[0]);
+      //console.log('food added');
       return res.rows;
       
     }
