@@ -20,6 +20,7 @@ class StalkOverflowAPI {
                 this.#logUser(req.body, res);
                 return;
             case 'AddFoodLog':
+                this.#addLog(req.body, res);
                 return;
         }
 
@@ -95,6 +96,46 @@ class StalkOverflowAPI {
         // Send to database and check for errors
         try {
             var result = await dbCom.logUser(userID);
+            console.log("Result:", result);
+
+            if (result.rowCount == 0) {
+                res.status(418);
+                return res.json({Error : "No rows found."});
+            } else {
+                res.status(201);
+                res.send("Success");
+            }           
+        } catch (err) {
+            console.log("Error:", result);
+            res.status(500);
+            return res.json({Error : err.detail});
+        }
+    }
+
+    async #addLog(body, res) {
+        var userID;
+        var foodName;
+        var weight;
+
+        try {
+            if(!(userID = body.UserID)) throw new Error("UserID not found.");
+            if(!(foodName = body.FoodName)) throw new Error("FoodName param not found.");
+            if(!(weight = body.Weight)) throw new Error("Weight param not found.");
+
+            weight = validator.toFloat(weight);
+
+            if (!(typeof userID === 'string')) throw new Error("Invalid UserID format.");
+            if (!(typeof foodName === 'string')) throw new Error("Invalid FoodName format.");
+            if (!(typeof weight === 'number')) throw new Error("Invalid Weight format.");
+        } catch (err) {
+            console.log(err.message);
+            res.status(400);
+            return res.json({Error : err.message});
+        }
+
+        // Send to database and check for errors
+        try {
+            var result = await dbCom.addLog(userID, foodName, weight);
             console.log("Result:", result);
 
             if (result.rowCount == 0) {
