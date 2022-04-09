@@ -34,6 +34,7 @@ class StalkOverflowAPI {
 
         switch(reqType) {
             case 'GetHarvestLogs':
+                this.#getHarvestLog(req, res);
                 return;
             case 'GetFoodTotalWeight':
                 this.#getFoodTotalWeight(req, res);
@@ -181,8 +182,40 @@ class StalkOverflowAPI {
                 res.status(201);
                 res.json({
                     FoodName : foodName,
-                    Weight : weight
+                    Weight : parseFloat(weight)
                 });
+            }           
+        } catch (err) {
+            console.log("Error:", err);
+            res.status(500);
+            return res.json({Error : err.detail});
+        }
+    }
+
+    async #getHarvestLog(req, res) {
+        var userID;
+
+        try {
+            if(!(userID = req.get("UserID"))) throw new Error("UserID param not found.");
+
+            if (!(typeof userID === 'string')) throw new Error("Invalid UserID format.");
+        } catch (err) {
+            console.log(err.message);
+            res.status(400);
+            return res.json({Error : err.message});
+        }
+
+        // Send to database and check for errors
+        try {
+            var result = await dbCom.getHarvestLogs(userID);
+            console.log("Result:", result);
+
+            if (result.rowCount == 0) {
+                res.status(418);
+                return res.json({Error : "No rows found."});
+            } else {
+                res.status(201);
+                res.json(result.rows);
             }           
         } catch (err) {
             console.log("Error:", err);
