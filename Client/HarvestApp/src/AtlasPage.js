@@ -2,6 +2,8 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import React from 'react';
 import {Node, useState} from 'react';
+import AtlasBody from '../shared/AtlasBody';
+import SearchBox from '../shared/searchbox'
 import {
   SafeAreaView,
   ScrollView,
@@ -28,7 +30,9 @@ export default function AtlasPage({navigation, route}) {
 
   return (
     <SafeAreaView style={styles.body}>
-      <Text style={styles.text}>This is the Atlas!</Text>
+       <SearchBox/>
+      <AtlasBody/>
+     
     </SafeAreaView>
   );
 }
