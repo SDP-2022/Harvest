@@ -3,6 +3,11 @@
   "version": "1.0.0",
   "description": "",
   "main": "main.js",
+  "jest": {
+    "verbose": true,
+    "collectCoverage": true,
+    "coverageReporters": ["json", "html"]
+  },
   "scripts": {
     "test": "node main.js"
   },
@@ -17,5 +22,8 @@
     "jwks-rsa": "^2.0.5",
     "pg": "^8.7.3",
     "validator": "^13.7.0"
+  },
+  "devDependencies": {
+    "jest": "^27.5.1"
   }
 }
