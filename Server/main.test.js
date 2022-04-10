@@ -1,10 +1,5 @@
-// Start Node + Express.js Server
-const express = require('express')
-const app = express()
-const port = process.env.PORT || 8080
-var jwt = require('express-jwt');
-var jwks = require('jwks-rsa');
+const testMain = require('./tests');
 
-test('The word I want', () => {
-    expect("Test").toBe("Test");
+test('GIVE ME TEST', () => {
+    expect(testMain()).toBe("Test");
 });
