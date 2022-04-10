@@ -46,6 +46,7 @@ app.post('/api/private', function (req, res) {
 app.get('/', function (req, res) {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     console.log(req);
     res.send('Time to Harvest! \n I\'ve been running for ' + process.uptime() + ' seconds! :D');
     //api.parseGETRequest(req, res);
@@ -72,11 +73,23 @@ app.post('/', function (req, res) {
 
 app.post('/', function (req, res) {
 >>>>>>> parent of 1d0aaf2 (Merge branch 'main' of https://github.com/SDP-2022/Harvest)
+=======
+    //res.send('Time to Harvest! \n I\'ve been running for ' + process.uptime() + ' seconds! :D');
+    console.log(req.headers);
+    console.log(req.body);
+    api.parseGETRequest(req, res);
+});
+
+app.post('/', function (req, res) {
+>>>>>>> parent of 1d0aaf2 (Merge branch 'main' of https://github.com/SDP-2022/Harvest)
     //res.send('Time to Harvest! \n I\'ve been running for ' + process.uptime() + ' seconds! :D');
     console.log(req.headers);
     console.log(req.body);
     api.parsePOSTRequest(req, res);
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> parent of 1d0aaf2 (Merge branch 'main' of https://github.com/SDP-2022/Harvest)
+=======
 >>>>>>> parent of 1d0aaf2 (Merge branch 'main' of https://github.com/SDP-2022/Harvest)
 =======
 >>>>>>> parent of 1d0aaf2 (Merge branch 'main' of https://github.com/SDP-2022/Harvest)
