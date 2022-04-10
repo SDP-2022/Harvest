@@ -1,25 +1,35 @@
-
+import {NavigationContainer} from '@react-navigation/native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import React from 'react';
-
-import  SearchBox from '../shared/searchbox'; 
-import AtlasBody from '../shared/AtlasBody';
+import {Node, useState} from 'react';
 import {
- 
+  SafeAreaView,
+  ScrollView,
+  StatusBar,
   StyleSheet,
-
+  Text,
+  useColorScheme,
+  View,
+  TouchableOpacity,
 } from 'react-native';
 
+import {
+  Colors,
+  DebugInstructions,
+  Header,
+  LearnMoreLinks,
+  Button,
+  ReloadInstructions,
+} from 'react-native/Libraries/NewAppScreen';
 
 
 export default function AtlasPage({navigation, route}) {
   const {userIDToken, userAccessToken, authUsername, userID} = route.params;
 
   return (
-   <> 
-    <SearchBox/>
-   <AtlasBody/>
-   </>
-  
+    <SafeAreaView style={styles.body}>
+      <Text style={styles.text}>This is the Atlas!</Text>
+    </SafeAreaView>
   );
 }
 
