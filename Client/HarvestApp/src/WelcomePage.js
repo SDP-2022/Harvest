@@ -145,6 +145,7 @@ export default function WelcomePage({navigation}) {
     auth0.webAuth
       .authorize({
         scope: 'openid profile email',
+        audience: "https://harvest-stalkoverflow.herokuapp.com/",
       })
       .then(credentials => {
         accessToken = credentials.accessToken;
