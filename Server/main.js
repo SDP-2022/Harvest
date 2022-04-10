@@ -5,7 +5,7 @@ const port = process.env.PORT || 8080
 var jwt = require('express-jwt');
 var jwks = require('jwks-rsa');
 
-if (process.env.CI || true) {
+if (process.env.CI) {
     console.log("Run in CI, let's stop listening and exit!")
     process.exit()
 }
