@@ -28,10 +28,14 @@ import AtlasPage from './AtlasPage';
 import GardenPage from './GardenPage';
 import AddPage from './AddPage';
 
+// This file is responsible for adding all appropriate pages to the navigation bar
+
 const Tab = createBottomTabNavigator();
 
 export default function Navigation({navigation, route}) {
   const {userIDToken, userAccessToken, authUsername, userID} = route.params;
+
+  // A new page can be added between the Tab.Screen tags
 
   return (
     <Tab.Navigator
