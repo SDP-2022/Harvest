@@ -19,6 +19,7 @@
 <h2 align="Left">Backend Server</h2>
 
 [![Server CI](https://github.com/SDP-2022/Harvest/actions/workflows/node.js.yml/badge.svg)](https://github.com/SDP-2022/Harvest/actions/workflows/node.js.yml)
+[![codecov](https://codecov.io/gh/SDP-2022/Harvest/branch/main/graph/badge.svg?token=AFNKIUVUUM)](https://codecov.io/gh/SDP-2022/Harvest)
 
 ### Built Using:
 * [Node.js](https://nodejs.org/)
