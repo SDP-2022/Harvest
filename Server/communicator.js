@@ -13,10 +13,6 @@ class communicator{
     return
   }
   
-  
-  
-
-
 //username String, email String, userID String
 async addUser(username,email,userID){
   
@@ -66,12 +62,34 @@ async getWeight(userID,food){
   }
 }
 
+async getHarvestLogs(userID){
+  const text = `SELECT "Food_Name","Date_Logged","Weight" FROM "log" WHERE "User_ID" = $1`;
+  const values = []
+  values.push(userID);
+  try{
+    var result=await client.query(text, values);
+    return result;
+  }catch{
+    throw err;
+  }
+}
 
  
-
-
-
-
+async addLog(userID,Food_Name,Weight){
+  const text = `INSERT INTO "log"("User_ID","Food_Name","Date_Logged","Weight") values($1,$2,CURRENT_DATE,$3) RETURNING *`;
+  const values = []
+  values.push(userID);
+  values.push(Food_Name);
+  values.push(Weight);
+  
+  
+  try{
+    var result=await client.query(text, values);
+    return result;
+  }catch(err){
+    throw err;
+  }
+}
 
 }
 
