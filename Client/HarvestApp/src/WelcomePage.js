@@ -32,12 +32,13 @@ const auth0 = new Auth0({
   clientId: 'M3DKab5D4L1TS1MvCwYf2I1dPfpKhlWV',
 });
 
+// Keeping this for later
 const ACCESS_TOKEN = '@save_token';
 
 export default function WelcomePage({navigation}) {
   let accessToken, idToken, username, user_id;
 
-  // Keeping this function for later :)
+  // Keeping this function for later as well
   // const onLogout = () => {
   //   auth0.webAuth
   //     .clearSession({})
@@ -50,18 +51,90 @@ export default function WelcomePage({navigation}) {
   //     });
   // };
 
+  // Change to Navigation.js, which will show the user their log (GardenPage.js)
   const toNavigation = async () => {
     navigation.navigate('Navigation', {userIDToken: idToken, userAccessToken: accessToken, authUsername: username, userID : user_id})
   }
 
+  // Add a user to the database 
+  const addUserToDatabase = async () => {
+    console.log(user_id)
+    console.log(JSON.stringify({
+      UserID : user_id,
+      Username : username,
+      Email : email
+    }))
+    fetch(
+      'https://harvest-stalkoverflow.herokuapp.com/api/private/',
+      {
+        method: 'POST',
+        headers: {
+          'Authorization' : 'Bearer ' + accessToken,
+          'RequestType' : 'AddUser',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          UserID : user_id,
+          Username : username,
+          Email : email
+        })
+      }
+    ).then((response) => response.text())
+    .then((text) => {
+      console.log(text)
+    })
+    .catch((error) => {
+      console.log(error)
+    })
+  }
+
+  // Update the date_last_accessed field in the database
+  const addLoginToDatabase = async () => {
+    fetch(
+      'https://harvest-stalkoverflow.herokuapp.com/api/private/',
+      {
+        method: 'POST',
+        headers: {
+          'Authorization' : 'Bearer ' + accessToken,
+          'RequestType' : 'LoginUser',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          'UserID' : user_id
+        })
+      }
+    ).then((response) => response.text())
+    .then((text) => {
+      console.log(text)
+    })
+    .catch((error) => {
+      console.log(error)
+    })
+  }
+
+  // Checks whether it is a user's first time using the app
+  // and calls the appropriate function
+  const addToDatabase = async (_callback) => {
+    if (loginsCount == 1) {
+      await addUserToDatabase();
+    }
+    else if (loginsCount != 1) {
+      await addLoginToDatabase();
+    }
+    _callback();
+  }
+
   // This function gets the user profile from
-  // Auth0 to get their username.
+  // Auth0 to get their username, user_id, email and 
+  // login count
   const getUserProfile = async (accTok, _callback) => {
     auth0.auth
       .userInfo({token: accTok})
       .then(Json => {
         username = String(Json['https://dev-q8h6rzir:us:auth0:com/username']);
         user_id = String(Json['https://dev-q8h6rzir:us:auth0:com/user_id']);
+        loginsCount = parseInt(Json['https://dev-q8h6rzir:us:auth0:com/loginsCount'])
+        email = String(Json['email']);
         _callback();
       })
       .catch(console.error);
@@ -84,14 +157,19 @@ export default function WelcomePage({navigation}) {
   return (
     <SafeAreaView style={styles.body}>
       <View style={styles.headingView}>
-        <Text style={styles.textHeading}>Harvest</Text>
+        <Text style={styles.textHeading}>
+          <Text>stalk</Text>
+          <Text style={{fontWeight: "bold"}}>overflow</Text>
+        </Text>
       </View>
       <View style={styles.buttonView}>
         <TouchableOpacity 
         onPress={async () => {
           await onLogin(async function() {
             await getUserProfile(accessToken, async function() {
-              await toNavigation();
+              await addToDatabase(async function() {
+                await toNavigation();
+              });
             })
 
           })
@@ -123,7 +201,6 @@ const styles = StyleSheet.create({
   textHeading: {
     color: '#000',
     fontSize: 35,
-    textTransform: 'uppercase',
   },
   text: {
     color: '#000',
