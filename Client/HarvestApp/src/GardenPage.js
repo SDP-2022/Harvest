@@ -13,7 +13,8 @@ import {
   View,
   TouchableOpacity,
   FlatList,
-  ActivityIndicator
+  ActivityIndicator,
+  RefreshControl
 } from 'react-native';
 
 import {
@@ -29,6 +30,11 @@ const ACCESS_TOKEN = '@save_token';
 
 export default function GardenPage({navigation, route}) {
   const {userIDToken, userAccessToken, authUsername, userID} = route.params;
+  const [Food, setFood] = useState([]);
+  const [FoodLen, setFoodLen] = useState(0);
+  const [Loading, setLoading] = useState(true);
+  const [Refresh, setRefresh] = useState(false);
+  const [Data, setData] = useState([{key: 1, text: 'text'}])
 
   // This function is used for testing
   const getVar = async() => {
@@ -58,7 +64,7 @@ export default function GardenPage({navigation, route}) {
         headers: {
           'Authorization' : 'Bearer ' + userAccessToken,
           'RequestType' : 'GetHarvestLogs',
-          'UserID' : 'A1'
+          'UserID' : userID
         },
       },
     ).then((response) => response.json())
@@ -92,11 +98,6 @@ export default function GardenPage({navigation, route}) {
     })
   };
 
-  // This array contains dummy data
-  const [Food, setFood] = useState([]);
-  const [FoodLen, setFoodLen] = useState(0);
-  const [Loading, setLoading] = useState(true);
-
   // This ensures the appropriate functions run when the screen is accessed
   useEffect(() => {
     getLog()
@@ -105,8 +106,9 @@ export default function GardenPage({navigation, route}) {
       console.log(json)
       setFood(json)
       setFoodLen(Object.keys(json).length)
+      setRefresh(false)
     })
-  }, []);
+  }, [Refresh]);
   
 
   if (Loading == true) {
@@ -119,20 +121,57 @@ export default function GardenPage({navigation, route}) {
   else if (Loading == false && FoodLen == 0) {
     return (
       <SafeAreaView style={styles.body}>
-        <Text style={styles.text}>You haven't harvested anything</Text>
-        <Text style={styles.text}>¯\_(ツ)_/¯</Text>
+  
+        <View style={styles.textView}>
+            <Text style={styles.userText}>Hey {authUsername}</Text>
+        </View>
+  
+        <FlatList
+          refreshControl={
+            <RefreshControl
+              refreshing={ Refresh }
+              onRefresh={() => {
+                setRefresh(true)
+              }}
+            />
+          }
+          showsVerticalScrollIndicator={false}
+          style={styles.flatList}
+          data={Data}
+          ListHeaderComponent={()=>
+            <View style={styles.header}>
+              <Text style={styles.text}>Your Garden is Empty</Text>
+              <Text style={styles.text}>¯\_(ツ)_/¯</Text>
+            </View>
+          }
+          // renderItem={({item}) => (
+            // <View style={styles.foodView}>
+            //   <Text style={styles.foodViewText}>{item.key}</Text>
+            //   <Text style={styles.foodViewText}>{item.text}</Text>
+            // </View>
+          // )}
+        />
+  
       </SafeAreaView>
-    )
+    );
   }
   else if (Loading == false && FoodLen > 0) {
   return (
     <SafeAreaView style={styles.body}>
 
       <View style={styles.textView}>
-          <Text style={styles.userText}>Hey User</Text>
+          <Text style={styles.userText}>Hey {authUsername}</Text>
       </View>
 
       <FlatList
+        refreshControl={
+          <RefreshControl
+            refreshing={ Refresh }
+            onRefresh={() => {
+              setRefresh(true)
+            }}
+          />
+        }
         showsVerticalScrollIndicator={false}
         style={styles.flatList}
         data={Food}
