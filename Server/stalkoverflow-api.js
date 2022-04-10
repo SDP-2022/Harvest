@@ -101,7 +101,7 @@ class StalkOverflowAPI {
 
             if (result.rowCount == 0) {
                 res.status(418);
-                return res.json({Error : "No rows found."});
+                return res.json({});
             } else {
                 res.status(201);
                 res.send("Success");
@@ -139,7 +139,7 @@ class StalkOverflowAPI {
 
             if (result.rowCount == 0) {
                 res.status(418);
-                return res.json({Error : "No rows found."});
+                return res.json({});
             } else {
                 res.status(201);
                 res.send("Success");
@@ -177,7 +177,7 @@ class StalkOverflowAPI {
 
             if (weight == null) {
                 res.status(418);
-                return res.json({Error : "No rows found."});
+                return res.json({});
             } else {
                 res.status(201);
                 res.json({
@@ -212,7 +212,7 @@ class StalkOverflowAPI {
 
             if (result.rowCount == 0) {
                 res.status(418);
-                return res.json({Error : "No rows found."});
+                return res.json({});
             } else {
                 res.status(201);
                 res.json(result.rows);
