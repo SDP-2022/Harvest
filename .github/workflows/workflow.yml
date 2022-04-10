@@ -23,6 +23,6 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     - uses: actions/checkout@master
-    - uses: codecov/codecov-action@v2
+    - uses: codecov/Harvest@v2
       with:
         name: codecov-stalkoverflow
