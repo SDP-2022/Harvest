@@ -35,7 +35,7 @@ const auth0 = new Auth0({
 const ACCESS_TOKEN = '@save_token';
 
 export default function WelcomePage({navigation}) {
-  let accessToken, idToken, username, user_id, loginsCount, email;
+  let accessToken, idToken, username, user_id;
 
   // Keeping this function for later :)
   // const onLogout = () => {
@@ -54,50 +54,6 @@ export default function WelcomePage({navigation}) {
     navigation.navigate('Navigation', {userIDToken: idToken, userAccessToken: accessToken, authUsername: username, userID : user_id})
   }
 
-  const addUserToDatabase = async () => {
-    fetch(
-      'https://harvest-stalkoverflow.herokuapp.com/api/private/',
-      {
-        method: 'POST',
-        headers: {
-          'Authorization' : 'Bearer ' + accessToken,
-          'RequestType' : 'AddUser'
-        },
-        body: {
-          'UserID' : user_id,
-          'Username' : username,
-          'Email' : email
-        }
-      }
-    )
-  }
-
-  const addLoginToDatabase = async () => {
-    fetch(
-      'https://harvest-stalkoverflow.herokuapp.com/api/private/',
-      {
-        method: 'POST',
-        headers: {
-          'Authorization' : 'Bearer ' + accessToken,
-          'RequestType' : 'LoginUser'
-        },
-        body: {
-          'UserID' : user_id
-        }
-      }
-    )
-  }
-
-  const addToDatabase = async (_callback) => {
-    if (loginsCount == 1) {
-      addUserToDatabase();
-    }
-    else if (loginsCount != 1) {
-      addLoginToDatabase();
-    }
-    _callback();
-  }
-
   // This function gets the user profile from
   // Auth0 to get their username.
   const getUserProfile = async (accTok, _callback) => {
@@ -105,12 +61,7 @@ export default function WelcomePage({navigation}) {
       .userInfo({token: accTok})
       .then(Json => {
         username = String(Json['https://dev-q8h6rzir:us:auth0:com/username']);
-        user_id = parseInt(Json['https://dev-q8h6rzir:us:auth0:com/user_id']);
-        loginsCount = String(Json['https://dev-q8h6rzir:us:auth0:com/loginsCount'])
-        email = String(Json['email']);
-        console.log(loginsCount);
-        console.log(email)
-        console.log(accessToken)
+        user_id = String(Json['https://dev-q8h6rzir:us:auth0:com/user_id']);
         _callback();
       })
       .catch(console.error);
@@ -120,11 +71,9 @@ export default function WelcomePage({navigation}) {
   const onLogin = async(_callback) => {
     auth0.webAuth
       .authorize({
-        audience: "https://harvest-stalkoverflow.herokuapp.com/",
         scope: 'openid profile email',
       })
       .then(credentials => {
-        console.log(credentials)
         accessToken = credentials.accessToken;
         idToken = credentials.idToken;
         _callback();

@@ -30,7 +30,6 @@ export default function GardenPage({navigation, route}) {
   const {userIDToken, userAccessToken, authUsername, userID} = route.params;
 
   const getVar = async() => {
-    console.log(userAccessToken);
     return fetch(
       'https://harvest-stalkoverflow.herokuapp.com/api/private/',
       {
@@ -44,47 +43,6 @@ export default function GardenPage({navigation, route}) {
       console.log(text)
     })
     .catch((error)=>{
-      console.log(error)
-    })
-  };
-
-  const getLog = async() => {
-    return fetch(
-      'https://harvest-stalkoverflow.herokuapp.com/api/private/',
-      {
-        method: 'GET', 
-        headers: {
-          'Authorization' : 'Bearer ' + userAccessToken,
-          'RequestType' : 'GetHarvestLogs',
-          'UserID' : 'A1'
-        },
-      },
-    ).then((response) => response.text())
-    .then((text) => {
-      console.log(text)
-    })
-    .catch((error) => {
-      console.log(error)
-    })
-  };
-
-  const getWeight = async(foodname) => {
-    return fetch(
-      'https://harvest-stalkoverflow.herokuapp.com/api/private/',
-      {
-        method: 'GET',
-        headers: {
-          'Authorization' : 'Bearer ' + userAccessToken,
-          'RequestType' : 'GetFoodTotalWeight',
-          'UserID' : userID,
-          'FoodName' : foodname
-        }
-      }
-    ).then((response) => response.text())
-    .then((text) => {
-      console.log(text)
-    })
-    .catch((error) => {
       console.log(error)
     })
   };
