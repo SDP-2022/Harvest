@@ -25,7 +25,7 @@ import {
 } from 'react-native/Libraries/NewAppScreen';
 
 import AtlasPage from './AtlasPage';
-import GardenPage from './GardenPage';
+import GardenNavigation from './GardenNavigation';
 import AddPage from './AddPage';
 
 // This file is responsible for adding all appropriate pages to the navigation bar
@@ -52,8 +52,8 @@ export default function Navigation({navigation, route}) {
   
     >
       <Tab.Screen
-        name="GardenPage"
-        component={GardenPage}
+        name="GardenNavigation"
+        component={GardenNavigation}
         initialParams={{userIDToken: userIDToken, userAccessToken : userAccessToken, authUsername: authUsername, userID : userID}}
         options={{
           tabBarIcon: ({focused}) => (
