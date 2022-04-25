@@ -1,15 +1,9 @@
-import {NavigationContainer} from '@react-navigation/native';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import React from 'react';
-import {Node, useState, useEffect} from 'react';
+import {useState, useEffect} from 'react';
 import {
   SafeAreaView,
-  ScrollView,
-  StatusBar,
   StyleSheet,
   Text,
-  useColorScheme,
   View,
   TouchableOpacity,
   FlatList,
@@ -18,14 +12,6 @@ import {
   RefreshControl,
 } from 'react-native';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  Button,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
 
 const ACCESS_TOKEN = '@save_token';
 

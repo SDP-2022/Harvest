@@ -1,30 +1,10 @@
-import {NavigationContainer} from '@react-navigation/native';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import Auth0 from 'react-native-auth0';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import React from 'react';
-import {Node, useState} from 'react';
 import {
   SafeAreaView,
-  ScrollView,
-  StatusBar,
   StyleSheet,
   Text,
-  useColorScheme,
-  View,
-  Alert,
-  ActivityIndicator,
-  TouchableOpacity,
 } from 'react-native';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  Button,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
 
 export default function PieChartPage({navigation}) {
     return (

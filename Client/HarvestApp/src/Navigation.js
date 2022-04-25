@@ -1,28 +1,11 @@
-import {NavigationContainer} from '@react-navigation/native';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import React from 'react';
-import {Node, useState} from 'react';
 import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
   Text,
-  useColorScheme,
   Image,
   View,
-  TouchableOpacity,
 } from 'react-native';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  Button,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
 
 import AtlasPage from './AtlasPage';
 import GardenNavigation from './GardenNavigation';

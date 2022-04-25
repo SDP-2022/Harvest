@@ -9,7 +9,6 @@
  import { NavigationContainer } from '@react-navigation/native';
  import { createNativeStackNavigator } from '@react-navigation/native-stack';
  import React from 'react';
- import {Node} from 'react';
  import WelcomePage from './WelcomePage';
  import Navigation from './Navigation';
  
