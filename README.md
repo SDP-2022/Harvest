@@ -14,6 +14,7 @@
 ### Built Using:
 * [React Native](https://reactnative.dev/)
 * [React Navigation](https://reactnavigation.org/)
+* [Victory Native](https://formidable.com/open-source/victory/)
 * [Auth0](https://auth0.com/)
 
 <h2 align="Left">Backend Server</h2>
