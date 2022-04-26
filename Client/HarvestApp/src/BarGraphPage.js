@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   SafeAreaView,
   StyleSheet,
   Text,
+  TouchableOpacity,
 } from 'react-native';
 
 
@@ -13,6 +14,11 @@ import {
 } from 'victory-native';
 
 export default function BarGraphPage({navigation}) {
+  const [filterIsApplied, setFilterIsApplied] = useState(false);
+  const [categories, setCategories] = useState([]);
+  const [graphData, setGraphData] = useState([]);
+  const [legend, setLegend] = useState([]);
+
   let testData_0 = [
     ['January', ['Blueberry', 30], ['Blackberry', 10], ['Strawberry', 34]],
     ['February', ['Blueberry', 36], ['Blackberry', 17], ['Strawberry', 42]],
@@ -37,70 +43,70 @@ export default function BarGraphPage({navigation}) {
     let duration = data.length;
     let numberOfFoodItems = data[0].length - 1;
     
-    let categories = [];
+    let parseCategories = [];
     for (let i = 0; i < duration; i++) {
-      categories.push(data[i][0]);
+      parseCategories.push(data[i][0]);
     }
 
     // Will use a custom legend which will link to Atlas
-    let legend = [];
+    let parseLegend = [];
     for (let i = 0; i < numberOfFoodItems; i++) {
-      legend.push(data[0][i+1][0]);
+      parseLegend.push(data[0][i+1][0]);
     }
 
-    let values = []
+    let parseValues = []
     for (let i = 0; i < numberOfFoodItems; i++) {
       let list = [];
       for (let j = 0; j < duration; j++) {
-        list.push({x: categories[j], y: data[j][i+1][1]});
+        list.push({x: parseCategories[j], y: data[j][i+1][1]});
       }
-      values.push(list);
+      parseValues.push(list);
     }
-
-    return {categories, legend, values, duration, numberOfFoodItems};
+    return {parseCategories, parseLegend, parseValues, duration, numberOfFoodItems};
   }
 
   const createObjects = (data) => {
-    let {categories, legend, values, duration, numberOfFoodItems} = parseData(data);
+    let {parseCategories, parseLegend, parseValues, duration, numberOfFoodItems} = parseData(data);
 
-    const graphData = [];
+    const objGraphData = [];
 
     for (let i = 0; i < numberOfFoodItems; i++) {
       let food = {
-        name: legend[i],
-        harvestData: values[i]
+        name: parseLegend[i],
+        harvestData: parseValues[i]
       }
-      graphData.push(food);
+      objGraphData.push(food);
     }
-    console.log(graphData);
+    console.log(objGraphData)
   } 
 
-  createObjects(testData_0);
+  const testFunction = () => {
+    setFilterIsApplied(!filterIsApplied);
+    createObjects(testData_0);
+  }
 
-  // Working on it :)
-  const createBarGraph = () => {
-    return 1;
+  const renderBarGraph = (dataArr, catArr) => {
+    return dataArr.map((item) => {
+      <VictoryBar
+        categories={{
+          x: catArr
+        }}
+        data={item.harvestData}
+      />
+    })
   }
 
   return (
     <SafeAreaView style={styles.body}>
-      <Text>This is the Bar Graph Page</Text>
+      <Text>This button is temporary (testing)</Text>
+
+      <TouchableOpacity style={styles.button} onPress={()=>testFunction()}>
+        <Text>Apply Filter</Text>
+      </TouchableOpacity>
 
       <VictoryChart domainPadding={30}>
         <VictoryGroup offset={20} colorScale={["#A1E8AF", "#4DA87D", "#32612D"]}>
-        <VictoryBar
-            categories={{
-              x: ['January', 'February', 'March', 'April', 'May', 'June'],
-            }}
-            data={[10, 17, 20, 34, 12, 53, 21]}
-          />
-          <VictoryBar
-            categories={{
-              x: ['January', 'February', 'March', 'April', 'May', 'June'],
-            }}
-            data={[30, 36, 12, 34, 12, 14, 13]}
-          />
-        </VictoryGroup>
+        </VictoryGroup> 
       </VictoryChart>
     </SafeAreaView>
   );
