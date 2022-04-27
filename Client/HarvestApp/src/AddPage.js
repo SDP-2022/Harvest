@@ -63,6 +63,7 @@ const checkTextInput = () => {
  const styles = StyleSheet.create({ 
   body: {
     flex: 1,
+    backgroundColor: '#fff'
   },
   text: { 
     color: '#000',
