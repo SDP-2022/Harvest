@@ -92,11 +92,10 @@ async addLog(userID,Food_Name,Weight){
 }
 
 //userID String, food String
-async getAllFood(userID,food){
+async getAllFood(){
   const text = `SELECT "Food_Name" FROM "food"`;
   const values = []
-  values.push(userID);
-  values.push(food);
+  
   try{
     var result=await client.query(text, values);
     return result;
