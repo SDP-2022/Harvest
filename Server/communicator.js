@@ -93,7 +93,7 @@ async addLog(userID,Food_Name,Weight){
 
 //userID String, food String
 async getAllFood(userID,food){
-  const text = `SELECT "Food" FROM "food"`;
+  const text = `SELECT "Food_Name" FROM "food"`;
   const values = []
   values.push(userID);
   values.push(food);
