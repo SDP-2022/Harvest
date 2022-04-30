@@ -39,6 +39,9 @@ class StalkOverflowAPI {
             case 'GetFoodTotalWeight':
                 this.#getFoodTotalWeight(req, res);
                 return;
+            case 'GetAllFoodNames':
+                this.#getAllFoodNames(req, res);
+                return;
         }
 
         res.status(404);
@@ -208,6 +211,25 @@ class StalkOverflowAPI {
         // Send to database and check for errors
         try {
             var result = await dbCom.getHarvestLogs(userID);
+            console.log("Result:", result);
+
+            if (result.rowCount == 0) {
+                res.status(418);
+                return res.json({});
+            } else {
+                res.status(201);
+                res.json(result.rows);
+            }           
+        } catch (err) {
+            console.log("Error:", err);
+            res.status(500);
+            return res.json({Error : err.detail});
+        }
+    }
+
+    async #getAllFoodNames(req, res) {
+        try {
+            var result = await dbCom.getAllFood();
             console.log("Result:", result);
 
             if (result.rowCount == 0) {
