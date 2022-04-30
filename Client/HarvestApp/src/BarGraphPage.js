@@ -1,4 +1,5 @@
 import React, {useState} from 'react';
+import {Picker} from '@react-native-picker/picker';
 import {
   SafeAreaView,
   View,
@@ -6,6 +7,11 @@ import {
   Text,
   Image,
   TouchableOpacity,
+  Modal,
+  Pressable,
+  TextInput,
+  Button,
+  
 } from 'react-native';
 
 import {
@@ -20,6 +26,8 @@ export default function BarGraphPage({navigation}) {
   const [categories, setCategories] = useState([]);
   const [graphData, setGraphData] = useState([]);
   const [legend, setLegend] = useState([]);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedValue, setSelectedValue] = useState([]);
 
   let testData_0 = [
     ['January', ['Blueberry', 30], ['Blackberry', 10], ['Strawberry', 34]],
@@ -113,16 +121,93 @@ export default function BarGraphPage({navigation}) {
             source={require('../assets/hamburger-icon.png')}
           />
         </TouchableOpacity>
+
+        <View style={styles.filter}>
+       
+           <Modal
+              animationType='slide'
+              transparent={true}
+              visible={modalVisible}
+              onRequestClose={() => {
+              Alert.alert("Modal has been closed.");
+              setModalVisible(!modalVisible);
+            }}
+            >
+            <View style={styles.Filter_View}>
+              <View style={styles.Popup_View}>
+                <Text style={{marginLeft: 20 , marginTop: 10 , color:'black'}}>Time Period</Text>
+                <Picker
+        
+                  selectedValue={selectedValue}
+                  style={{ height: 50, width: 140,backgroundColor:"white",borderLeftWidth:20 }}
+                  onValueChange={(itemValue, itemIndex) => setSelectedValue(itemValue)}
+                >
+                  <Picker.Item label="1 Year" value='1' />
+                  <Picker.Item label="6 Months" value='2'/>
+                  <Picker.Item label="3 Months" value='3'/>
+                  <Picker.Item label="1 Month" value='4'/>
+                  <Picker.Item label="1 Week"  value='5'/>
+                </Picker>
+  
+           
+        <Text style={{marginLeft: 20 , marginTop: 5 , color:'black'}}>Level</Text>
+        <Picker
+           selectedValue={selectedValue}
+          style={{ height: 50, width: 150,backgroundColor:"white",marginRight:50 }}
+          onValueChange={(itemValue, itemIndex) => setSelectedValue(itemValue)}
+        >
+          <Picker.Item label="Supertype" value='1' />
+          <Picker.Item label="Subtype" value='2'/>
+          <Picker.Item label="Food" value='3'/>
+      </Picker>
+      <Text style={{marginLeft: 20 , marginTop: 5 ,  color:'black'}}>Produce</Text>
+      <TextInput
+        placeholder='....'
+        placeholderTextColor={'black'}
+        style={{backgroundColor:'white', width:70 , 
+        height:40,marginLeft: 0, marginTop: 5}}
+       >
+      </TextInput>     
+
+      <Pressable
+        style={{backgroundColor:'#A1E8AF' ,width:150,height: 35, 
+                    borderRadius:15, marginTop: 10, marginLeft: 50
+                    ,marginBottom: 15}}
+        onPress={() => {setModalVisible(!modalVisible);renderBarGraph()} }
+        >
+        <Text style={{fontSize: 20 , marginLeft: 20, color:'black'}}>Apply Filter</Text>
+        </Pressable>
+          </View>
+        </View>
+      </Modal>
+
+        <Pressable
+          onPress={() => setModalVisible(true)}
+        >
+          <Image
+              style={{
+                height: 25,
+                width: 25,
+              }}
+              source={require('../assets/filter.png')}
+              />
+        </Pressable>
+
+       </View>
+
       </View>
       <View style={styles.graphView}>
         <Text>This button is temporary (testing)</Text>
-
+       
         <TouchableOpacity
-          style={styles.button}
-          onPress={() => renderBarGraph()}>
-          <Text>Apply Filter</Text>
+         // style={styles.button}
+         // onPress={() => renderBarGraph()}
+         >
+        <Text>
+          Apply Filter
+          </Text>
         </TouchableOpacity>
-
+       
         {filterIsApplied ? (
           <VictoryChart
             domainPadding={20}
@@ -168,6 +253,38 @@ export default function BarGraphPage({navigation}) {
 }
 
 const styles = StyleSheet.create({
+  
+  drop_down:{
+    backgroundColor: 'white',
+    borderRadius: 2,
+    borderBottomWidth: 0.5,
+   padding:2,
+  },
+  Filter_View: {
+     justifyContent: 'center',
+     alignItems: 'flex-end',
+   },
+   Popup_View: {
+     margin:20,
+     backgroundColor: 'grey',
+     width:230,
+     alignItems: 'flex-start',
+     shadowColor: "#000",
+     shadowOffset: {
+       width: 0,
+       height: 5
+  },
+     shadowOpacity: 0.25,
+     shadowRadius: 4,
+     elevation: 5
+  },
+  filter:{
+    marginTop:-20,
+    height:0,
+    width: 0,
+    marginLeft: 350,
+    backgroundColor: 'red',
+  },
   body: {
     flex: 1,
     justifyContent: 'center',
