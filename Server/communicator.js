@@ -91,9 +91,37 @@ async addLog(userID,Food_Name,Weight){
   }
 }
 
+//userID String, food String
+async getAllFood(userID,food){
+  const text = `SELECT "Food" FROM "food"`;
+  const values = []
+  values.push(userID);
+  values.push(food);
+  try{
+    var result=await client.query(text, values);
+    return result;
+  }catch{
+    throw err;
+  }
+}
+
+async getLogsSuperType(foodType){
+  const text = `SELECT food."Food_Name" FROM "food" inner join "subtypes" on food."Subtype" = subtypes."Subtype" where subtypes."Type" = $1`;
+  const values = []
+  values.push(foodType);
+  try{
+    var result=await client.query(text, values);
+    return result;
+  }catch{
+    throw err;
+  }
+}
+
 }
 
 module.exports=communicator;
+
+
 
 
 
