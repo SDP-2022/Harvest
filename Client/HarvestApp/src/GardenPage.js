@@ -59,6 +59,53 @@ export default function GardenPage({navigation, route}) {
       });
   };
 
+  const formatFood = (json) => {
+    let foodData = [];
+    for (let i = 0; i < json.length; i++) {
+      let date = new Date(json[i].Date_Logged.slice(0, 10));
+      let food = json[i].Food_Name;
+      let weight = json[i].Weight;
+      let object = {
+        DateLogged: date,
+        FoodName: food, 
+        Weight: weight
+      }
+      foodData.push(object)
+    }
+
+    foodData = foodData.sort((a, b) => b.DateLogged - a.DateLogged);
+
+    let categorizedFoodData = [
+      {
+        DateLogged: new Date("1900-01-01"),
+        FoodName: ["placeholder"],
+        Weight: [0]
+      }
+    ]
+
+    for (let i = 0; i < foodData.length; i++) {
+      let isInList = false;
+      for (let j = 0; j < categorizedFoodData.length; j++) {
+        if (foodData[i].DateLogged.toDateString() === categorizedFoodData[j].DateLogged.toDateString()) {
+          categorizedFoodData[j].FoodName.push(foodData[i].FoodName);
+          categorizedFoodData[j].Weight.push(foodData[i].Weight);
+          isInList = true;
+          break;
+        }
+      }
+      if (isInList == false) {
+        let object = {
+          DateLogged: foodData[i].DateLogged,
+          FoodName: [foodData[i].FoodName],
+          Weight: [foodData[i].Weight]
+        }
+        categorizedFoodData.push(object)
+      }
+    }
+    categorizedFoodData.shift();
+    console.log(categorizedFoodData)
+  }
+
   // This function gets the weight of a specific food item
   const getWeight = async foodname => {
     return fetch('https://harvest-stalkoverflow.herokuapp.com/api/private/', {
@@ -83,8 +130,8 @@ export default function GardenPage({navigation, route}) {
   useEffect(() => {
     getLog().then(json => {
       setLoading(false);
-      console.log(json);
       setFood(json);
+      formatFood(json)
       setFoodLen(Object.keys(json).length);
       setRefresh(false);
     });
