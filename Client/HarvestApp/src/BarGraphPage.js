@@ -1,5 +1,7 @@
 import React, {useState} from 'react';
 import {Picker} from '@react-native-picker/picker';
+import ModalSelector from 'react-native-modal-selector'
+
 import {
   SafeAreaView,
   View,
@@ -22,12 +24,15 @@ import {
 } from 'victory-native';
 
 export default function BarGraphPage({navigation}) {
+ 
   const [filterIsApplied, setFilterIsApplied] = useState(false);
   const [categories, setCategories] = useState([]);
   const [graphData, setGraphData] = useState([]);
   const [legend, setLegend] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
-  const [selectedValue, setSelectedValue] = useState([]);
+  const [selectedPeriod, setSelectedPeriod] = useState();
+  const [selectedType, setSelectedType] = useState();
+  const [text, setText] = useState('');
 
   let testData_0 = [
     ['January', ['Blueberry', 30], ['Blackberry', 10], ['Strawberry', 34]],
@@ -108,7 +113,7 @@ export default function BarGraphPage({navigation}) {
     createObjects(testData_1);
     setFilterIsApplied(!filterIsApplied);
   };
-
+  
   return (
     <SafeAreaView style={styles.body}>
       <View style={styles.burgerView}>
@@ -135,37 +140,39 @@ export default function BarGraphPage({navigation}) {
             >
             <View style={styles.Filter_View}>
               <View style={styles.Popup_View}>
-                <Text style={{marginLeft: 20 , marginTop: 10 , color:'black'}}>Time Period</Text>
+                <Text style={{marginLeft: 20 , marginTop: 10 , color:'white'}}>Time Period</Text>
+               
                 <Picker
         
-                  selectedValue={selectedValue}
-                  style={{ height: 50, width: 140,backgroundColor:"white",borderLeftWidth:20 }}
-                  onValueChange={(itemValue, itemIndex) => setSelectedValue(itemValue)}
+                  selectedValue={selectedPeriod}
+                  style={{ height: 50, width: 190,backgroundColor:"grey",marginLeft:20  }}
+                  onValueChange={(itemValue, itemIndex) => setSelectedPeriod(itemValue)}
                 >
+                  <Picker.Item label="Please select an option..." value='0' />
                   <Picker.Item label="1 Year" value='1' />
                   <Picker.Item label="6 Months" value='2'/>
                   <Picker.Item label="3 Months" value='3'/>
                   <Picker.Item label="1 Month" value='4'/>
                   <Picker.Item label="1 Week"  value='5'/>
-                </Picker>
   
-           
-        <Text style={{marginLeft: 20 , marginTop: 5 , color:'black'}}>Level</Text>
+                </Picker>
+      <Text style={{marginLeft: 20 , marginTop: 5 , color:'white'}}>Level</Text>
+       
         <Picker
-           selectedValue={selectedValue}
-          style={{ height: 50, width: 150,backgroundColor:"white",marginRight:50 }}
-          onValueChange={(itemValue, itemIndex) => setSelectedValue(itemValue)}
+           selectedValue={selectedType}
+           style={{ height: 50, width: 190,backgroundColor:"grey",marginLeft:20  }}
+           onValueChange={(itemValue, itemIndex) => setSelectedType(itemValue)}
         >
-          <Picker.Item label="Supertype" value='1' />
+          <Picker.Item label="Please select an option..." value='0' />
+          <Picker.Item label="Supertype" value='1'/>
           <Picker.Item label="Subtype" value='2'/>
           <Picker.Item label="Food" value='3'/>
       </Picker>
-      <Text style={{marginLeft: 20 , marginTop: 5 ,  color:'black'}}>Produce</Text>
+      <Text style={{marginLeft: 20 , marginTop: 5 ,  color:'white'}}>Produce</Text>
       <TextInput
-        placeholder='....'
+        placeholde = 'produce'
         placeholderTextColor={'black'}
-        style={{backgroundColor:'white', width:70 , 
-        height:40,marginLeft: 0, marginTop: 5}}
+        style={{height: 50, width: 190,backgroundColor:"grey",marginLeft:20 }}
        >
       </TextInput>     
 
@@ -175,7 +182,7 @@ export default function BarGraphPage({navigation}) {
                     ,marginBottom: 15}}
         onPress={() => {setModalVisible(!modalVisible);renderBarGraph()} }
         >
-        <Text style={{fontSize: 20 , marginLeft: 20, color:'black'}}>Apply Filter</Text>
+        <Text style={{fontSize: 20 , marginLeft: 25, marginTop:2, color:'black'}}>Apply Filter</Text>
         </Pressable>
           </View>
         </View>
@@ -255,10 +262,10 @@ export default function BarGraphPage({navigation}) {
 const styles = StyleSheet.create({
   
   drop_down:{
-    backgroundColor: 'white',
+    backgroundColor: 'black',
     borderRadius: 2,
     borderBottomWidth: 0.5,
-   padding:2,
+    padding:2,
   },
   Filter_View: {
      justifyContent: 'center',
@@ -266,7 +273,8 @@ const styles = StyleSheet.create({
    },
    Popup_View: {
      margin:20,
-     backgroundColor: 'grey',
+     borderRadius:20,
+     backgroundColor: 'black',
      width:230,
      alignItems: 'flex-start',
      shadowColor: "#000",

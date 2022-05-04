@@ -27,7 +27,8 @@ export default function PieChartPage({navigation}) {
   const [graphData, setGraphData] = useState([]);
   const [legend, setLegend] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
-  const [selectedValue, setSelectedValue] = useState([]);
+  const [selectedPeriod, setSelectedPeriod] = useState();
+  const [selectedType, setSelectedType] = useState();
   let testData_0 = [
     ['January', ['Blueberry', 30], ['Blackberry', 10], ['Strawberry', 34]],
     ['February', ['Blueberry', 36], ['Blackberry', 17], ['Strawberry', 42]],
@@ -134,39 +135,44 @@ export default function PieChartPage({navigation}) {
         >
         <View style={styles.Filter_View}>
           <View style={styles.Popup_View}>
-            <Text style={{marginLeft: 20 , marginTop: 10 , color:'black'}}>Time Period</Text>
-            <Picker
-    
-              selectedValue={selectedValue}
-              style={{ height: 50, width: 140,backgroundColor:"white",borderLeftWidth:20 }}
-              onValueChange={(itemValue, itemIndex) => setSelectedValue(itemValue)}
-            >
-              <Picker.Item label="1 Year" value='1' />
-              <Picker.Item label="6 Months" value='2'/>
-              <Picker.Item label="3 Months" value='3'/>
-              <Picker.Item label="1 Month" value='4'/>
-              <Picker.Item label="1 Week"  value='5'/>
-            </Picker>
+          <Text style={{marginLeft: 20 , marginTop: 10 , color:'white'}}>Time Period</Text>
+               
+               <Picker
+       
+                 selectedValue={selectedPeriod}
+                 style={{ height: 50, width: 190,backgroundColor:"grey",marginLeft:20  }}
+                 onValueChange={(itemValue, itemIndex) => setSelectedPeriod(itemValue)}
+               >
+                 <Picker.Item label="Please select an option..." value='0' />
+                 <Picker.Item label="1 Year" value='1' />
+                 <Picker.Item label="6 Months" value='2'/>
+                 <Picker.Item label="3 Months" value='3'/>
+                 <Picker.Item label="1 Month" value='4'/>
+                 <Picker.Item label="1 Week"  value='5'/>
+ 
+               </Picker>
 
        
-    <Text style={{marginLeft: 20 , marginTop: 5 , color:'black'}}>Level</Text>
-    <Picker
-       selectedValue={selectedValue}
-      style={{ height: 50, width: 150,backgroundColor:"white",marginRight:50 }}
-      onValueChange={(itemValue, itemIndex) => setSelectedValue(itemValue)}
-    >
-      <Picker.Item label="Supertype" value='1' />
-      <Picker.Item label="Subtype" value='2'/>
-      <Picker.Item label="Food" value='3'/>
-  </Picker>
-  <Text style={{marginLeft: 20 , marginTop: 5 ,  color:'black'}}>Produce</Text>
-  <TextInput
-    placeholder='....'
-    placeholderTextColor={'black'}
-    style={{backgroundColor:'white', width:70 , 
-    height:40,marginLeft: 0, marginTop: 5}}
-   >
-  </TextInput>     
+               <Text style={{marginLeft: 20 , marginTop: 5 , color:'white'}}>Level</Text>
+       
+       <Picker
+          selectedValue={selectedType}
+          style={{ height: 50, width: 190,backgroundColor:"grey",marginLeft:20  }}
+          onValueChange={(itemValue, itemIndex) => setSelectedType(itemValue)}
+       >
+         <Picker.Item label="Please select an option..." value='0' />
+         <Picker.Item label="Supertype" value='1'/>
+         <Picker.Item label="Subtype" value='2'/>
+         <Picker.Item label="Food" value='3'/>
+     </Picker>
+     <Text style={{marginLeft: 20 , marginTop: 5 ,  color:'white'}}>Produce</Text>
+      <TextInput
+        placeholde = 'produce'
+        placeholderTextColor={'black'}
+        style={{height: 50, width: 190,backgroundColor:"grey",marginLeft:20 }}
+       >
+      </TextInput>     
+    
 
   <Pressable
     style={{backgroundColor:'#A1E8AF' ,width:150,height: 35, 
@@ -261,7 +267,8 @@ const styles = StyleSheet.create({
    },
    Popup_View: {
      margin:20,
-     backgroundColor: 'grey',
+     borderRadius:20,
+     backgroundColor: 'black',
      width:250,
      alignItems: 'flex-start',
      shadowColor: "#000",
