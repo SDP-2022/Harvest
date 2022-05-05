@@ -20,6 +20,7 @@
     "react-native": "0.67.4",
     "react-native-auth0": "^2.13.0",
     "react-native-gesture-handler": "^2.4.1",
+    "react-native-modal-selector": "^2.1.0",
     "react-native-reanimated": "^2.7.0",
     "react-native-restart": "^0.0.24",
     "react-native-safe-area-context": "^4.2.4",
