@@ -7,6 +7,7 @@ import {
   View,
   TouchableOpacity,
   FlatList,
+  SectionList,
   Image,
   ActivityIndicator,
   RefreshControl,
@@ -76,8 +77,8 @@ export default function GardenPage({navigation, route}) {
 
     let categorizedFoodData = [
       {
-        DateLogged: new Date('1900-01-01'),
-        Data: [{FoodName: 'placeholder', Weight: 0}],
+        title: new Date('1900-01-01'),
+        data: [{FoodName: 'placeholder', Weight: 0}],
       },
     ];
 
@@ -86,21 +87,21 @@ export default function GardenPage({navigation, route}) {
       for (let j = 0; j < categorizedFoodData.length; j++) {
         if (
           foodData[i].DateLogged.toDateString() ===
-          categorizedFoodData[j].DateLogged.toDateString()
+          categorizedFoodData[j].title.toDateString()
         ) {
           let object = {
             FoodName: foodData[i].FoodName,
-            Weight: foodData[i].Weight
-          }
-          categorizedFoodData[j].Data.push(object)
+            Weight: foodData[i].Weight,
+          };
+          categorizedFoodData[j].data.push(object);
           isInList = true;
           break;
         }
       }
       if (isInList == false) {
         let object = {
-          DateLogged: foodData[i].DateLogged,
-          Data: [
+          title: foodData[i].DateLogged,
+          data: [
             {
               FoodName: foodData[i].FoodName,
               Weight: foodData[i].Weight,
@@ -111,6 +112,7 @@ export default function GardenPage({navigation, route}) {
       }
     }
     categorizedFoodData.shift();
+    return categorizedFoodData;
   };
 
   // This function gets the weight of a specific food item
@@ -137,8 +139,7 @@ export default function GardenPage({navigation, route}) {
   useEffect(() => {
     getLog().then(json => {
       setLoading(false);
-      setFood(json);
-      formatFood(json);
+      setFood(formatFood(json));
       setFoodLen(Object.keys(json).length);
       setRefresh(false);
     });
@@ -175,7 +176,7 @@ export default function GardenPage({navigation, route}) {
             />
           }
           showsVerticalScrollIndicator={false}
-          style={styles.flatList}
+          style={styles.list}
           data={Data}
           ListHeaderComponent={() => (
             <View style={styles.header}>
@@ -193,6 +194,12 @@ export default function GardenPage({navigation, route}) {
       </SafeAreaView>
     );
   } else if (Loading == false && FoodLen > 0) {
+    {
+      console.log(Food);
+    }
+    {
+      console.log(Food[2]);
+    }
     return (
       <SafeAreaView style={styles.body}>
         <View style={styles.burgerView}>
@@ -207,7 +214,7 @@ export default function GardenPage({navigation, route}) {
           </TouchableOpacity>
         </View>
 
-        <FlatList
+        <SectionList
           refreshControl={
             <RefreshControl
               refreshing={Refresh}
@@ -217,21 +224,22 @@ export default function GardenPage({navigation, route}) {
             />
           }
           showsVerticalScrollIndicator={false}
-          style={styles.flatList}
-          data={Food}
           ListHeaderComponent={() => (
             <View style={styles.header}>
               <Text style={styles.text}>Your Garden:</Text>
             </View>
           )}
+          style={styles.list}
+          sections={Food}
+          keyExtractor={(item, index) => item + index}
           renderItem={({item}) => (
-            <View style={styles.foodView}>
-              <Text style={styles.foodViewText}>{item.Food_Name}</Text>
-              <Text style={styles.foodViewText}>Weight: {item.Weight}g</Text>
-              <Text style={styles.foodViewText}>
-                Date: {item.Date_Logged.slice(0, 10)}
-              </Text>
+            <View>
+              <Text>{item.FoodName}</Text>
+              <Text>{item.Weight}</Text>
             </View>
+          )}
+          renderSectionHeader={({section: {title}}) => (
+            <Text style={{fontSize: 24}}>{title.toDateString()}</Text>
           )}
         />
       </SafeAreaView>
@@ -252,7 +260,7 @@ const styles = StyleSheet.create({
     marginLeft: 20,
     alignSelf: 'stretch',
   },
-  flatList: {
+  list: {
     flex: 2,
     marginBottom: 50,
   },
