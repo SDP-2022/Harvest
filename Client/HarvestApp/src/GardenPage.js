@@ -230,16 +230,25 @@ export default function GardenPage({navigation, route}) {
             </View>
           )}
           style={styles.list}
+          stickySectionHeadersEnabled={false}
           sections={Food}
           keyExtractor={(item, index) => item + index}
           renderItem={({item}) => (
-            <View>
-              <Text>{item.FoodName}</Text>
-              <Text>{item.Weight}</Text>
+            <View style={styles.foodView}>
+              <Text style={styles.foodViewName}>{item.FoodName}</Text>
+              <Text style={styles.foodViewWeight}>{item.Weight}g</Text>
             </View>
           )}
           renderSectionHeader={({section: {title}}) => (
-            <Text style={{fontSize: 24}}>{title.toDateString()}</Text>
+            <>
+              {new Date().toDateString() === title.toDateString() ? (
+                <Text style={styles.sectionHeader}>Today</Text>
+              ) : new Date().toDateString() - 1 === title.toDateString() ? (
+                <Text style={styles.sectionHeader}>Yesterday</Text>
+              ) : (
+                <Text style={styles.sectionHeader}>{title.toDateString()}</Text>
+              )}
+            </>
           )}
         />
       </SafeAreaView>
@@ -279,8 +288,8 @@ const styles = StyleSheet.create({
     textAlign: 'left',
   },
   foodView: {
-    width: 300,
-    height: 125,
+    width: 325,
+    height: 75,
     margin: 10,
     padding: 10,
     backgroundColor: '#A1E8Af',
@@ -288,8 +297,18 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  foodViewText: {
+  foodViewName: {
+    color: '#000',
+    fontSize: 18,
+  },
+  foodViewWeight: {
     color: '#000',
     fontSize: 15,
+  },
+  sectionHeader: {
+    fontSize: 22,
+    textAlign: 'center',
+    marginTop: 15,
+    marginBottom: 15,
   },
 });
