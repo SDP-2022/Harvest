@@ -105,7 +105,7 @@ async getAllFood(){
 }
 
 async getLogsType(foodType){//eg Nut
-  const text = `SELECT food."Food_Name" FROM "food" inner join "subtypes" on food."Subtype" = subtypes."Subtype" where subtypes."Type" = $1`;
+  const text = `SELECT food."Food_Name" FROM "food" inner join "subtypes" on "food"."Subtype" = "subtypes"."Subtype" where "subtypes"."Type" = $1`;
   const values = []
   values.push(foodType);
   try{
@@ -116,7 +116,7 @@ async getLogsType(foodType){//eg Nut
   }
 }
 async getLogsSuperType(foodSuperType){//eg Fruit
-  const text = `select food."Food_Name" from "food" inner join "subtypes" on food."Subtype" = subtypes."Subtype" inner join types on types."Type" = subtypes."Type" where types."Supertype" = $1`;
+  const text = `select "food"."Food_Name" from "food" inner join "subtypes" on "food"."Subtype" = "subtypes"."Subtype" inner join types on "types"."Type" = "subtypes"."Type" where "types"."Supertype" = $1`;
   const values = []
   values.push(foodSuperType);
   try{
@@ -128,7 +128,7 @@ async getLogsSuperType(foodSuperType){//eg Fruit
 }
 
 async getLogsSubType(foodSubType){//eg Almond
-  const text = `SELECT food."Food_Name" FROM "food" WHERE food."Subtype" = $1`;
+  const text = `SELECT "food"."Food_Name" FROM "food" WHERE "food"."Subtype" = $1`;
   const values = []
   values.push(foodSubType);
   try{
