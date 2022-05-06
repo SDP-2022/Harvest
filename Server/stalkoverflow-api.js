@@ -42,6 +42,9 @@ class StalkOverflowAPI {
             case 'GetAllFoodNames':
                 this.#getAllFoodNames(req, res);
                 return;
+            case 'GetFilteredLogs':
+                this.#getFilteredLog(req, res);
+                return;
         }
 
         res.status(404);
@@ -244,6 +247,208 @@ class StalkOverflowAPI {
             res.status(500);
             return res.json({Error : err.detail});
         }
+    }
+
+    async #getFilteredLog(req, res) {
+        var userID;
+        var time;
+        var period;
+        var level;
+        var produce;
+
+        // Check all the header stuff
+        try {
+            if(!(userID = req.get("UserID"))) throw new Error("UserID param not found.");
+            if(!(time = parseInt(req.get("Time")))) throw new Error("Time param not found.");
+            if(!(period = req.get("Period"))) throw new Error("Period param not found.");
+            if(!(level = req.get("Level"))) throw new Error("Level param not found.");
+            if(!(produce = req.get("Produce"))) throw new Error("Level param not found.");
+
+            if (!(typeof userID === 'string')) throw new Error("Invalid UserID format.");
+            if (!(typeof time === 'number') || !Number.isInteger(time))  throw new Error("Invalid Time format.");
+            if (!(typeof period === 'string') || !["day", "month", "year"].includes(period.toLowerCase())) throw new Error("Invalid Period format.");
+            if (!(typeof level === 'string') || !["supertype", "type", "subtype", "superdupertype"].includes(level.toLowerCase())) throw new Error("Invalid Level format.");
+            if (!(typeof produce === 'string')) throw new Error("Invalid Produce format.");
+
+            level = level.toLowerCase()
+            period = period.toLowerCase()
+        } catch (err) {
+            console.log(err.message);
+            res.status(400);
+            return res.json({Error : err.message});
+        }
+
+        if (level === "superdupertype") {
+            var filteredResult = await filterSuperDuperType(res, userID, time, period);
+        } else if (level === "supertype") {
+            var filteredResult = await filterSuperType(res, userID, time, period, produce);
+        } else if (level === "type") {
+            var filteredResult = await filterType(res, userID, time, period, produce);
+        } else if (level === "subtype") {
+            var filteredResult = await filterSubType(res, userID, time, period, produce);
+        }
+    }
+}
+
+const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+async function filterSuperDuperType(res, userID, time, period) {
+    try {
+        var result = await dbCom.getLogsSuperDuperType(userID, time, period);
+        console.log("Result:", result);
+
+        if (result.rowCount == 0) {
+            res.status(418);
+            return res.json({});
+        } else {
+            res.status(201);
+            var rows = result.rows;
+
+            var monthRows = new Object();
+
+            rows.forEach(function(row) {
+                var date = new Date(row.Date_Logged);
+                var monthName = monthNames[date.getMonth()];
+                var supertype = row.Supertype;
+                var weight = parseFloat(row.Weight);
+                
+                if (!(monthName in monthRows)) {
+                    monthRows[monthName] = new Object();
+                }
+
+                if (!(supertype in monthRows[monthName])) {
+                    monthRows[monthName][supertype] = new Number(0);
+                }
+                
+                monthRows[monthName][supertype] += weight;
+            });
+            res.json(monthRows);
+
+        }           
+    } catch (err) {
+        console.log("Error:", err);
+        res.status(500);
+        return res.json({Error : err.detail});
+    }
+}
+
+async function filterSuperType(res, userID, time, period, superType) {
+    try {
+        var result = await dbCom.getLogsSuperType(superType, userID, time, period);
+        console.log("Result:", result);
+
+        if (result.rowCount == 0) {
+            res.status(418);
+            return res.json({});
+        } else {
+            res.status(201);
+            var rows = result.rows;
+
+            var monthRows = new Object();
+
+            rows.forEach(function(row) {
+                var date = new Date(row.Date_Logged);
+                var monthName = monthNames[date.getMonth()];
+                var type = row.Type;
+                var weight = parseFloat(row.Weight);
+                
+                if (!(monthName in monthRows)) {
+                    monthRows[monthName] = new Object();
+                }
+
+                if (!(type in monthRows[monthName])) {
+                    monthRows[monthName][type] = new Number(0);
+                }
+                
+                monthRows[monthName][type] += weight;
+            });
+            res.json(monthRows);
+
+        }           
+    } catch (err) {
+        console.log("Error:", err);
+        res.status(500);
+        return res.json({Error : err.detail});
+    }
+}
+
+async function filterType(res, userID, time, period, type) {
+    try {
+        var result = await dbCom.getLogsType(type, userID, time, period);
+        console.log("Result:", result);
+
+        if (result.rowCount == 0) {
+            res.status(418);
+            return res.json({});
+        } else {
+            res.status(201);
+            var rows = result.rows;
+
+            var monthRows = new Object();
+
+            rows.forEach(function(row) {
+                var date = new Date(row.Date_Logged);
+                var monthName = monthNames[date.getMonth()];
+                var subtype = row.Subtype;
+                var weight = parseFloat(row.Weight);
+                
+                if (!(monthName in monthRows)) {
+                    monthRows[monthName] = new Object();
+                }
+
+                if (!(subtype in monthRows[monthName])) {
+                    monthRows[monthName][subtype] = new Number(0);
+                }
+                
+                monthRows[monthName][subtype] += weight;
+            });
+            res.json(monthRows);
+
+        }           
+    } catch (err) {
+        console.log("Error:", err);
+        res.status(500);
+        return res.json({Error : err.detail});
+    }
+}
+
+async function filterSubType(res, userID, time, period, subtype) {
+    try {
+        var result = await dbCom.getLogsSubType(subtype, userID, time, period);
+        console.log("Result:", result);
+
+        if (result.rowCount == 0) {
+            res.status(418);
+            return res.json({});
+        } else {
+            res.status(201);
+            var rows = result.rows;
+
+            var monthRows = new Object();
+
+            rows.forEach(function(row) {
+                var date = new Date(row.Date_Logged);
+                var monthName = monthNames[date.getMonth()];
+                var name = row.Food_Name;
+                var weight = parseFloat(row.Weight);
+                
+                if (!(monthName in monthRows)) {
+                    monthRows[monthName] = new Object();
+                }
+
+                if (!(name in monthRows[monthName])) {
+                    monthRows[monthName][name] = new Number(0);
+                }
+                
+                monthRows[monthName][name] += weight;
+            });
+            res.json(monthRows);
+
+        }           
+    } catch (err) {
+        console.log("Error:", err);
+        res.status(500);
+        return res.json({Error : err.detail});
     }
 }
 
