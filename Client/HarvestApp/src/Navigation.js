@@ -23,6 +23,7 @@ export default function Navigation({navigation, route}) {
   return (
     <Tab.Navigator
     screenOptions={{
+        tabBarHideOnKeyboard: true,
         header: () => null,
         tabBarShowLabel: false,
         tabBarStyle: {

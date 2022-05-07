@@ -7,11 +7,11 @@ import {
   View,
   TouchableOpacity,
   FlatList,
+  SectionList,
   Image,
   ActivityIndicator,
   RefreshControl,
 } from 'react-native';
-
 
 const ACCESS_TOKEN = '@save_token';
 
@@ -59,6 +59,62 @@ export default function GardenPage({navigation, route}) {
       });
   };
 
+  const formatFood = json => {
+    let foodData = [];
+    for (let i = 0; i < json.length; i++) {
+      let date = new Date(json[i].Date_Logged.slice(0, 10));
+      let food = json[i].Food_Name;
+      let weight = json[i].Weight;
+      let object = {
+        DateLogged: date,
+        FoodName: food,
+        Weight: weight,
+      };
+      foodData.push(object);
+    }
+
+    foodData = foodData.sort((a, b) => b.DateLogged - a.DateLogged);
+
+    let categorizedFoodData = [
+      {
+        title: new Date('1900-01-01'),
+        data: [{FoodName: 'placeholder', Weight: 0}],
+      },
+    ];
+
+    for (let i = 0; i < foodData.length; i++) {
+      let isInList = false;
+      for (let j = 0; j < categorizedFoodData.length; j++) {
+        if (
+          foodData[i].DateLogged.toDateString() ===
+          categorizedFoodData[j].title.toDateString()
+        ) {
+          let object = {
+            FoodName: foodData[i].FoodName,
+            Weight: foodData[i].Weight,
+          };
+          categorizedFoodData[j].data.push(object);
+          isInList = true;
+          break;
+        }
+      }
+      if (isInList == false) {
+        let object = {
+          title: foodData[i].DateLogged,
+          data: [
+            {
+              FoodName: foodData[i].FoodName,
+              Weight: foodData[i].Weight,
+            },
+          ],
+        };
+        categorizedFoodData.push(object);
+      }
+    }
+    categorizedFoodData.shift();
+    return categorizedFoodData;
+  };
+
   // This function gets the weight of a specific food item
   const getWeight = async foodname => {
     return fetch('https://harvest-stalkoverflow.herokuapp.com/api/private/', {
@@ -83,8 +139,7 @@ export default function GardenPage({navigation, route}) {
   useEffect(() => {
     getLog().then(json => {
       setLoading(false);
-      console.log(json);
-      setFood(json);
+      setFood(formatFood(json));
       setFoodLen(Object.keys(json).length);
       setRefresh(false);
     });
@@ -121,7 +176,7 @@ export default function GardenPage({navigation, route}) {
             />
           }
           showsVerticalScrollIndicator={false}
-          style={styles.flatList}
+          style={styles.list}
           data={Data}
           ListHeaderComponent={() => (
             <View style={styles.header}>
@@ -139,6 +194,12 @@ export default function GardenPage({navigation, route}) {
       </SafeAreaView>
     );
   } else if (Loading == false && FoodLen > 0) {
+    {
+      console.log(Food);
+    }
+    {
+      console.log(Food[2]);
+    }
     return (
       <SafeAreaView style={styles.body}>
         <View style={styles.burgerView}>
@@ -153,7 +214,7 @@ export default function GardenPage({navigation, route}) {
           </TouchableOpacity>
         </View>
 
-        <FlatList
+        <SectionList
           refreshControl={
             <RefreshControl
               refreshing={Refresh}
@@ -163,21 +224,31 @@ export default function GardenPage({navigation, route}) {
             />
           }
           showsVerticalScrollIndicator={false}
-          style={styles.flatList}
-          data={Food}
           ListHeaderComponent={() => (
             <View style={styles.header}>
               <Text style={styles.text}>Your Garden:</Text>
             </View>
           )}
+          style={styles.list}
+          stickySectionHeadersEnabled={false}
+          sections={Food}
+          keyExtractor={(item, index) => item + index}
           renderItem={({item}) => (
             <View style={styles.foodView}>
-              <Text style={styles.foodViewText}>{item.Food_Name}</Text>
-              <Text style={styles.foodViewText}>Weight: {item.Weight}g</Text>
-              <Text style={styles.foodViewText}>
-                Date: {item.Date_Logged.slice(0, 10)}
-              </Text>
+              <Text style={styles.foodViewName}>{item.FoodName}</Text>
+              <Text style={styles.foodViewWeight}>{item.Weight}g</Text>
             </View>
+          )}
+          renderSectionHeader={({section: {title}}) => (
+            <>
+              {new Date().toDateString() === title.toDateString() ? (
+                <Text style={styles.sectionHeader}>Today</Text>
+              ) : new Date().toDateString() - 1 === title.toDateString() ? (
+                <Text style={styles.sectionHeader}>Yesterday</Text>
+              ) : (
+                <Text style={styles.sectionHeader}>{title.toDateString()}</Text>
+              )}
+            </>
           )}
         />
       </SafeAreaView>
@@ -198,7 +269,7 @@ const styles = StyleSheet.create({
     marginLeft: 20,
     alignSelf: 'stretch',
   },
-  flatList: {
+  list: {
     flex: 2,
     marginBottom: 50,
   },
@@ -217,8 +288,8 @@ const styles = StyleSheet.create({
     textAlign: 'left',
   },
   foodView: {
-    width: 300,
-    height: 125,
+    width: 325,
+    height: 75,
     margin: 10,
     padding: 10,
     backgroundColor: '#A1E8Af',
@@ -226,8 +297,18 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  foodViewText: {
+  foodViewName: {
+    color: '#000',
+    fontSize: 18,
+  },
+  foodViewWeight: {
     color: '#000',
     fontSize: 15,
+  },
+  sectionHeader: {
+    fontSize: 22,
+    textAlign: 'center',
+    marginTop: 15,
+    marginBottom: 15,
   },
 });
