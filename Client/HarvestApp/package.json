@@ -18,6 +18,9 @@
     "react": "17.0.2",
     "react-native": "0.67.4",
     "react-native-auth0": "^2.13.0",
+    "react-native-autocomplete-dropdown": "^1.2.1",
+    "react-native-autocomplete-input": "^5.1.0",
+    "react-native-dropdown-autocomplete-textinput": "^1.0.1",
     "react-native-gesture-handler": "^2.4.1",
     "react-native-reanimated": "^2.7.0",
     "react-native-restart": "^0.0.24",
@@ -25,6 +28,7 @@
     "react-native-screens": "^3.13.1",
     "react-native-sensitive-info": "^5.5.8",
     "react-native-svg": "^12.3.0",
+    "react-native-vector-icons": "^9.1.0",
     "victory-native": "^36.3.2"
   },
   "devDependencies": {
