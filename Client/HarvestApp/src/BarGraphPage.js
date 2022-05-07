@@ -1,6 +1,5 @@
-import React, {useState} from 'react';
+import React, {useState, useRef} from 'react';
 import {Picker} from '@react-native-picker/picker';
-import ModalSelector from 'react-native-modal-selector'
 
 import {
   SafeAreaView,
@@ -12,8 +11,6 @@ import {
   Modal,
   Pressable,
   TextInput,
-  Button,
-  
 } from 'react-native';
 
 import {
@@ -23,16 +20,117 @@ import {
   VictoryAxis,
 } from 'victory-native';
 
+import SelectDropdown from 'react-native-select-dropdown';
+
 export default function BarGraphPage({navigation}) {
- 
   const [filterIsApplied, setFilterIsApplied] = useState(false);
   const [categories, setCategories] = useState([]);
   const [graphData, setGraphData] = useState([]);
   const [legend, setLegend] = useState([]);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [selectedPeriod, setSelectedPeriod] = useState();
-  const [selectedType, setSelectedType] = useState();
-  const [text, setText] = useState('');
+
+  const produceRef = useRef({});
+  const TimePeriods = [
+    'One Year',
+    'Six Months',
+    'Three Months',
+    'One Month',
+    'One Week',
+  ];
+  const Levels = ['Supertype', 'Type', 'Subtype', 'Food'];
+  const Supertypes = ['Vegetable', 'Fruit', 'Herb', 'Flower'];
+  const Types = [
+    'Allium',
+    'Berry',
+    'Citrus',
+    'Cruciferous',
+    'Cucurbit',
+    'False Fruit',
+    'Flower',
+    'Leaf',
+    'Legume',
+    'Nightshade',
+    'Nut',
+    'Pome Fruit',
+    'Root',
+    'Seed',
+    'Soft Herb',
+    'Stalk',
+    'Stone Fruit',
+    'Vine Fruit',
+    'Hard Herb',
+  ];
+  const Subtypes = [
+    'Almond',
+    'Apple',
+    'Artichoke',
+    'Aubergine',
+    'Basil',
+    'Bean',
+    'Beetroot',
+    'Blackberry',
+    'Blueberry',
+    'Broccoli',
+    'Cabbage',
+    'Carrot',
+    'Cauliflower',
+    'Celery',
+    'Chilli',
+    'Chive',
+    'Coriander',
+    'Cucumber',
+    'Curry Leaf',
+    'Edible Flower',
+    'Fennel',
+    'Fig',
+    'Ginger',
+    'Gooseberry',
+    'Granadilla',
+    'Grape',
+    'Grapefruit',
+    'Jerusalem Artichoke',
+    'Kale',
+    'Kei Apple',
+    'Leek',
+    'Lemon',
+    'Lemon Balm',
+    'Lemon Verbena',
+    'Lettuce',
+    'Lime',
+    'Marjoram',
+    'Mint',
+    'Mustard Leaf',
+    'Naartjie',
+    'Nasturtium',
+    'Onion',
+    'Orange',
+    'Oregano',
+    'Parsley',
+    'Pea',
+    'Peach',
+    'Pepper',
+    'Plum',
+    'Pumpkin',
+    'Radish',
+    'Rhubarb',
+    'Rosemary',
+    'Sage',
+    'Sorrel',
+    'Spinach',
+    'Squash',
+    'Strawberry',
+    'Sunflower Seed',
+    'Sweet Potato',
+    'Thyme',
+    'Tomato',
+    'Turmeric',
+    'Turnip',
+    'Zucchini',
+  ];
+
+  const [timePeriod, setTimePeriod] = useState(null);
+  const [level, setLevel] = useState(null);
+  const [produce, setProduce] = useState(null);
+  const [modalOpen, setModalOpen] = useState(false);
 
   let testData_0 = [
     ['January', ['Blueberry', 30], ['Blackberry', 10], ['Strawberry', 34]],
@@ -113,10 +211,10 @@ export default function BarGraphPage({navigation}) {
     createObjects(testData_1);
     setFilterIsApplied(!filterIsApplied);
   };
-  
+
   return (
     <SafeAreaView style={styles.body}>
-      <View style={styles.burgerView}>
+      <View style={styles.iconView}>
         <TouchableOpacity onPress={navigation.openDrawer}>
           <Image
             style={{
@@ -127,94 +225,187 @@ export default function BarGraphPage({navigation}) {
           />
         </TouchableOpacity>
 
-        <View style={styles.filter}>
-       
-           <Modal
-              animationType='slide'
-              transparent={true}
-              visible={modalVisible}
-              onRequestClose={() => {
-              Alert.alert("Modal has been closed.");
-              setModalVisible(!modalVisible);
+        <TouchableOpacity onPress={() => setModalOpen(true)}>
+          <Image
+            style={{
+              height: 20,
+              width: 20,
+              marginRight: 20,
             }}
-            >
-            <View style={styles.Filter_View}>
-              <View style={styles.Popup_View}>
-                <Text style={{marginLeft: 20 , marginTop: 10 , color:'white'}}>Time Period</Text>
-               
-                <Picker
-        
-                  selectedValue={selectedPeriod}
-                  style={{ height: 50, width: 190,backgroundColor:"grey",marginLeft:20  }}
-                  onValueChange={(itemValue, itemIndex) => setSelectedPeriod(itemValue)}
-                >
-                  <Picker.Item label="Please select an option..." value='0' />
-                  <Picker.Item label="1 Year" value='1' />
-                  <Picker.Item label="6 Months" value='2'/>
-                  <Picker.Item label="3 Months" value='3'/>
-                  <Picker.Item label="1 Month" value='4'/>
-                  <Picker.Item label="1 Week"  value='5'/>
-  
-                </Picker>
-      <Text style={{marginLeft: 20 , marginTop: 5 , color:'white'}}>Level</Text>
-       
-        <Picker
-           selectedValue={selectedType}
-           style={{ height: 50, width: 190,backgroundColor:"grey",marginLeft:20  }}
-           onValueChange={(itemValue, itemIndex) => setSelectedType(itemValue)}
-        >
-          <Picker.Item label="Please select an option..." value='0' />
-          <Picker.Item label="Supertype" value='1'/>
-          <Picker.Item label="Subtype" value='2'/>
-          <Picker.Item label="Food" value='3'/>
-      </Picker>
-      <Text style={{marginLeft: 20 , marginTop: 5 ,  color:'white'}}>Produce</Text>
-      <TextInput
-        placeholde = 'produce'
-        placeholderTextColor={'black'}
-        style={{height: 50, width: 190,backgroundColor:"grey",marginLeft:20 }}
-       >
-      </TextInput>     
-
-      <Pressable
-        style={{backgroundColor:'#A1E8AF' ,width:150,height: 35, 
-                    borderRadius:15, marginTop: 10, marginLeft: 50
-                    ,marginBottom: 15}}
-        onPress={() => {setModalVisible(!modalVisible);renderBarGraph()} }
-        >
-        <Text style={{fontSize: 20 , marginLeft: 25, marginTop:2, color:'black'}}>Apply Filter</Text>
-        </Pressable>
+            source={require('../assets/filter.png')}
+          />
+        </TouchableOpacity>
+      </View>
+      <Modal visible={modalOpen} animationType="fade" transparent={true}>
+        <SafeAreaView style={styles.modalView}>
+          <View>
+            <TouchableOpacity onPress={() => setModalOpen(false)}>
+              <Image
+                style={{
+                  height: 15,
+                  width: 15,
+                  marginLeft: 200,
+                  marginBottom: 40,
+                }}
+                source={require('../assets/close-icon.png')}
+              />
+            </TouchableOpacity>
           </View>
-        </View>
+          <View style={styles.filterView}>
+            <Text style={styles.filterText}>Time Period:</Text>
+
+            <SelectDropdown
+              data={TimePeriods}
+              onSelect={(selectedItem, index) => {
+                console.log(selectedItem, index);
+                setTimePeriod(selectedItem);
+              }}
+              defaultButtonText={'Select an option'}
+              buttonTextAfterSelection={(selectedItem, index) => {
+                console.log('this is the date: ' + timePeriod);
+                return selectedItem;
+              }}
+              rowTextForSelection={(item, index) => {
+                return item;
+              }}
+              buttonStyle={{
+                borderWidth: 2,
+                borderColor: '#A1E8Af',
+                backgroundColor: '#fff',
+                borderRadius: 10,
+              }}
+              buttonTextStyle={{color: '#A1E8Af'}}
+              dropdownOverlayColor={'rgba(255, 255, 255, 0)'}
+              dropdownStyle={{
+                marginTop: 1,
+                borderRadius: 10,
+                backgroundColor: '#fff',
+                borderWidth: 2,
+                borderColor: '#A1E8Af',
+              }}
+              rowStyle={{
+                borderWidth: 0,
+                borderColor: '#A1E8Af',
+                backgroundColor: '#fff',
+                borderBottomWidth: 0,
+                borderTopWidth: 0,
+                marginLeft: 10,
+                marginRight: 10,
+              }}
+              rowTextStyle={{color: '#A1E8Af'}}
+            />
+          </View>
+          <View style={styles.filterView}>
+            <Text style={styles.filterText}>Level:</Text>
+            <SelectDropdown
+              data={Levels}
+              onSelect={(selectedItem, index) => {
+                console.log(selectedItem, index);
+                produceRef.current.reset();
+                setLevel(selectedItem);
+              }}
+              defaultButtonText={'Select an option'}
+              buttonTextAfterSelection={(selectedItem, index) => {
+                console.log('this is the level: ' + level);
+                return selectedItem;
+              }}
+              rowTextForSelection={(item, index) => {
+                return item;
+              }}
+              buttonStyle={{
+                borderWidth: 2,
+                borderColor: '#A1E8Af',
+                backgroundColor: '#fff',
+                borderRadius: 10,
+              }}
+              buttonTextStyle={{color: '#A1E8Af'}}
+              dropdownOverlayColor={'rgba(255, 255, 255, 0)'}
+              dropdownStyle={{
+                marginTop: 1,
+                borderRadius: 10,
+                backgroundColor: '#fff',
+                borderWidth: 2,
+                borderColor: '#A1E8Af',
+              }}
+              rowStyle={{
+                borderWidth: 0,
+                borderColor: '#A1E8Af',
+                backgroundColor: '#fff',
+                borderBottomWidth: 0,
+                borderTopWidth: 0,
+                marginLeft: 10,
+                marginRight: 10,
+              }}
+              rowTextStyle={{color: '#A1E8Af'}}
+            />
+          </View>
+          <View style={styles.filterView}>
+            <Text style={styles.filterText}>Produce:</Text>
+            <SelectDropdown
+              data={
+                level === 'Supertype'
+                  ? ['---']
+                  : level === 'Type'
+                  ? Supertypes
+                  : level === 'Subtype'
+                  ? Types
+                  : level === 'Food'
+                  ? Subtypes
+                  : ['---']
+              }
+              ref={produceRef}
+              onSelect={(selectedItem, index) => {
+                console.log(selectedItem, index);
+                setProduce(selectedItem);
+              }}
+              defaultButtonText={'Select an option'}
+              buttonTextAfterSelection={(selectedItem, index) => {
+                console.log('this is the produce: ' + produce);
+                return selectedItem;
+              }}
+              rowTextForSelection={(item, index) => {
+                return item;
+              }}
+              buttonStyle={{
+                borderWidth: 2,
+                borderColor: '#A1E8Af',
+                backgroundColor: '#fff',
+                borderRadius: 10,
+              }}
+              buttonTextStyle={{color: '#A1E8Af'}}
+              dropdownOverlayColor={'rgba(255, 255, 255, 0)'}
+              dropdownStyle={{
+                marginTop: 1,
+                borderRadius: 10,
+                backgroundColor: '#fff',
+                borderWidth: 2,
+                borderColor: '#A1E8Af',
+              }}
+              rowStyle={{
+                borderWidth: 0,
+                borderColor: '#A1E8Af',
+                backgroundColor: '#fff',
+                borderBottomWidth: 0,
+                borderTopWidth: 0,
+                marginLeft: 10,
+                marginRight: 10,
+              }}
+              rowTextStyle={{color: '#A1E8Af'}}
+            />
+          </View>
+          <View>
+            <TouchableOpacity
+              onPress={() => {
+                console.log('Filter has been applied');
+                setModalOpen(false);
+              }}>
+              <Text style={styles.filterButton}>Apply Filter</Text>
+            </TouchableOpacity>
+          </View>
+        </SafeAreaView>
       </Modal>
 
-        <Pressable
-          onPress={() => setModalVisible(true)}
-        >
-          <Image
-              style={{
-                height: 25,
-                width: 25,
-              }}
-              source={require('../assets/filter.png')}
-              />
-        </Pressable>
-
-       </View>
-
-      </View>
       <View style={styles.graphView}>
-        <Text>This button is temporary (testing)</Text>
-       
-        <TouchableOpacity
-         // style={styles.button}
-         // onPress={() => renderBarGraph()}
-         >
-        <Text>
-          Apply Filter
-          </Text>
-        </TouchableOpacity>
-       
         {filterIsApplied ? (
           <VictoryChart
             domainPadding={20}
@@ -260,35 +451,34 @@ export default function BarGraphPage({navigation}) {
 }
 
 const styles = StyleSheet.create({
-  
-  drop_down:{
+  drop_down: {
     backgroundColor: 'black',
     borderRadius: 2,
     borderBottomWidth: 0.5,
-    padding:2,
+    padding: 2,
   },
   Filter_View: {
-     justifyContent: 'center',
-     alignItems: 'flex-end',
-   },
-   Popup_View: {
-     margin:20,
-     borderRadius:20,
-     backgroundColor: 'black',
-     width:230,
-     alignItems: 'flex-start',
-     shadowColor: "#000",
-     shadowOffset: {
-       width: 0,
-       height: 5
+    justifyContent: 'center',
+    alignItems: 'flex-end',
   },
-     shadowOpacity: 0.25,
-     shadowRadius: 4,
-     elevation: 5
+  Popup_View: {
+    margin: 20,
+    borderRadius: 20,
+    backgroundColor: 'black',
+    width: 230,
+    alignItems: 'flex-start',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 5,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
   },
-  filter:{
-    marginTop:-20,
-    height:0,
+  filter: {
+    marginTop: -20,
+    height: 0,
     width: 0,
     marginLeft: 350,
     backgroundColor: 'red',
@@ -299,11 +489,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#fff',
   },
-  burgerView: {
+  iconView: {
     flex: 0.1,
+    flexDirection: 'row',
     paddingTop: 20,
     marginLeft: 20,
     alignSelf: 'stretch',
+    justifyContent: 'space-between',
   },
   graphView: {
     flex: 2,
@@ -336,5 +528,36 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderRadius: 30,
     backgroundColor: '#A1E8AF',
+  },
+  modalView: {
+    alignSelf: 'center',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    height: 500,
+    width: 300,
+    borderRadius: 30,
+    marginTop: '50%',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 0.5,
+    },
+    shadowOpacity: 0.4,
+    shadowRadius: 3,
+    elevation: 5,
+  },
+  filterText: {
+    fontSize: 20,
+    color: '#000',
+    marginBottom: 5,
+  },
+  filterView: {
+    margin: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  filterButton: {
+    marginTop: 10,
   },
 });
