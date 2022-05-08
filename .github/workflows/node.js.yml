@@ -28,8 +28,10 @@ jobs:
 
     - name: Create env file
       run: |
-        touch ./Server/.env
-        echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> ./Server/.env
+        ls -a
+        touch .env
+        ls -a
+        echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> .env
 
     - name: Dotenv Action
       uses: falti/dotenv-action@v0.2.8
