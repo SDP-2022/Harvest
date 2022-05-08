@@ -29,8 +29,7 @@ jobs:
     - name: Create env file
       run: |
         touch .env
-        echo "DATABASE_URL=$ENV_VAR_1" >> .env
-        echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> $GITHUB_ENV
+        echo "DATABASE_URL=${{ secrets.DATABASE_URL }}"" >> .env
 
     - name: Buidling using Node.js ${{ matrix.node-version }}.
       env:

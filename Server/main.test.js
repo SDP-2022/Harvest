@@ -1,4 +1,3 @@
-require('dotenv').config()
 const { mockRequest, mockResponse } = require('mock-req-res')
 const api = require('./stalkoverflow-api');
 
