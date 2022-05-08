@@ -30,6 +30,7 @@ jobs:
       run: |
         touch .env
         echo DATABASE_URL=$ENV_VAR_1 >> .env
+        cat .env
       env:
         ENV_VAR_1: ${{ secrets.DATABASE_URL }}
 
