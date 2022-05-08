@@ -4,9 +4,14 @@
 <h3 align="center">A Simple App To Log and Keep Track Of Your Garden's Harvests </h2>
 
 <p align="center">
-  <img height="500" src="https://cdn.discordapp.com/attachments/957601990286901269/962699188850786324/Screenshot_2022-04-10_at_14.52.44.png">
-  <img height="500" src="https://cdn.discordapp.com/attachments/957601990286901269/962699189379272724/Screenshot_2022-04-10_at_15.00.38.png">
-  <img height="500" src="https://cdn.discordapp.com/attachments/957601990286901269/962699189702262814/Screenshot_2022-04-10_at_15.00.43.png">
+  <img height="500" src="https://cdn.discordapp.com/attachments/965976572236558427/972890733818290296/Simulator_Screen_Shot_-_iPhone_13_-_2022-05-08_at_18.00.08.png">
+  <img height="500" src="https://cdn.discordapp.com/attachments/965976572236558427/972890230929629276/Simulator_Screen_Shot_-_iPhone_13_-_2022-05-08_at_17.57.03.png">
+  <img height="500" src="https://cdn.discordapp.com/attachments/965976572236558427/972890231722360852/Simulator_Screen_Shot_-_iPhone_13_-_2022-05-08_at_17.57.34.png">
+</p>
+<p align="center">
+  <img height="500" src="https://cdn.discordapp.com/attachments/965976572236558427/972890231965614100/Simulator_Screen_Shot_-_iPhone_13_-_2022-05-08_at_17.57.40.png">
+  <img height="500" src="https://cdn.discordapp.com/attachments/965976572236558427/972890231202254909/Simulator_Screen_Shot_-_iPhone_13_-_2022-05-08_at_17.57.07.png">
+  <img height="500" src="https://cdn.discordapp.com/attachments/965976572236558427/972890231462322176/Simulator_Screen_Shot_-_iPhone_13_-_2022-05-08_at_17.57.12.png">
 </p>
 
 <h2 align="Left">Frontend Application</h2>
