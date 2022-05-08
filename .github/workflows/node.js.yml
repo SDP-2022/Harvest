@@ -44,11 +44,11 @@ jobs:
         cache-dependency-path: Server/package-lock.json
     - run: npm ci
     - run: npm run build --if-present
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
     - name: Running Jest tests
       run: npm test
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
     - name: Uploading coverage to Codecov
       uses: codecov/codecov-action@v2
