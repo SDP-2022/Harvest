@@ -180,6 +180,9 @@ export default function BarGraphPage({navigation, route}) {
       .then(response => response.json())
       .then(json => {
         console.log(json);
+        if (json.Error === 'Time param not found.') {
+          json = {};
+        }
         return json;
       })
       .catch(error => {

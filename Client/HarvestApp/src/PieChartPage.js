@@ -1,4 +1,4 @@
-import React, {useState, useRef} from 'react';
+import React, {useState, useRef, useEffect} from 'react';
 import {
   SafeAreaView,
   View,
@@ -21,6 +21,7 @@ export default function PieChartPage({navigation, route}) {
   const [renderGraph, setRenderGraph] = useState(false);
   const [dateLabels, setDateLabels] = useState([]);
   const [graphData, setGraphData] = useState([]);
+  const [refresh, setRefresh] = useState(true);
 
   const produceRef = useRef({});
   const TimePeriods = [
@@ -191,8 +192,11 @@ export default function PieChartPage({navigation, route}) {
     })
       .then(response => response.json())
       .then(json => {
-        console.log("test")
-        console.log("This is the json object: " + json);
+        console.log('test');
+        console.log('This is the json object: ' + json);
+        if (json.Error === 'Time param not found.') {
+          json = {};
+        }
         return json;
       })
       .catch(error => {
@@ -216,17 +220,20 @@ export default function PieChartPage({navigation, route}) {
     setGraphData(completeData);
   };
 
-  const renderPieChart = async () => {
+  const renderBarGraph = async () => {
     getData()
       .then(json => {
-        console.log("test")
         parseData(json);
       })
       .then(() => {
         setFilterIsApplied(true);
       });
-    console.log(dateLabels);
   };
+
+  useEffect(() => {
+    console.log('Refreshing');
+    renderBarGraph();
+  }, [refresh]);
 
   return (
     <SafeAreaView style={styles.body}>
@@ -415,7 +422,7 @@ export default function PieChartPage({navigation, route}) {
               onPress={() => {
                 console.log('Filter has been applied');
                 setModalOpen(false);
-                renderPieChart();
+                setRefresh(!refresh);
               }}>
               <Text style={styles.filterButton}>Apply Filter</Text>
             </TouchableOpacity>
@@ -431,7 +438,9 @@ export default function PieChartPage({navigation, route}) {
             justifyContent: 'center',
             alignItems: 'center',
           }}>
-          {filterIsApplied ? (
+          {filterIsApplied && graphData.length == 0 ? (
+            <Text>No Data to display</Text>
+          ) : filterIsApplied ? (
             graphData.map((item, index) => {
               return (
                 <>
@@ -441,7 +450,7 @@ export default function PieChartPage({navigation, route}) {
                   <VictoryPie
                     key={index}
                     animate={{duration: 1000, easing: 'linear'}}
-                    cornerRadius={({datum}) => datum.y * 0.03}
+                    cornerRadius={({datum}) => datum.y * 0.02}
                     colorScale={[
                       '#A1E8AF',
                       '#4A7C59',
