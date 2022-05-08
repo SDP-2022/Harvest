@@ -8,19 +8,24 @@ function stalkoverflow() {
 }
 
 class StalkOverflowAPI {
-    parsePOSTRequest(req, res) {
+    async parsePOSTRequest(req, res) {
         var reqType = req.get('RequestType');
+
+        if (areWeTestingWithJest()) {
+            reqType = req.headers['RequestType'];
+        }
+        
         console.log("Request Type:", reqType);
 
         switch(reqType) {
             case 'AddUser':
-                this.#addUser(req.body, res);
+                await this.#addUser(req.body, res);
                 return;
             case 'LoginUser':
-                this.#logUser(req.body, res);
+                await this.#logUser(req.body, res);
                 return;
             case 'AddFoodLog':
-                this.#addLog(req.body, res);
+                await this.#addLog(req.body, res);
                 return;
         }
 
@@ -28,22 +33,27 @@ class StalkOverflowAPI {
         res.json({Error: "Unknown request type."});
     }
 
-    parseGETRequest(req, res) {
+    async parseGETRequest(req, res) {
         var reqType = req.get('RequestType');
+        
+        if (areWeTestingWithJest()) {
+            reqType = req.headers['RequestType'];
+        }
+
         console.log("Request Type:", reqType);
 
         switch(reqType) {
             case 'GetHarvestLogs':
-                this.#getHarvestLog(req, res);
+                await this.#getHarvestLog(req, res);
                 return;
             case 'GetFoodTotalWeight':
-                this.#getFoodTotalWeight(req, res);
+                await this.#getFoodTotalWeight(req, res);
                 return;
             case 'GetAllFoodNames':
-                this.#getAllFoodNames(req, res);
+                await this.#getAllFoodNames(req, res);
                 return;
             case 'GetFilteredLogs':
-                this.#getFilteredLog(req, res);
+                await this.#getFilteredLog(req, res);
                 return;
         }
 
@@ -110,7 +120,7 @@ class StalkOverflowAPI {
                 return res.json({});
             } else {
                 res.status(201);
-                res.send("Success");
+                return res.send("Success");
             }           
         } catch (err) {
             console.log("Error:", err);
@@ -163,8 +173,13 @@ class StalkOverflowAPI {
         var foodName;
 
         try {
-            if(!(userID = req.get("UserID"))) throw new Error("UserID param not found.");
-            if(!(foodName = req.get("FoodName"))) throw new Error("FoodName param not found.");
+            if (areWeTestingWithJest()) {
+                if(!(userID = req.headers["UserID"])) throw new Error("UserID param not found.");
+                if(!(foodName = req.headers["FoodName"])) throw new Error("FoodName param not found.");
+            } else {
+                if(!(userID = req.get("UserID"))) throw new Error("UserID param not found.");
+                if(!(foodName = req.get("FoodName"))) throw new Error("FoodName param not found.");
+            }
 
             if (!(typeof userID === 'string')) throw new Error("Invalid UserID format.");
             if (!(typeof foodName === 'string')) throw new Error("Invalid FoodName format.");
@@ -202,7 +217,11 @@ class StalkOverflowAPI {
         var userID;
 
         try {
-            if(!(userID = req.get("UserID"))) throw new Error("UserID param not found.");
+            if (areWeTestingWithJest()) {
+                if(!(userID = req.headers["UserID"])) throw new Error("UserID param not found.");
+            } else {
+                if(!(userID = req.get("UserID"))) throw new Error("UserID param not found.");
+            }
 
             if (!(typeof userID === 'string')) throw new Error("Invalid UserID format.");
         } catch (err) {
@@ -258,11 +277,19 @@ class StalkOverflowAPI {
 
         // Check all the header stuff
         try {
-            if(!(userID = req.get("UserID"))) throw new Error("UserID param not found.");
-            if(!(time = parseInt(req.get("Time")))) throw new Error("Time param not found.");
-            if(!(period = req.get("Period"))) throw new Error("Period param not found.");
-            if(!(level = req.get("Level"))) throw new Error("Level param not found.");
-            if(!(produce = req.get("Produce"))) throw new Error("Level param not found.");
+            if (areWeTestingWithJest()) {
+                if(!(userID = req.headers["UserID"])) throw new Error("UserID param not found.");
+                if(!(time = parseInt(req.headers["Time"]))) throw new Error("Time param not found.");
+                if(!(period = req.headers["Period"])) throw new Error("Period param not found.");
+                if(!(level = req.headers["Level"])) throw new Error("Level param not found.");
+                if(!(produce = req.headers["Produce"])) throw new Error("Produce param not found.");
+            } else {
+                if(!(userID = req.get("UserID"))) throw new Error("UserID param not found.");
+                if(!(time = parseInt(req.get("Time")))) throw new Error("Time param not found.");
+                if(!(period = req.get("Period"))) throw new Error("Period param not found.");
+                if(!(level = req.get("Level"))) throw new Error("Level param not found.");
+                if(!(produce = req.get("Produce"))) throw new Error("Produce param not found.");
+            }
 
             if (!(typeof userID === 'string')) throw new Error("Invalid UserID format.");
             if (!(typeof time === 'number') || !Number.isInteger(time))  throw new Error("Invalid Time format.");
@@ -287,6 +314,10 @@ class StalkOverflowAPI {
         } else if (level === "subtype") {
             var filteredResult = await filterSubType(res, userID, time, period, produce);
         }
+    }
+
+    async endClient() {
+        await dbCom.endClient();
     }
 }
 
@@ -456,4 +487,8 @@ module.exports=stalkoverflow();
 
 function isFloat(n){
     return Number(n) === n && n % 1 !== 0;
+}
+
+function areWeTestingWithJest() {
+    return process.env.JEST_WORKER_ID !== undefined;
 }
