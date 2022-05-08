@@ -1,3 +1,4 @@
+require('dotenv').config()
 var validator = require('validator');
 
 const Communicator = require('./communicator.js')
