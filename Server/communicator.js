@@ -12,6 +12,8 @@ class communicator{
     client.connect();
     return
   }
+
+async endClient() { await client.end() }
   
 //username String, email String, userID String
 async addUser(username,email,userID){
@@ -163,7 +165,7 @@ async getLogsSuperDuperType(userID,time,period){//eg Fruit
 
 module.exports=communicator;
 
-
+/*
 async function getstuff(){
   let com =new communicator;
   let aaaa=await com.getLogsSuperDuperType('A1','1','month');
@@ -171,6 +173,5 @@ async function getstuff(){
   await client.end();
   process.exit(1);
 }
-//getstuff();
-
-
+getstuff();
+*/
