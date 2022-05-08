@@ -32,10 +32,7 @@ jobs:
         cat .env
       shell: bash
       env:
-        DEV_ENV_FILE : ${{secrets.DATABASE_URL}}
-
-    - name: Dotenv Action
-      uses: falti/dotenv-action@v0.2.8
+        DEV_ENV_FILE : DATABASE_URL=${{secrets.DATABASE_URL}}
 
     - name: Buidling using Node.js ${{ matrix.node-version }}.
       env:
