@@ -6,10 +6,13 @@
   "jest": {
     "verbose": true,
     "collectCoverage": true,
-    "coverageReporters": ["json", "html"]
+    "coverageReporters": [
+      "json",
+      "html"
+    ]
   },
   "scripts": {
-    "test": "node main.js"
+    "test": "jest"
   },
   "author": "",
   "license": "ISC",
@@ -24,6 +27,7 @@
     "validator": "^13.7.0"
   },
   "devDependencies": {
-    "jest": "^27.5.1"
+    "jest": "^27.5.1",
+    "mock-req-res": "^1.2.0"
   }
 }
