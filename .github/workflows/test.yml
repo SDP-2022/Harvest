@@ -27,4 +27,6 @@ jobs:
 
       # Runs a single command using the runners shell
       - name: Run a one-line script
-        run: echo ${#${{secrets.DATABASE_URL}}}
+        env:
+          TEST_SECRET: ${{ secrets.DATABASE_URL }}
+        run: echo ${#TEST_SECRET}
