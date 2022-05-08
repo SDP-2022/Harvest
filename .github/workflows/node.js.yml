@@ -1,7 +1,7 @@
 # This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
 
-name: Server CI & CC
+name: Server CI
 
 on:
   push:
@@ -29,7 +29,7 @@ jobs:
     - name: Create env file
       run: |
         touch .env
-        echo "DATABASE_URL=${{ secrets.DATABASE_URL }}"" >> .env
+        echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> .env
 
     - name: Buidling using Node.js ${{ matrix.node-version }}.
       env:
