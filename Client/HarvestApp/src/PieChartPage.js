@@ -10,17 +10,17 @@ import {
   Modal,
 } from 'react-native';
 
-import {
-  VictoryPie,
-} from 'victory-native';
+import {VictoryPie} from 'victory-native';
 
 import SelectDropdown from 'react-native-select-dropdown';
 
-export default function PieChartPage({navigation}) {
+export default function PieChartPage({navigation, route}) {
+  const {userIDToken, userAccessToken, authUsername, userID} = route.params;
+
   const [filterIsApplied, setFilterIsApplied] = useState(false);
-  const [categories, setCategories] = useState([]);
+  const [renderGraph, setRenderGraph] = useState(false);
+  const [dateLabels, setDateLabels] = useState([]);
   const [graphData, setGraphData] = useState([]);
-  const [legend, setLegend] = useState([]);
 
   const produceRef = useRef({});
   const TimePeriods = [
@@ -145,65 +145,87 @@ export default function PieChartPage({navigation}) {
     ['Sunday', ['Green Apple', 14], ['Red Apple', 53]],
   ];
 
+  const getData = async () => {
+    let headerLevel, headerTime, headerPeriod, headerProduce;
+
+    if (timePeriod === 'One Year') {
+      headerTime = 1;
+      headerPeriod = 'year';
+    } else if (timePeriod === 'Six Months') {
+      headerTime = 6;
+      headerPeriod = 'month';
+    } else if (timePeriod === 'Three Months') {
+      headerTime = 3;
+      headerPeriod = 'month';
+    } else if (timePeriod === 'One Month') {
+      headerTime = 1;
+      headerPeriod = 'month';
+    } else if (timePeriod === 'One Week') {
+      headerTime = 7;
+      headerPeriod = 'day';
+    }
+
+    if (level === 'Supertype') {
+      headerLevel = 'Superdupertype';
+    } else if (level === 'Type') {
+      headerLevel = 'Supertype';
+    } else if (level === 'Subtype') {
+      headerLevel = 'Type';
+    } else if (level === 'Food') {
+      headerLevel = 'Subtype';
+    }
+
+    headerProduce = produce;
+
+    return fetch('https://harvest-stalkoverflow.herokuapp.com/api/private', {
+      method: 'GET',
+      headers: {
+        Authorization: 'Bearer ' + userAccessToken,
+        RequestType: 'GetFilteredLogs',
+        userID: userID,
+        Time: headerTime,
+        Period: headerPeriod,
+        Level: headerLevel,
+        Produce: headerProduce,
+      },
+    })
+      .then(response => response.json())
+      .then(json => {
+        console.log("test")
+        console.log("This is the json object: " + json);
+        return json;
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  };
+
   // This function will process the data returned from the API
-  const parseData = data => {
-    let duration = data.length;
-    let numberOfFoodItems = data[0].length - 1;
-
-    let parseCategories = [];
-    for (let i = 0; i < duration; i++) {
-      parseCategories.push(data[i][0]);
-    }
-
-    // Will use a custom legend which will link to Atlas
-    let parseLegend = [];
-    for (let i = 0; i < numberOfFoodItems; i++) {
-      parseLegend.push(data[0][i + 1][0]);
-    }
-
-    let parseValues = [];
-    for (let i = 0; i < numberOfFoodItems; i++) {
-      let list = [];
-      for (let j = 0; j < duration; j++) {
-        list.push({x: parseCategories[j], y: data[j][i + 1][1]});
+  const parseData = arr => {
+    let dates = [];
+    let completeData = [];
+    for (let i in arr) {
+      dates.push(i);
+      let incompleteData = [];
+      for (let j in arr[i]) {
+        incompleteData.push({x: j, y: arr[i][j]});
       }
-      parseValues.push(list);
+      completeData.push(incompleteData);
     }
-    return {
-      parseCategories,
-      parseLegend,
-      parseValues,
-      duration,
-      numberOfFoodItems,
-    };
+    setDateLabels(dates);
+    setGraphData(completeData);
   };
 
-  const createObjects = data => {
-    let {
-      parseCategories,
-      parseLegend,
-      parseValues,
-      duration,
-      numberOfFoodItems,
-    } = parseData(data);
-
-    const objGraphData = [];
-
-    for (let i = 0; i < numberOfFoodItems; i++) {
-      let food = {
-        name: parseLegend[i],
-        harvestData: parseValues[i],
-      };
-      objGraphData.push(food);
-    }
-    setCategories(parseCategories);
-    setGraphData(objGraphData);
-    setLegend(parseLegend);
-  };
-
-  const renderPieChart = () => {
-    createObjects(testData_0);
-    setFilterIsApplied(!filterIsApplied);
+  const renderPieChart = async () => {
+    getData()
+      .then(json => {
+        console.log("test")
+        parseData(json);
+      })
+      .then(() => {
+        setFilterIsApplied(true);
+      });
+    console.log(dateLabels);
   };
 
   return (
@@ -393,6 +415,7 @@ export default function PieChartPage({navigation}) {
               onPress={() => {
                 console.log('Filter has been applied');
                 setModalOpen(false);
+                renderPieChart();
               }}>
               <Text style={styles.filterButton}>Apply Filter</Text>
             </TouchableOpacity>
@@ -409,13 +432,16 @@ export default function PieChartPage({navigation}) {
             alignItems: 'center',
           }}>
           {filterIsApplied ? (
-            graphData.map(item => {
+            graphData.map((item, index) => {
               return (
                 <>
-                  <Text style={styles.textHeading}>{item.name}</Text>
+                  <Text style={styles.textHeading}>
+                    {String(dateLabels[index])}
+                  </Text>
                   <VictoryPie
+                    key={index}
                     animate={{duration: 1000, easing: 'linear'}}
-                    cornerRadius={({datum}) => datum.y * 0.5}
+                    cornerRadius={({datum}) => datum.y * 0.03}
                     colorScale={[
                       '#A1E8AF',
                       '#4A7C59',
@@ -430,8 +456,8 @@ export default function PieChartPage({navigation}) {
                       '#33772C',
                       '#132A13',
                     ]}
-                    padding={{left: 75, right: 75}}
-                    data={item.harvestData}
+                    padding={{left: 85, right: 85}}
+                    data={item}
                   />
                 </>
               );

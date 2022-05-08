@@ -1,5 +1,4 @@
 import React, {useState, useRef, useEffect} from 'react';
-import {Picker} from '@react-native-picker/picker';
 
 import {
   SafeAreaView,
@@ -9,8 +8,6 @@ import {
   Image,
   TouchableOpacity,
   Modal,
-  Pressable,
-  TextInput,
 } from 'react-native';
 
 import {
@@ -18,7 +15,7 @@ import {
   VictoryChart,
   VictoryGroup,
   VictoryAxis,
-  VictoryLegend
+  VictoryLegend,
 } from 'victory-native';
 
 import SelectDropdown from 'react-native-select-dropdown';
@@ -30,6 +27,7 @@ export default function BarGraphPage({navigation, route}) {
   const [renderGraph, setRenderGraph] = useState(false);
   const [dateLabels, setDateLabels] = useState([]);
   const [graphData, setGraphData] = useState([]);
+  const [refresh, setRefresh] = useState(true);
 
   const produceRef = useRef({});
   const TimePeriods = [
@@ -135,41 +133,34 @@ export default function BarGraphPage({navigation, route}) {
   const [produce, setProduce] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
 
-  const getData = async() => {
+  const getData = async () => {
     let headerLevel, headerTime, headerPeriod, headerProduce;
 
     if (timePeriod === 'One Year') {
       headerTime = 1;
-      headerPeriod = 'year'
-    }
-    else if (timePeriod === 'Six Months') {
+      headerPeriod = 'year';
+    } else if (timePeriod === 'Six Months') {
       headerTime = 6;
-      headerPeriod = 'month'
-    }
-    else if (timePeriod === 'Three Months') {
+      headerPeriod = 'month';
+    } else if (timePeriod === 'Three Months') {
       headerTime = 3;
-      headerPeriod = 'month'
-    }
-    else if (timePeriod === 'One Month') {
+      headerPeriod = 'month';
+    } else if (timePeriod === 'One Month') {
       headerTime = 1;
-      headerPeriod = 'month'
-    }
-    else if (timePeriod === 'One Week') {
+      headerPeriod = 'month';
+    } else if (timePeriod === 'One Week') {
       headerTime = 7;
-      headerPeriod = 'day'
+      headerPeriod = 'day';
     }
 
     if (level === 'Supertype') {
-      headerLevel = 'Superdupertype'
-    }
-    else if (level === 'Type') {
-      headerLevel = 'Supertype'
-    }
-    else if (level === 'Subtype') {
-      headerLevel = 'Type'
-    }
-    else if (level === 'Food') {
-      headerLevel = 'Subtype'
+      headerLevel = 'Superdupertype';
+    } else if (level === 'Type') {
+      headerLevel = 'Supertype';
+    } else if (level === 'Subtype') {
+      headerLevel = 'Type';
+    } else if (level === 'Food') {
+      headerLevel = 'Subtype';
     }
 
     headerProduce = produce;
@@ -183,18 +174,18 @@ export default function BarGraphPage({navigation, route}) {
         Time: headerTime,
         Period: headerPeriod,
         Level: headerLevel,
-        Produce: headerProduce 
+        Produce: headerProduce,
       },
     })
-    .then(response => response.json())
-    .then(json => {
-      console.log(json);
-      return json;
-    })
-    .catch(error => {
-      console.log(error);
-    })
-  }
+      .then(response => response.json())
+      .then(json => {
+        console.log(json);
+        return json;
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  };
 
   let testData_0 = [
     ['January', ['Blueberry', 30], ['Blackberry', 10], ['Strawberry', 34]],
@@ -231,20 +222,20 @@ export default function BarGraphPage({navigation, route}) {
     setGraphData(completeData);
   };
 
-  const renderBarGraph = async() => {
+  const renderBarGraph = async () => {
     getData()
-    .then((json) => {
-      parseData(json);
-    })
-    .then(() => {
-      setFilterIsApplied(true);
-    })
-
+      .then(json => {
+        parseData(json);
+      })
+      .then(() => {
+        setFilterIsApplied(true);
+      });
   };
 
-  // useEffect(() => {
-  //   renderBarGraph();
-  // }, [renderGraph]);
+  useEffect(() => {
+    console.log("Refreshing")
+    renderBarGraph();
+  }, [refresh]);
 
   return (
     <SafeAreaView style={styles.body}>
@@ -432,7 +423,7 @@ export default function BarGraphPage({navigation, route}) {
               onPress={() => {
                 console.log('Filter has been applied');
                 setModalOpen(false);
-                renderBarGraph();
+                setRefresh(!refresh)
               }}>
               <Text style={styles.filterButton}>Apply Filter</Text>
             </TouchableOpacity>
@@ -441,34 +432,36 @@ export default function BarGraphPage({navigation, route}) {
       </Modal>
 
       <View style={styles.graphView}>
-        {filterIsApplied ? (
+        {filterIsApplied && graphData.length > 0 ? (
           <VictoryChart
-            domainPadding={10}
+            domainPadding={75}
+            height={300}
+            width={400}
             animate={{duration: 1000, easing: 'linear'}}>
-              <VictoryLegend
-            x={125}
-            y={5}
-            centerTitle
-            orientation="horizontal"
-            gutter={25}
-            data={dateLabels}
-            colorScale={[
-              '#A1E8AF',
-              '#4A7C59',
-              '#A5BE00',
-              '#717744',
-              '#245501',
-              '#73A942',
-              '#AAD576',
-              '#1A4301',
-              '#909955',
-              '#4F772D',
-              '#33772C',
-              '#132A13',
-            ]}
-          />
+            <VictoryLegend
+              x={125}
+              y={5}
+              centerTitle
+              orientation="horizontal"
+              gutter={25}
+              data={dateLabels}
+              colorScale={[
+                '#A1E8AF',
+                '#4A7C59',
+                '#A5BE00',
+                '#717744',
+                '#245501',
+                '#73A942',
+                '#AAD576',
+                '#1A4301',
+                '#909955',
+                '#4F772D',
+                '#33772C',
+                '#132A13',
+              ]}
+            />
             <VictoryGroup
-              offset={75}
+              offset={-15}
               colorScale={[
                 '#A1E8AF',
                 '#4A7C59',
@@ -483,19 +476,17 @@ export default function BarGraphPage({navigation, route}) {
                 '#33772C',
                 '#132A13',
               ]}>
-              {graphData.map(item => {
-                return (
-                  <VictoryBar
-                    data={item}
-                  />
-                );
+              {graphData.map((item, index) => {
+                return <VictoryBar key={index} data={item} barWidth={15} />;
               })}
             </VictoryGroup>
-            <VictoryAxis dependentAxis />
+            <VictoryAxis dependentAxis/>
             <VictoryAxis
-              style={{tickLabels: {angle: 30, transform: 'translate(3, 4)'}}}
+              style={{tickLabels: {angle: 30, transform: 'translate(1, 4)'}}}
             />
           </VictoryChart>
+        ) : graphData.length == 0 ? (
+          <Text>No Data to display</Text>
         ) : (
           <Text>Apply Filter Please</Text>
         )}
