@@ -53,7 +53,8 @@ jobs:
       run: |
         touch .env
         echo DATABASE_URL=${{secrets.DATABASE_URL}} >> .env
+        cat .env
         npm test
-        
+
     - name: Uploading coverage to Codecov
       uses: codecov/codecov-action@v2
