@@ -1,4 +1,4 @@
-import React, {useState, useRef} from 'react';
+import React, {useState, useRef, useEffect} from 'react';
 import {Picker} from '@react-native-picker/picker';
 
 import {
@@ -18,15 +18,18 @@ import {
   VictoryChart,
   VictoryGroup,
   VictoryAxis,
+  VictoryLegend
 } from 'victory-native';
 
 import SelectDropdown from 'react-native-select-dropdown';
 
-export default function BarGraphPage({navigation}) {
+export default function BarGraphPage({navigation, route}) {
+  const {userIDToken, userAccessToken, authUsername, userID} = route.params;
+
   const [filterIsApplied, setFilterIsApplied] = useState(false);
-  const [categories, setCategories] = useState([]);
+  const [renderGraph, setRenderGraph] = useState(false);
+  const [dateLabels, setDateLabels] = useState([]);
   const [graphData, setGraphData] = useState([]);
-  const [legend, setLegend] = useState([]);
 
   const produceRef = useRef({});
   const TimePeriods = [
@@ -132,6 +135,67 @@ export default function BarGraphPage({navigation}) {
   const [produce, setProduce] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
 
+  const getData = async() => {
+    let headerLevel, headerTime, headerPeriod, headerProduce;
+
+    if (timePeriod === 'One Year') {
+      headerTime = 1;
+      headerPeriod = 'year'
+    }
+    else if (timePeriod === 'Six Months') {
+      headerTime = 6;
+      headerPeriod = 'month'
+    }
+    else if (timePeriod === 'Three Months') {
+      headerTime = 3;
+      headerPeriod = 'month'
+    }
+    else if (timePeriod === 'One Month') {
+      headerTime = 1;
+      headerPeriod = 'month'
+    }
+    else if (timePeriod === 'One Week') {
+      headerTime = 7;
+      headerPeriod = 'day'
+    }
+
+    if (level === 'Supertype') {
+      headerLevel = 'Superdupertype'
+    }
+    else if (level === 'Type') {
+      headerLevel = 'Supertype'
+    }
+    else if (level === 'Subtype') {
+      headerLevel = 'Type'
+    }
+    else if (level === 'Food') {
+      headerLevel = 'Subtype'
+    }
+
+    headerProduce = produce;
+
+    return fetch('https://harvest-stalkoverflow.herokuapp.com/api/private', {
+      method: 'GET',
+      headers: {
+        Authorization: 'Bearer ' + userAccessToken,
+        RequestType: 'GetFilteredLogs',
+        userID: userID,
+        Time: headerTime,
+        Period: headerPeriod,
+        Level: headerLevel,
+        Produce: headerProduce 
+      },
+    })
+    .then(response => response.json())
+    .then(json => {
+      console.log(json);
+      return json;
+    })
+    .catch(error => {
+      console.log(error);
+    })
+  }
+
   let testData_0 = [
     ['January', ['Blueberry', 30], ['Blackberry', 10], ['Strawberry', 34]],
     ['February', ['Blueberry', 36], ['Blackberry', 17], ['Strawberry', 42]],
@@ -152,65 +216,35 @@ export default function BarGraphPage({navigation}) {
   ];
 
   // This function will process the data returned from the API
-  const parseData = data => {
-    let duration = data.length;
-    let numberOfFoodItems = data[0].length - 1;
-
-    let parseCategories = [];
-    for (let i = 0; i < duration; i++) {
-      parseCategories.push(data[i][0]);
-    }
-
-    // Will use a custom legend which will link to Atlas
-    let parseLegend = [];
-    for (let i = 0; i < numberOfFoodItems; i++) {
-      parseLegend.push(data[0][i + 1][0]);
-    }
-
-    let parseValues = [];
-    for (let i = 0; i < numberOfFoodItems; i++) {
-      let list = [];
-      for (let j = 0; j < duration; j++) {
-        list.push({x: parseCategories[j], y: data[j][i + 1][1]});
+  const parseData = arr => {
+    let dates = [];
+    let completeData = [];
+    for (let i in arr) {
+      dates.push({name: i});
+      let incompleteData = [];
+      for (let j in arr[i]) {
+        incompleteData.push({x: j, y: arr[i][j]});
       }
-      parseValues.push(list);
+      completeData.push(incompleteData);
     }
-    return {
-      parseCategories,
-      parseLegend,
-      parseValues,
-      duration,
-      numberOfFoodItems,
-    };
+    setDateLabels(dates);
+    setGraphData(completeData);
   };
 
-  const createObjects = data => {
-    let {
-      parseCategories,
-      parseLegend,
-      parseValues,
-      duration,
-      numberOfFoodItems,
-    } = parseData(data);
+  const renderBarGraph = async() => {
+    getData()
+    .then((json) => {
+      parseData(json);
+    })
+    .then(() => {
+      setFilterIsApplied(true);
+    })
 
-    const objGraphData = [];
-
-    for (let i = 0; i < numberOfFoodItems; i++) {
-      let food = {
-        name: parseLegend[i],
-        harvestData: parseValues[i],
-      };
-      objGraphData.push(food);
-    }
-    setCategories(parseCategories);
-    setGraphData(objGraphData);
-    setLegend(parseLegend);
   };
 
-  const renderBarGraph = () => {
-    createObjects(testData_1);
-    setFilterIsApplied(!filterIsApplied);
-  };
+  // useEffect(() => {
+  //   renderBarGraph();
+  // }, [renderGraph]);
 
   return (
     <SafeAreaView style={styles.body}>
@@ -398,6 +432,7 @@ export default function BarGraphPage({navigation}) {
               onPress={() => {
                 console.log('Filter has been applied');
                 setModalOpen(false);
+                renderBarGraph();
               }}>
               <Text style={styles.filterButton}>Apply Filter</Text>
             </TouchableOpacity>
@@ -408,10 +443,32 @@ export default function BarGraphPage({navigation}) {
       <View style={styles.graphView}>
         {filterIsApplied ? (
           <VictoryChart
-            domainPadding={20}
+            domainPadding={10}
             animate={{duration: 1000, easing: 'linear'}}>
+              <VictoryLegend
+            x={125}
+            y={5}
+            centerTitle
+            orientation="horizontal"
+            gutter={25}
+            data={dateLabels}
+            colorScale={[
+              '#A1E8AF',
+              '#4A7C59',
+              '#A5BE00',
+              '#717744',
+              '#245501',
+              '#73A942',
+              '#AAD576',
+              '#1A4301',
+              '#909955',
+              '#4F772D',
+              '#33772C',
+              '#132A13',
+            ]}
+          />
             <VictoryGroup
-              offset={10}
+              offset={75}
               colorScale={[
                 '#A1E8AF',
                 '#4A7C59',
@@ -429,10 +486,7 @@ export default function BarGraphPage({navigation}) {
               {graphData.map(item => {
                 return (
                   <VictoryBar
-                    categories={{
-                      x: categories,
-                    }}
-                    data={item.harvestData}
+                    data={item}
                   />
                 );
               })}
