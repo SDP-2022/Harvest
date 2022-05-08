@@ -47,6 +47,8 @@ jobs:
 
     - name: Running Jest tests
       run: npm test
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
     - name: Uploading coverage to Codecov
       uses: codecov/codecov-action@v2
