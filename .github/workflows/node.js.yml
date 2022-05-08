@@ -37,7 +37,6 @@ jobs:
         cache-dependency-path: Server/package-lock.json
     - run: npm ci
     - run: npm run build --if-present
-    - name: Running Jest Tests.
     - run: npm test
 
     - name: Uploading coverage to Codecov
