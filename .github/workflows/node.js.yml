@@ -48,12 +48,12 @@ jobs:
         DATABASE_URL: ${{secrets.DATABASE_URL}}
 
     - name: Running Jest tests
+      env:
+        DATABASE_URL: ${{secrets.DATABASE_URL}}
       run: |
         touch .env
         echo DATABASE_URL=${{secrets.DATABASE_URL}} >> .env
-      env:
-        DATABASE_URL: ${{secrets.DATABASE_URL}}
-      run: npm test
-
+        npm test
+        
     - name: Uploading coverage to Codecov
       uses: codecov/codecov-action@v2
