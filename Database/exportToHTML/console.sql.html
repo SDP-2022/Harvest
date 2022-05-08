@@ -1,0 +1,97 @@
+<html>
+<head>
+<title>console.sql</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cc7832;}
+.s1 { color: #a9b7c6;}
+.s2 { color: #6897bb;}
+.s3 { color: #6a8759;}
+</style>
+</head>
+<body bgcolor="#2b2b2b">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+console.sql</font>
+</center></td></tr></table>
+<pre><span class="s0">create table </span><span class="s1">test</span>
+<span class="s1">(</span>
+    <span class="s1">column_1 </span><span class="s0">int</span>
+        <span class="s0">constraint </span><span class="s1">test_pk</span>
+            <span class="s0">primary key,</span>
+    <span class="s1">column_2 </span><span class="s0">varchar</span>
+<span class="s1">)</span><span class="s0">;</span>
+
+<span class="s0">select </span><span class="s1">&quot;Type&quot; </span><span class="s0">from </span><span class="s1">subtypes</span><span class="s0">;</span>
+
+<span class="s0">alter table </span><span class="s1">subtypes</span>
+    <span class="s0">alter column </span><span class="s1">Subtypes </span><span class="s0">set not null;</span>
+
+<span class="s0">create unique index </span><span class="s1">subtypes_subtype_uindex</span>
+    <span class="s0">on </span><span class="s1">subtypes (Subtypes)</span><span class="s0">;</span>
+
+<span class="s0">alter table </span><span class="s1">subtypes</span>
+    <span class="s0">add constraint </span><span class="s1">subtypes_pk</span>
+        <span class="s0">primary key </span><span class="s1">(Subtypes)</span><span class="s0">;</span>
+
+<span class="s0">alter table </span><span class="s1">subtypes</span>
+    <span class="s0">add constraint </span><span class="s1">subtypes_types_type_fk</span>
+        <span class="s0">foreign key </span><span class="s1">(&quot;Type&quot;) </span><span class="s0">references types;</span>
+
+<span class="s0">alter table </span><span class="s1">subtypes</span>
+    <span class="s0">add constraint </span><span class="s1">subtypes_types_type_fk</span>
+        <span class="s0">foreign key </span><span class="s1">(&quot;Type&quot;) </span><span class="s0">references types;</span>
+
+<span class="s0">alter table </span><span class="s1">subtypes</span>
+    <span class="s0">add constraint </span><span class="s1">subtypes_types_type_fk</span>
+        <span class="s0">foreign key </span><span class="s1">(&quot;Type&quot;) </span><span class="s0">references types;</span>
+
+<span class="s0">alter table </span><span class="s1">accounts</span>
+    <span class="s0">add </span><span class="s1">&quot;Date_Joined&quot; </span><span class="s0">date;</span>
+
+<span class="s0">alter table </span><span class="s1">accounts</span>
+    <span class="s0">drop column </span><span class="s1">&quot;Date_Joined&quot;</span><span class="s0">;</span>
+
+<span class="s0">alter table log</span>
+    <span class="s0">drop </span><span class="s1">&quot;Weight&quot;</span><span class="s0">;</span>
+
+<span class="s0">alter table log</span>
+    <span class="s0">add column </span><span class="s1">&quot;Weight&quot; </span><span class="s0">decimal</span><span class="s1">(</span><span class="s2">6</span><span class="s0">,</span><span class="s2">2</span><span class="s1">)</span><span class="s0">;</span>
+
+<span class="s0">alter table log</span>
+    <span class="s0">add constraint </span><span class="s1">log_accounts_user_id_fk</span>
+        <span class="s0">foreign key </span><span class="s1">(&quot;User_ID&quot;) </span><span class="s0">references </span><span class="s1">accounts</span><span class="s0">;</span>
+
+<span class="s0">alter table log</span>
+    <span class="s0">add constraint </span><span class="s1">log_food_food_name_fk</span>
+        <span class="s0">foreign key </span><span class="s1">(&quot;Food_Name&quot;) </span><span class="s0">references </span><span class="s1">food</span><span class="s0">;</span>
+
+
+<span class="s0">SELECT </span><span class="s1">SUM(“Weight”) </span><span class="s0">FROM </span><span class="s1">&quot;log&quot; </span><span class="s0">WHERE </span><span class="s1">&quot;Date_Logged&quot; </span><span class="s0">between </span><span class="s1">DATEADD(</span><span class="s0">DAY, </span><span class="s1">-</span><span class="s2">7</span><span class="s0">, </span><span class="s1">&quot;Date_Logged&quot;) </span><span class="s0">and </span><span class="s1">DATEADD(</span><span class="s0">DAY, </span><span class="s2">0</span><span class="s0">, </span><span class="s1">&quot;Date_Logged&quot;)</span><span class="s0">;</span>
+
+<span class="s0">SELECT </span><span class="s1">SUM(&quot;Weight&quot;) </span><span class="s0">FROM </span><span class="s1">&quot;log&quot; </span><span class="s0">WHERE </span><span class="s1">&quot;User_ID&quot; = </span><span class="s3">'A1' </span><span class="s0">AND </span><span class="s1">&quot;Date_logged&quot; </span><span class="s0">between</span>
+<span class="s0">select </span><span class="s1">SUM(&quot;Weight&quot;) </span><span class="s0">from </span><span class="s1">&quot;log&quot; </span><span class="s0">WHERE </span><span class="s1">&quot;Date_Logged&quot; </span><span class="s0">between </span><span class="s1">&quot;Date_Logged&quot; + (-</span><span class="s2">7 </span><span class="s1">* </span><span class="s0">INTERVAL </span><span class="s3">'1 day'</span><span class="s1">) </span><span class="s0">and </span><span class="s1">&quot;Date_Logged&quot; </span><span class="s0">;</span>
+
+<span class="s1">pg_dump harvest &gt; mydb.sql</span><span class="s0">;</span>
+
+<span class="s0">SELECT </span><span class="s1">“Type” </span><span class="s0">from </span><span class="s1">“food” </span><span class="s0">inner join </span><span class="s1">“types </span><span class="s0">where </span><span class="s1">&quot;food&quot;.Subtype = &quot;types&quot;.Subtype</span><span class="s0">;</span>
+
+
+<span class="s0">select </span><span class="s1">food.&quot;Food_Name&quot; </span><span class="s0">from </span><span class="s1">&quot;food&quot;</span>
+    <span class="s0">inner join </span><span class="s1">&quot;log&quot; </span><span class="s0">on </span><span class="s1">food.&quot;Food_Name&quot; = </span><span class="s0">log</span><span class="s1">.&quot;Food_Name&quot;</span>
+    <span class="s0">inner join </span><span class="s1">&quot;subtypes&quot; </span><span class="s0">on </span><span class="s1">food.&quot;Subtype&quot; = subtypes.&quot;Subtype&quot;</span>
+    <span class="s0">where </span><span class="s1">subtypes.&quot;Type&quot; = </span><span class="s3">'Citrus' </span><span class="s0">and log</span><span class="s1">.&quot;User_ID&quot; = </span><span class="s3">'A1'</span><span class="s0">;</span>
+
+<span class="s0">select </span><span class="s1">food.&quot;Food_Name&quot; </span><span class="s0">from </span><span class="s1">&quot;food&quot;</span>
+    <span class="s0">inner join </span><span class="s1">&quot;log&quot; </span><span class="s0">on </span><span class="s1">food.&quot;Food_Name&quot; = </span><span class="s0">log</span><span class="s1">.&quot;Food_Name&quot;</span>
+    <span class="s0">inner join </span><span class="s1">&quot;subtypes&quot; </span><span class="s0">on </span><span class="s1">food.&quot;Subtype&quot; = subtypes.&quot;Subtype&quot;</span>
+    <span class="s0">inner join types on types</span><span class="s1">.&quot;Type&quot; = subtypes.&quot;Type&quot;</span>
+    <span class="s0">where types</span><span class="s1">.&quot;Supertype&quot; = </span><span class="s3">'Fruit' </span><span class="s0">and log</span><span class="s1">.&quot;User_ID&quot;= </span><span class="s3">'A1'</span><span class="s0">;</span>
+
+
+<span class="s0">select </span><span class="s1">food.&quot;Food_Name&quot; </span><span class="s0">from </span><span class="s1">food </span><span class="s0">UNION ALL select </span><span class="s1">&quot;Subtype&quot; </span><span class="s0">from </span><span class="s1">subtypes </span><span class="s0">where </span><span class="s1">&quot;Type&quot; = &quot;Nut&quot;</span><span class="s0">;</span>
+
+<span class="s0">SELECT </span><span class="s1">food.&quot;Food_Name&quot; </span><span class="s0">FROM </span><span class="s1">&quot;food&quot; </span><span class="s0">inner join </span><span class="s1">&quot;subtypes&quot; </span><span class="s0">on </span><span class="s1">food.&quot;Subtype&quot; = subtypes.&quot;Subtype&quot; </span><span class="s0">where </span><span class="s1">subtypes.&quot;Type&quot; = </span><span class="s3">'Berry' </span><span class="s0">AND log</span><span class="s1">.&quot;User_ID&quot; = </span><span class="s3">'A1'</span><span class="s0">;</span></pre>
+</body>
+</html>
