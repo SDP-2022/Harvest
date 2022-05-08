@@ -29,11 +29,6 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v3
 
-    - name: Create environment variables
-      run: |
-        touch .env
-        echo DATABASE_URL=${{ secrets.DATABASE_URL }} >> .env
-
     - name: Buidling using Node.js ${{ matrix.node-version }}.
       env:
         CI: true
@@ -46,6 +41,9 @@ jobs:
     - run: npm run build --if-present
 
     - name: Running Jest tests
+      run: |
+        touch .env
+        echo DATABASE_URL=${{ secrets.DATABASE_URL }} >> .env
       run: npm test
 
     - name: Uploading coverage to Codecov
