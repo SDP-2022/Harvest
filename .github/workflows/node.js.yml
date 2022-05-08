@@ -32,6 +32,8 @@ jobs:
         touch .env
         ls -a
         echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> .env
+        echo ${{ secrets.DATABASE_URL }}
+        cat .env
 
     - name: Dotenv Action
       uses: falti/dotenv-action@v0.2.8
