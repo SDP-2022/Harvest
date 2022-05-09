@@ -15,6 +15,7 @@ import {VictoryPie} from 'victory-native';
 import SelectDropdown from 'react-native-select-dropdown';
 
 export default function PieChartPage({navigation, route}) {
+  // Here, the appropriate variables and arrays are declared
   const {userIDToken, userAccessToken, authUsername, userID} = route.params;
 
   const [filterIsApplied, setFilterIsApplied] = useState(false);
@@ -127,6 +128,7 @@ export default function PieChartPage({navigation, route}) {
   const [produce, setProduce] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
 
+  // This is some test data 
   let testData_0 = [
     ['January', ['Blueberry', 30], ['Blackberry', 10], ['Strawberry', 34]],
     ['February', ['Blueberry', 36], ['Blackberry', 17], ['Strawberry', 42]],
@@ -146,6 +148,8 @@ export default function PieChartPage({navigation, route}) {
     ['Sunday', ['Green Apple', 14], ['Red Apple', 53]],
   ];
 
+  // This function makes a request to the API
+  // to get the data for the Pie Charts
   const getData = async () => {
     let headerLevel, headerTime, headerPeriod, headerProduce;
 
@@ -220,7 +224,8 @@ export default function PieChartPage({navigation, route}) {
     setGraphData(completeData);
   };
 
-  const renderBarGraph = async () => {
+  // This function renders a pie chart
+  const renderPieChart = async () => {
     getData()
       .then(json => {
         parseData(json);
@@ -230,10 +235,11 @@ export default function PieChartPage({navigation, route}) {
       });
   };
 
+  // This function refreshes the page, when a user changes the entries to the filter
   useEffect(() => {
     console.log('Refreshing');
-    renderBarGraph();
-  }, [refresh]);
+    renderPieChart();
+  }, [refresh, graphData]);
 
   return (
     <SafeAreaView style={styles.body}>

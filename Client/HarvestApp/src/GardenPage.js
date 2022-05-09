@@ -16,6 +16,7 @@ import {
 const ACCESS_TOKEN = '@save_token';
 
 export default function GardenPage({navigation, route}) {
+  // Variables are declared here
   const {userIDToken, userAccessToken, authUsername, userID} = route.params;
   const [Food, setFood] = useState([]);
   const [FoodLen, setFoodLen] = useState(0);
@@ -59,6 +60,9 @@ export default function GardenPage({navigation, route}) {
       });
   };
 
+  // This function takes the data from the backend
+  // and sorts by date, as well as parsing the data
+  // so that it is in the appropriate format 
   const formatFood = json => {
     let foodData = [];
     for (let i = 0; i < json.length; i++) {

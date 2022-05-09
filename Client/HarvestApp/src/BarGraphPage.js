@@ -21,6 +21,7 @@ import {
 import SelectDropdown from 'react-native-select-dropdown';
 
 export default function BarGraphPage({navigation, route}) {
+  // Here, the appropriate variables and arrays are declared
   const {userIDToken, userAccessToken, authUsername, userID} = route.params;
 
   const [filterIsApplied, setFilterIsApplied] = useState(false);
@@ -133,6 +134,7 @@ export default function BarGraphPage({navigation, route}) {
   const [produce, setProduce] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
 
+  // This function requests data from the API to generate the graph
   const getData = async () => {
     let headerLevel, headerTime, headerPeriod, headerProduce;
 
@@ -190,6 +192,7 @@ export default function BarGraphPage({navigation, route}) {
       });
   };
 
+  // This is some data that can be used for testing
   let testData_0 = [
     ['January', ['Blueberry', 30], ['Blackberry', 10], ['Strawberry', 34]],
     ['February', ['Blueberry', 36], ['Blackberry', 17], ['Strawberry', 42]],
@@ -225,6 +228,7 @@ export default function BarGraphPage({navigation, route}) {
     setGraphData(completeData);
   };
 
+  // This function will render the bar graph
   const renderBarGraph = async () => {
     getData()
       .then(json => {
@@ -235,10 +239,12 @@ export default function BarGraphPage({navigation, route}) {
       });
   };
 
+  // This ensures that a new bar graph is rendered whenever a user makes changes 
+  // to the filter
   useEffect(() => {
     console.log("Refreshing")
     renderBarGraph();
-  }, [refresh]);
+  }, [refresh, graphData]);
 
   return (
     <SafeAreaView style={styles.body}>
@@ -264,6 +270,10 @@ export default function BarGraphPage({navigation, route}) {
           />
         </TouchableOpacity>
       </View>
+      {/*
+        Here a modal view is created, which will contain the contents
+        of the filter
+      */}
       <Modal visible={modalOpen} animationType="fade" transparent={true}>
         <SafeAreaView style={styles.modalView}>
           <View>

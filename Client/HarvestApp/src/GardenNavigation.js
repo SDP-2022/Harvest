@@ -15,6 +15,9 @@ import GardenPage from './GardenPage.js';
 import BarGraphPage from './BarGraphPage.js';
 import PieChartPage from './PieChartPage.js';
 
+// This file is responsible for managing all screens that
+// are accessible from the hamburger menu
+
 const Drawer = createDrawerNavigator();
 
 export default function GardenNavigation({navigation, route}) {
@@ -34,6 +37,9 @@ export default function GardenNavigation({navigation, route}) {
       </View>
     );
   };
+
+  // This is where screens for the hamburger menu
+  // are to be added
 
   return (
     <Drawer.Navigator
