@@ -1,3 +1,6 @@
+// Get environment Vars
+require('dotenv').config();
+
 // Start Node + Express.js Server
 const express = require('express')
 const app = express()

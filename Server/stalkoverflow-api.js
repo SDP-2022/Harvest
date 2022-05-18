@@ -334,26 +334,39 @@ async function filterSuperDuperType(res, userID, time, period) {
         } else {
             res.status(201);
             var rows = result.rows;
-
             var monthRows = new Object();
 
+            var lastMonthName = "";
             rows.forEach(function(row) {
                 var date = new Date(row.Date_Logged);
                 var monthName = monthNames[date.getMonth()];
-                var supertype = row.Supertype;
+                lastMonthName = monthName;
                 var weight = parseFloat(row.Weight);
                 
                 if (!(monthName in monthRows)) {
-                    monthRows[monthName] = new Object();
+                    monthRows[monthName] = new Number(0);
                 }
 
-                if (!(supertype in monthRows[monthName])) {
-                    monthRows[monthName][supertype] = new Number(0);
-                }
-                
-                monthRows[monthName][supertype] += weight;
+            
+                monthRows[monthName] += weight;
             });
-            res.json(monthRows);
+
+            var allMonthRows = new Object();
+
+            var indexOfLastMonth = monthNames.indexOf(lastMonthName);
+            for (let i = indexOfLastMonth+1; i < monthNames.length; i++) {
+                allMonthRows[monthNames[i]] = new Number(0);
+            }
+
+            for (let i = 0; i < monthNames.length; i++) {
+                if (!(monthNames[i] in monthRows)) {
+                    allMonthRows[monthNames[i]] = new Number(0);
+                } else {
+                    allMonthRows[monthNames[i]] = monthRows[monthNames[i]];
+                }
+            }
+
+            res.json(allMonthRows);
 
         }           
     } catch (err) {
@@ -377,23 +390,37 @@ async function filterSuperType(res, userID, time, period, superType) {
 
             var monthRows = new Object();
 
+            var lastMonthName = "";
             rows.forEach(function(row) {
                 var date = new Date(row.Date_Logged);
                 var monthName = monthNames[date.getMonth()];
-                var type = row.Type;
+                lastMonthName = monthName;
                 var weight = parseFloat(row.Weight);
                 
                 if (!(monthName in monthRows)) {
-                    monthRows[monthName] = new Object();
+                    monthRows[monthName] = new Number(0);
                 }
 
-                if (!(type in monthRows[monthName])) {
-                    monthRows[monthName][type] = new Number(0);
-                }
-                
-                monthRows[monthName][type] += weight;
+            
+                monthRows[monthName] += weight;
             });
-            res.json(monthRows);
+
+            var allMonthRows = new Object();
+
+            var indexOfLastMonth = monthNames.indexOf(lastMonthName);
+            for (let i = indexOfLastMonth+1; i < monthNames.length; i++) {
+                allMonthRows[monthNames[i]] = new Number(0);
+            }
+
+            for (let i = 0; i < monthNames.length; i++) {
+                if (!(monthNames[i] in monthRows)) {
+                    allMonthRows[monthNames[i]] = new Number(0);
+                } else {
+                    allMonthRows[monthNames[i]] = monthRows[monthNames[i]];
+                }
+            }
+
+            res.json(allMonthRows);
 
         }           
     } catch (err) {
@@ -417,23 +444,37 @@ async function filterType(res, userID, time, period, type) {
 
             var monthRows = new Object();
 
+            var lastMonthName = "";
             rows.forEach(function(row) {
                 var date = new Date(row.Date_Logged);
                 var monthName = monthNames[date.getMonth()];
-                var subtype = row.Subtype;
+                lastMonthName = monthName;
                 var weight = parseFloat(row.Weight);
                 
                 if (!(monthName in monthRows)) {
-                    monthRows[monthName] = new Object();
+                    monthRows[monthName] = new Number(0);
                 }
 
-                if (!(subtype in monthRows[monthName])) {
-                    monthRows[monthName][subtype] = new Number(0);
-                }
-                
-                monthRows[monthName][subtype] += weight;
+            
+                monthRows[monthName] += weight;
             });
-            res.json(monthRows);
+
+            var allMonthRows = new Object();
+
+            var indexOfLastMonth = monthNames.indexOf(lastMonthName);
+            for (let i = indexOfLastMonth+1; i < monthNames.length; i++) {
+                allMonthRows[monthNames[i]] = new Number(0);
+            }
+
+            for (let i = 0; i < monthNames.length; i++) {
+                if (!(monthNames[i] in monthRows)) {
+                    allMonthRows[monthNames[i]] = new Number(0);
+                } else {
+                    allMonthRows[monthNames[i]] = monthRows[monthNames[i]];
+                }
+            }
+
+            res.json(allMonthRows);
 
         }           
     } catch (err) {
@@ -457,23 +498,37 @@ async function filterSubType(res, userID, time, period, subtype) {
 
             var monthRows = new Object();
 
+            var lastMonthName = "";
             rows.forEach(function(row) {
                 var date = new Date(row.Date_Logged);
                 var monthName = monthNames[date.getMonth()];
-                var name = row.Food_Name;
+                lastMonthName = monthName;
                 var weight = parseFloat(row.Weight);
                 
                 if (!(monthName in monthRows)) {
-                    monthRows[monthName] = new Object();
+                    monthRows[monthName] = new Number(0);
                 }
 
-                if (!(name in monthRows[monthName])) {
-                    monthRows[monthName][name] = new Number(0);
-                }
-                
-                monthRows[monthName][name] += weight;
+            
+                monthRows[monthName] += weight;
             });
-            res.json(monthRows);
+
+            var allMonthRows = new Object();
+
+            var indexOfLastMonth = monthNames.indexOf(lastMonthName);
+            for (let i = indexOfLastMonth+1; i < monthNames.length; i++) {
+                allMonthRows[monthNames[i]] = new Number(0);
+            }
+
+            for (let i = 0; i < monthNames.length; i++) {
+                if (!(monthNames[i] in monthRows)) {
+                    allMonthRows[monthNames[i]] = new Number(0);
+                } else {
+                    allMonthRows[monthNames[i]] = monthRows[monthNames[i]];
+                }
+            }
+
+            res.json(allMonthRows);
 
         }           
     } catch (err) {
