@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const { Client } = require('pg')
     const connectionString = process.env.DATABASE_URL;
     const client = new Client({
@@ -172,16 +174,27 @@ async getAllAtlas(foodName){
     throw err;
   }
 }
-
+async getHarvestLogsTotalWeight(userID,foodname){
+  const text = `SELECT SUM("Weight") FROM "log" WHERE "User_ID" = $1 AND "Food_Name" = $2 AND "Date_Logged" between CURRENT_DATE + (-1* INTERVAL '1 year') and CURRENT_DATE;`;
+  const values = []
+  values.push(userID);
+  values.push(foodname);
+  try{
+    var result=await client.query(text, values);
+    return result;
+  }catch(err){
+    throw err;
+  }
+}
 
 }
 
 module.exports=communicator;
-
 /*
+
 async function getstuff(){
   let com =new communicator;
-  let aaaa=await com.getAllAtlas('Almond');
+  let aaaa=await com.getHarvestLogsWeight('A1','Lemon');
   console.log(aaaa.rows);
   await client.end();
   process.exit(1);
