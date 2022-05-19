@@ -15,7 +15,6 @@ import {
   VictoryChart,
   VictoryGroup,
   VictoryAxis,
-  VictoryLegend,
 } from 'victory-native';
 
 import SelectDropdown from 'react-native-select-dropdown';
@@ -28,6 +27,7 @@ export default function BarGraphPage({navigation, route}) {
   const [renderGraph, setRenderGraph] = useState(false);
   const [dateLabels, setDateLabels] = useState([]);
   const [graphData, setGraphData] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [refresh, setRefresh] = useState(true);
 
   const produceRef = useRef({});
@@ -38,7 +38,7 @@ export default function BarGraphPage({navigation, route}) {
     'One Month',
     'One Week',
   ];
-  const Levels = ['Supertype', 'Type', 'Subtype', 'Food'];
+  const Levels = ['Superdupertype', 'Supertype', 'Type', 'Subtype', 'Food'];
   const Supertypes = ['Vegetable', 'Fruit', 'Herb', 'Flower'];
   const Types = [
     'Allium',
@@ -129,6 +129,103 @@ export default function BarGraphPage({navigation, route}) {
     'Zucchini',
   ];
 
+  const Food = [
+    'Almond',
+    'Apple (Golden Delicious)',
+    'Apple (Granny Smith)',
+    'Artichoke',
+    'Aubergine',
+    'Basil',
+    'Bean (Broad)',
+    'Bean (Flat)',
+    'Bean (Green)',
+    'Bean (Yellow)',
+    'Bean (Black)',
+    'Bean (Black-Eyed)',
+    'Bean (Purple)',
+    'Beetroot',
+    'Blackberry',
+    'Blueberry',
+    'Broccoli',
+    'Butternut Squash',
+    'Cabbage (Chinese)',
+    'Cabbage (Purple)',
+    'Carrot',
+    'Cauliflower',
+    'Cavolo Nero',
+    'Celery',
+    'Chilli (Birdseye)',
+    'Chilli (Serrano)',
+    'Chive',
+    'Coriander',
+    'Cucumber',
+    'Curry Leaf',
+    'Edible Flower',
+    'Fennel',
+    'Fig (Green)',
+    'Fig (Purple)',
+    'Gem Squash',
+    'Ginger',
+    'Gooseberry',
+    'Granadilla',
+    'Grape (Catawba)',
+    'Grape (Hanepoot)',
+    'Grape (Victoria)',
+    'Grapefruit (Ruby)',
+    'Jerusalem Artichoke',
+    'Kale',
+    'Kei Apple',
+    'Leek',
+    'Lemon',
+    'Lemon Balm',
+    'Lemon Verbena',
+    'Lettuce',
+    'Lime',
+    'Marjoram',
+    'Mint',
+    'Mustard Leaf',
+    'Naartjie',
+    'Nasturtium',
+    'Onion (Red)',
+    'Onion (White)',
+    'Orange (Cara Cara)',
+    'Orange (Valencia)',
+    'Oregano',
+    'Parsley',
+    'Pea',
+    'Peach (White)',
+    'Peach (Yellow)',
+    'Pepper (Green California Wonder)',
+    'Pepper (Red Santorini)',
+    'Plum (Yellow)',
+    'Plum (Red)',
+    'Plum (Purple)',
+    'Plum (Purple Leaf)',
+    'Pumpkin (Boerpampoen)',
+    'Pumpkin (Queensland Blue)',
+    'Radish',
+    'Rhubarb',
+    'Rosemary',
+    'Sage',
+    'Shallot',
+    'Sorrel',
+    'Spinach',
+    'Strawberry',
+    'Sunflower Seed',
+    'Sweet Potato (White)',
+    'Sweet Potato (Orange)',
+    'Thyme',
+    'Tomato (Cherry)',
+    'Tomato (Costoluto)',
+    'Tomato (Floradade)',
+    'Tomato (Moneymaker)',
+    'Tomato (St. Pierre)',
+    'Tomato (Yellow Baby)',
+    'Turmeric',
+    'Turnip',
+    'Zucchini (Green)',
+  ];
+
   const [timePeriod, setTimePeriod] = useState(null);
   const [level, setLevel] = useState(null);
   const [produce, setProduce] = useState(null);
@@ -155,15 +252,7 @@ export default function BarGraphPage({navigation, route}) {
       headerPeriod = 'day';
     }
 
-    if (level === 'Supertype') {
-      headerLevel = 'Superdupertype';
-    } else if (level === 'Type') {
-      headerLevel = 'Supertype';
-    } else if (level === 'Subtype') {
-      headerLevel = 'Type';
-    } else if (level === 'Food') {
-      headerLevel = 'Subtype';
-    }
+    headerLevel = level;
 
     headerProduce = produce;
 
@@ -193,43 +282,67 @@ export default function BarGraphPage({navigation, route}) {
   };
 
   // This is some data that can be used for testing
-  let testData_0 = [
-    ['January', ['Blueberry', 30], ['Blackberry', 10], ['Strawberry', 34]],
-    ['February', ['Blueberry', 36], ['Blackberry', 17], ['Strawberry', 42]],
-    ['March', ['Blueberry', 12], ['Blackberry', 20], ['Strawberry', 23]],
-    ['April', ['Blueberry', 34], ['Blackberry', 34], ['Strawberry', 24]],
-    ['May', ['Blueberry', 12], ['Blackberry', 12], ['Strawberry', 44]],
-    ['June', ['Blueberry', 14], ['Blackberry', 53], ['Strawberry', 13]],
-  ];
+  // User selects supertype
+  let newTestData_0 = {
+    Jan: 50,
+    Feb: 0,
+    Mar: 0,
+    Apr: 0,
+    May: 3,
+    Jun: 0,
+    Jul: 2,
+    Aug: 0,
+    Sep: 0,
+    Oct: 2,
+    Nov: 2,
+    Dec: 0,
+  };
 
-  let testData_1 = [
-    ['Monday', ['Green Apple', 30], ['Red Apple', 10]],
-    ['Tuesday', ['Green Apple', 36], ['Red Apple', 17]],
-    ['Wednesday', ['Green Apple', 12], ['Red Apple', 20]],
-    ['Thursday', ['Green Apple', 34], ['Red Apple', 34]],
-    ['Friday', ['Green Apple', 12], ['Red Apple', 12]],
-    ['Saturday', ['Green Apple', 12], ['Red Apple', 12]],
-    ['Sunday', ['Green Apple', 14], ['Red Apple', 53]],
-  ];
+  // User selects type
+  let newTestData_1 = {
+    January: 50,
+    February: 60,
+    March: 10,
+    April: 34,
+    May: 23,
+    June: 21,
+  };
+
+  // User selects subtype
+  let newTestData_2 = {
+    January: 50,
+    February: 60,
+    March: 10,
+    April: 34,
+    May: 23,
+    June: 21,
+  };
+
+  // User selects food
+  let newTestData_3 = {
+    January: 50,
+    February: 78,
+    March: 10,
+    April: 123,
+    May: 65,
+    June: 111,
+  };
 
   // This function will process the data returned from the API
-  const parseData = arr => {
-    let dates = [];
-    let completeData = [];
-    for (let i in arr) {
-      dates.push({name: i});
-      let incompleteData = [];
-      for (let j in arr[i]) {
-        incompleteData.push({x: j, y: arr[i][j]});
-      }
-      completeData.push(incompleteData);
-    }
-    setDateLabels(dates);
-    setGraphData(completeData);
+  const parseData = data => {
+    dataArr = [];
+
+    const keys = Object.keys(data);
+
+    keys.forEach((key, index) => {
+      dataArr.push({x: key, y: data[key]});
+    });
+    setGraphData(dataArr);
+    setCategories(keys);
   };
 
   // This function will render the bar graph
-  const renderBarGraph = async () => {
+  const renderBarGraph = () => {
     getData()
       .then(json => {
         parseData(json);
@@ -239,12 +352,11 @@ export default function BarGraphPage({navigation, route}) {
       });
   };
 
-  // This ensures that a new bar graph is rendered whenever a user makes changes 
+  // This ensures that a new bar graph is rendered whenever a user makes changes
   // to the filter
   useEffect(() => {
-    console.log("Refreshing")
-    renderBarGraph();
-  }, [refresh, graphData]);
+    console.log('Refreshing');
+  }, [refresh]);
 
   return (
     <SafeAreaView style={styles.body}>
@@ -381,14 +493,16 @@ export default function BarGraphPage({navigation, route}) {
             <Text style={styles.filterText}>Produce:</Text>
             <SelectDropdown
               data={
-                level === 'Supertype'
-                  ? ['---']
-                  : level === 'Type'
+                level === 'Superdupertype'
+                  ? ['All']
+                  : level === 'Supertype'
                   ? Supertypes
-                  : level === 'Subtype'
+                  : level === 'Type'
                   ? Types
-                  : level === 'Food'
+                  : level === 'Subtype'
                   ? Subtypes
+                  : level === 'Food'
+                  ? Food
                   : ['---']
               }
               ref={produceRef}
@@ -436,7 +550,8 @@ export default function BarGraphPage({navigation, route}) {
               onPress={() => {
                 console.log('Filter has been applied');
                 setModalOpen(false);
-                setRefresh(!refresh)
+                renderBarGraph();
+                setRefresh(!refresh);
               }}>
               <Text style={styles.filterButton}>Apply Filter</Text>
             </TouchableOpacity>
@@ -446,58 +561,42 @@ export default function BarGraphPage({navigation, route}) {
 
       <View style={styles.graphView}>
         {filterIsApplied && graphData.length > 0 ? (
-          <VictoryChart
-            domainPadding={75}
-            height={300}
-            width={400}
-            animate={{duration: 1000, easing: 'linear'}}>
-            <VictoryLegend
-              x={125}
-              y={5}
-              centerTitle
-              orientation="horizontal"
-              gutter={25}
-              data={dateLabels}
-              colorScale={[
-                '#A1E8AF',
-                '#4A7C59',
-                '#A5BE00',
-                '#717744',
-                '#245501',
-                '#73A942',
-                '#AAD576',
-                '#1A4301',
-                '#909955',
-                '#4F772D',
-                '#33772C',
-                '#132A13',
-              ]}
-            />
-            <VictoryGroup
-              offset={-15}
-              colorScale={[
-                '#A1E8AF',
-                '#4A7C59',
-                '#A5BE00',
-                '#717744',
-                '#245501',
-                '#73A942',
-                '#AAD576',
-                '#1A4301',
-                '#909955',
-                '#4F772D',
-                '#33772C',
-                '#132A13',
-              ]}>
-              {graphData.map((item, index) => {
-                return <VictoryBar key={index} data={item} barWidth={15} />;
-              })}
-            </VictoryGroup>
-            <VictoryAxis dependentAxis/>
-            <VictoryAxis
-              style={{tickLabels: {angle: 30, transform: 'translate(1, 4)'}}}
-            />
-          </VictoryChart>
+          <>
+            <TouchableOpacity
+              onPress={() => {
+                navigation.navigate('AtlasPage', {foodItem: produce});
+              }}>
+              <Text style={styles.textHeading}>{produce}</Text>
+            </TouchableOpacity>
+            <VictoryChart domainPadding={15}>
+              <VictoryGroup
+                offset={7.5}
+                colorScale={[
+                  '#A1E8AF',
+                  '#4A7C59',
+                  '#A5BE00',
+                  '#717744',
+                  '#245501',
+                  '#73A942',
+                  '#AAD576',
+                  '#1A4301',
+                  '#909955',
+                  '#4F772D',
+                  '#33772C',
+                  '#132A13',
+                ]}>
+                <VictoryBar
+                  categories={{x: categories}}
+                  barWidth={10}
+                  data={graphData}
+                />
+              </VictoryGroup>
+              <VictoryAxis dependentAxis tickFormat={t => `${t}g`} />
+              <VictoryAxis
+                style={{tickLabels: {angle: 30, transform: 'translate(3, 4)'}}}
+              />
+            </VictoryChart>
+          </>
         ) : graphData.length == 0 ? (
           <Text>No Data to display</Text>
         ) : (

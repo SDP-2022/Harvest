@@ -10,7 +10,7 @@ import {
   Modal,
 } from 'react-native';
 
-import {VictoryPie} from 'victory-native';
+import {VictoryPie, VictoryLabel} from 'victory-native';
 
 import SelectDropdown from 'react-native-select-dropdown';
 
@@ -21,7 +21,8 @@ export default function PieChartPage({navigation, route}) {
   const [filterIsApplied, setFilterIsApplied] = useState(false);
   const [renderGraph, setRenderGraph] = useState(false);
   const [dateLabels, setDateLabels] = useState([]);
-  const [graphData, setGraphData] = useState([]);
+  const [chartData, setChartData] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [refresh, setRefresh] = useState(true);
 
   const produceRef = useRef({});
@@ -32,7 +33,7 @@ export default function PieChartPage({navigation, route}) {
     'One Month',
     'One Week',
   ];
-  const Levels = ['Supertype', 'Type', 'Subtype', 'Food'];
+  const Levels = ['Superdupertype', 'Supertype', 'Type', 'Subtype', 'Food'];
   const Supertypes = ['Vegetable', 'Fruit', 'Herb', 'Flower'];
   const Types = [
     'Allium',
@@ -123,33 +124,109 @@ export default function PieChartPage({navigation, route}) {
     'Zucchini',
   ];
 
+  const Food = [
+    'Almond',
+    'Apple (Golden Delicious)',
+    'Apple (Granny Smith)',
+    'Artichoke',
+    'Aubergine',
+    'Basil',
+    'Bean (Broad)',
+    'Bean (Flat)',
+    'Bean (Green)',
+    'Bean (Yellow)',
+    'Bean (Black)',
+    'Bean (Black-Eyed)',
+    'Bean (Purple)',
+    'Beetroot',
+    'Blackberry',
+    'Blueberry',
+    'Broccoli',
+    'Butternut Squash',
+    'Cabbage (Chinese)',
+    'Cabbage (Purple)',
+    'Carrot',
+    'Cauliflower',
+    'Cavolo Nero',
+    'Celery',
+    'Chilli (Birdseye)',
+    'Chilli (Serrano)',
+    'Chive',
+    'Coriander',
+    'Cucumber',
+    'Curry Leaf',
+    'Edible Flower',
+    'Fennel',
+    'Fig (Green)',
+    'Fig (Purple)',
+    'Gem Squash',
+    'Ginger',
+    'Gooseberry',
+    'Granadilla',
+    'Grape (Catawba)',
+    'Grape (Hanepoot)',
+    'Grape (Victoria)',
+    'Grapefruit (Ruby)',
+    'Jerusalem Artichoke',
+    'Kale',
+    'Kei Apple',
+    'Leek',
+    'Lemon',
+    'Lemon Balm',
+    'Lemon Verbena',
+    'Lettuce',
+    'Lime',
+    'Marjoram',
+    'Mint',
+    'Mustard Leaf',
+    'Naartjie',
+    'Nasturtium',
+    'Onion (Red)',
+    'Onion (White)',
+    'Orange (Cara Cara)',
+    'Orange (Valencia)',
+    'Oregano',
+    'Parsley',
+    'Pea',
+    'Peach (White)',
+    'Peach (Yellow)',
+    'Pepper (Green California Wonder)',
+    'Pepper (Red Santorini)',
+    'Plum (Yellow)',
+    'Plum (Red)',
+    'Plum (Purple)',
+    'Plum (Purple Leaf)',
+    'Pumpkin (Boerpampoen)',
+    'Pumpkin (Queensland Blue)',
+    'Radish',
+    'Rhubarb',
+    'Rosemary',
+    'Sage',
+    'Shallot',
+    'Sorrel',
+    'Spinach',
+    'Strawberry',
+    'Sunflower Seed',
+    'Sweet Potato (White)',
+    'Sweet Potato (Orange)',
+    'Thyme',
+    'Tomato (Cherry)',
+    'Tomato (Costoluto)',
+    'Tomato (Floradade)',
+    'Tomato (Moneymaker)',
+    'Tomato (St. Pierre)',
+    'Tomato (Yellow Baby)',
+    'Turmeric',
+    'Turnip',
+    'Zucchini (Green)',
+  ];
+
   const [timePeriod, setTimePeriod] = useState(null);
   const [level, setLevel] = useState(null);
   const [produce, setProduce] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
 
-  // This is some test data 
-  let testData_0 = [
-    ['January', ['Blueberry', 30], ['Blackberry', 10], ['Strawberry', 34]],
-    ['February', ['Blueberry', 36], ['Blackberry', 17], ['Strawberry', 42]],
-    ['March', ['Blueberry', 12], ['Blackberry', 20], ['Strawberry', 23]],
-    ['April', ['Blueberry', 34], ['Blackberry', 34], ['Strawberry', 24]],
-    ['May', ['Blueberry', 12], ['Blackberry', 12], ['Strawberry', 44]],
-    ['June', ['Blueberry', 14], ['Blackberry', 53], ['Strawberry', 13]],
-  ];
-
-  let testData_1 = [
-    ['Monday', ['Green Apple', 30], ['Red Apple', 10]],
-    ['Tuesday', ['Green Apple', 36], ['Red Apple', 17]],
-    ['Wednesday', ['Green Apple', 12], ['Red Apple', 20]],
-    ['Thursday', ['Green Apple', 34], ['Red Apple', 34]],
-    ['Friday', ['Green Apple', 12], ['Red Apple', 12]],
-    ['Saturday', ['Green Apple', 12], ['Red Apple', 12]],
-    ['Sunday', ['Green Apple', 14], ['Red Apple', 53]],
-  ];
-
-  // This function makes a request to the API
-  // to get the data for the Pie Charts
+  // This function requests data from the API to generate the graph
   const getData = async () => {
     let headerLevel, headerTime, headerPeriod, headerProduce;
 
@@ -170,15 +247,7 @@ export default function PieChartPage({navigation, route}) {
       headerPeriod = 'day';
     }
 
-    if (level === 'Supertype') {
-      headerLevel = 'Superdupertype';
-    } else if (level === 'Type') {
-      headerLevel = 'Supertype';
-    } else if (level === 'Subtype') {
-      headerLevel = 'Type';
-    } else if (level === 'Food') {
-      headerLevel = 'Subtype';
-    }
+    headerLevel = level;
 
     headerProduce = produce;
 
@@ -196,8 +265,7 @@ export default function PieChartPage({navigation, route}) {
     })
       .then(response => response.json())
       .then(json => {
-        console.log('test');
-        console.log('This is the json object: ' + json);
+        console.log(json);
         if (json.Error === 'Time param not found.') {
           json = {};
         }
@@ -208,24 +276,72 @@ export default function PieChartPage({navigation, route}) {
       });
   };
 
-  // This function will process the data returned from the API
-  const parseData = arr => {
-    let dates = [];
-    let completeData = [];
-    for (let i in arr) {
-      dates.push(i);
-      let incompleteData = [];
-      for (let j in arr[i]) {
-        incompleteData.push({x: j, y: arr[i][j]});
-      }
-      completeData.push(incompleteData);
-    }
-    setDateLabels(dates);
-    setGraphData(completeData);
+  // This is some data that can be used for testing
+  // User selects supertype
+  let newTestData_0 = {
+    Jan: 50,
+    Feb: 0,
+    Mar: 0,
+    Apr: 0,
+    May: 3,
+    Jun: 0,
+    Jul: 2,
+    Aug: 0,
+    Sep: 0,
+    Oct: 2,
+    Nov: 2,
+    Dec: 0,
   };
 
-  // This function renders a pie chart
-  const renderPieChart = async () => {
+  // User selects type
+  let newTestData_1 = {
+    January: 50,
+    February: 60,
+    March: 10,
+    April: 34,
+    May: 23,
+    June: 21,
+  };
+
+  // User selects subtype
+  let newTestData_2 = {
+    January: 50,
+    February: 60,
+    March: 10,
+    April: 34,
+    May: 23,
+    June: 21,
+  };
+
+  // User selects food
+  let newTestData_3 = {
+    January: 50,
+    February: 78,
+    March: 10,
+    April: 123,
+    May: 65,
+    June: 111,
+  };
+
+  // This function will process the data returned from the API
+  const parseData = data => {
+    dataArr = [];
+
+    const keys = Object.keys(data);
+
+    keys.forEach((key, index) => {
+      if (data[key] != 0) {
+        dataArr.push({x: key, y: data[key]});
+      }
+    });
+
+    console.log(dataArr);
+    setChartData(dataArr);
+    setCategories(keys);
+  };
+
+  // This function will render the pie chart
+  const renderBarGraph = () => {
     getData()
       .then(json => {
         parseData(json);
@@ -235,11 +351,9 @@ export default function PieChartPage({navigation, route}) {
       });
   };
 
-  // This function refreshes the page, when a user changes the entries to the filter
   useEffect(() => {
     console.log('Refreshing');
-    renderPieChart();
-  }, [refresh, graphData]);
+  }, [refresh]);
 
   return (
     <SafeAreaView style={styles.body}>
@@ -373,14 +487,16 @@ export default function PieChartPage({navigation, route}) {
             <Text style={styles.filterText}>Produce:</Text>
             <SelectDropdown
               data={
-                level === 'Supertype'
-                  ? ['---']
-                  : level === 'Type'
+                level === 'Superdupertype'
+                  ? ['All']
+                  : level === 'Supertype'
                   ? Supertypes
-                  : level === 'Subtype'
+                  : level === 'Type'
                   ? Types
-                  : level === 'Food'
+                  : level === 'Subtype'
                   ? Subtypes
+                  : level === 'Food'
+                  ? Food
                   : ['---']
               }
               ref={produceRef}
@@ -428,6 +544,7 @@ export default function PieChartPage({navigation, route}) {
               onPress={() => {
                 console.log('Filter has been applied');
                 setModalOpen(false);
+                renderBarGraph();
                 setRefresh(!refresh);
               }}>
               <Text style={styles.filterButton}>Apply Filter</Text>
@@ -437,52 +554,41 @@ export default function PieChartPage({navigation, route}) {
       </Modal>
 
       <View style={styles.chartView}>
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{
-            flexGrow: 1,
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}>
-          {filterIsApplied && graphData.length == 0 ? (
-            <Text>No Data to display</Text>
-          ) : filterIsApplied ? (
-            graphData.map((item, index) => {
-              return (
-                <>
-                  <Text style={styles.textHeading}>
-                    {String(dateLabels[index])}
-                  </Text>
-                  <VictoryPie
-                    key={index}
-                    animate={{duration: 1000, easing: 'linear'}}
-                    cornerRadius={({datum}) => datum.y * 0.02}
-                    colorScale={[
-                      '#A1E8AF',
-                      '#4A7C59',
-                      '#A5BE00',
-                      '#717744',
-                      '#245501',
-                      '#73A942',
-                      '#AAD576',
-                      '#1A4301',
-                      '#909955',
-                      '#4F772D',
-                      '#33772C',
-                      '#132A13',
-                    ]}
-                    padding={{left: 85, right: 85}}
-                    data={item}
-                  />
-                </>
-              );
-            })
-          ) : (
-            <>
-              <Text>Apply Filter Please</Text>
-            </>
-          )}
-        </ScrollView>
+        {filterIsApplied && chartData.length > 0 ? (
+          <>
+            <TouchableOpacity
+              onPress={() => {
+                navigation.navigate('AtlasPage', {foodItem: produce});
+              }}>
+              <Text style={styles.textHeading}>{produce}</Text>
+            </TouchableOpacity>
+            <VictoryPie
+              labelComponent={<VictoryLabel angle={0} />}
+              animate={{duration: 1000, easing: 'linear'}}
+              cornerRadius={({datum}) => datum.y * 0.01}
+              colorScale={[
+                '#A1E8AF',
+                '#4A7C59',
+                '#A5BE00',
+                '#717744',
+                '#245501',
+                '#73A942',
+                '#AAD576',
+                '#1A4301',
+                '#909955',
+                '#4F772D',
+                '#33772C',
+                '#132A13',
+              ]}
+              padding={{left: 85, right: 85}}
+              data={chartData}
+            />
+          </>
+        ) : chartData.length == 0 ? (
+          <Text>No Data to display</Text>
+        ) : (
+          <Text>Apply Filter Please</Text>
+        )}
       </View>
     </SafeAreaView>
   );
