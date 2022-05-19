@@ -11,9 +11,7 @@ const ACCESS_TOKEN = '@save_token';
   const {userIDToken, userAccessToken, authUsername, userID} = route.params;
   const [weightAmt, setWeightAmt] = useState("");
   const [foodtype, setFoodType] = useState("");
-  const [example, setExample] = useState("");
   const [remoteDataSet, setRemoteDataSet] = useState(null);
-  const [selectedItem, setSelectedItem] = useState(null);
   const [loading, setLoading] = useState(false);
 
   
@@ -57,9 +55,15 @@ const checkTextInput = () => { // this method is used to check if the fields are
     setFoodType(value);
   }
 
+  const handleSelectedChange = (value) =>{
+    if(value){
+      setFoodType(value.title);
+    }
+  }
+
   const getSuggestions = useCallback(async q => {
     const filterToken = q.toLowerCase()
-    console.log('getSuggestions', filterToken)
+    //console.log('getSuggestions', filterToken)
     if (typeof q !== 'string' || q.length < 3) {
       setRemoteDataSet(null)
       return
@@ -89,6 +93,7 @@ const checkTextInput = () => { // this method is used to check if the fields are
         title: item.Food_Name
       }))
     setRemoteDataSet(suggestions)
+    console.log(suggestions)
     setLoading(false)
   }, [])
 
@@ -111,7 +116,7 @@ const checkTextInput = () => { // this method is used to check if the fields are
             color: "black"
           }
         }}
-        onSelectItem={setSelectedItem}
+        onSelectItem={handleSelectedChange}
         loading={loading}
         onChangeText={(value) => handleChange(value)}
         suggestionsListTextStyle={{
