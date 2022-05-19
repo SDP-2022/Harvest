@@ -35,6 +35,9 @@ export default function AtlasPage({navigation, route}) {
   const [loading, setLoading] = useState(false);
   const [foodtype, setFoodType] = useState("");
 
+  //This is the variable passed from the graph/chart page:
+  const {foodItem} = route.params;
+
   const getSuggestions = useCallback(async q => {
     const filterToken = q.toLowerCase()
     //console.log('getSuggestions', filterToken)
