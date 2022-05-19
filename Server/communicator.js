@@ -160,6 +160,19 @@ async getLogsSuperDuperType(userID,time,period){//eg Fruit
     throw err;
   }
 }
+async getAllAtlas(foodName){
+  const text = `SELECT * FROM "food" where "Food_Name" = $1`;
+  const values = []
+  values.push(foodName);
+  
+  try{
+    var result=await client.query(text, values);
+    return result;
+  }catch(err){
+    throw err;
+  }
+}
+
 
 }
 
@@ -168,10 +181,10 @@ module.exports=communicator;
 /*
 async function getstuff(){
   let com =new communicator;
-  let aaaa=await com.getLogsSuperDuperType('A1','1','month');
+  let aaaa=await com.getAllAtlas('Almond');
   console.log(aaaa.rows);
   await client.end();
   process.exit(1);
 }
-getstuff();
-*/
+getstuff();*/
+
