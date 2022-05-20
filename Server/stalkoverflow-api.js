@@ -336,38 +336,53 @@ async function filterSuperDuperType(res, userID, time, period) {
             var rows = result.rows;
             var monthRows = new Object();
 
-            var lastMonthName = "";
+            var firstMonthName = "";
             rows.forEach(function(row) {
                 var date = new Date(row.Date_Logged);
                 var monthName = monthNames[date.getMonth()];
-                lastMonthName = monthName;
+                if (firstMonthName === "") firstMonthName = monthName;
                 var weight = parseFloat(row.Weight);
                 
                 if (!(monthName in monthRows)) {
                     monthRows[monthName] = new Number(0);
                 }
 
-            
                 monthRows[monthName] += weight;
             });
 
-            var allMonthRows = new Object();
-
-            var indexOfLastMonth = monthNames.indexOf(lastMonthName);
-            for (let i = indexOfLastMonth+1; i < monthNames.length; i++) {
-                allMonthRows[monthNames[i]] = new Number(0);
+            var allMonthRows = [];
+            var numMonths = 0;
+            if (period === "month") {
+                numMonths = time;
+            } else if (period === "year") {
+                numMonths = time * 12;
+            }
+            var indexOfFirstMonth = monthNames.indexOf(firstMonthName);
+            var monthsRemaining = numMonths - Object.keys(monthRows).length;
+            for (let i = indexOfFirstMonth-1; i >= 0; i--) {
+                if (monthsRemaining == 0) break;
+                monthsRemaining--;
+                allMonthRows.push([monthNames[i], new Number(0)]);
             }
 
-            for (let i = 0; i < monthNames.length; i++) {
-                if (!(monthNames[i] in monthRows)) {
-                    allMonthRows[monthNames[i]] = new Number(0);
-                } else {
-                    allMonthRows[monthNames[i]] = monthRows[monthNames[i]];
+            if (monthsRemaining > 0) {
+                for (let i = monthNames.length - 1; i >= monthNames.length - monthsRemaining; i--) {
+                    if (i < 0) break;
+                    allMonthRows.push([monthNames[i], new Number(0)]);
                 }
             }
 
-            res.json(allMonthRows);
+            for (const [key, value] of Object.entries(monthRows)) {
+                allMonthRows.unshift([key, value]);
+            }
 
+
+            var finalData = new Object();
+            allMonthRows.reverse().forEach(function(row) {
+                finalData[row[0]] = row[1];
+            });
+
+            res.json(finalData);
         }           
     } catch (err) {
         console.log("Error:", err);
@@ -387,41 +402,55 @@ async function filterSuperType(res, userID, time, period, superType) {
         } else {
             res.status(201);
             var rows = result.rows;
-
             var monthRows = new Object();
 
-            var lastMonthName = "";
+            var firstMonthName = "";
             rows.forEach(function(row) {
                 var date = new Date(row.Date_Logged);
                 var monthName = monthNames[date.getMonth()];
-                lastMonthName = monthName;
+                if (firstMonthName === "") firstMonthName = monthName;
                 var weight = parseFloat(row.Weight);
                 
                 if (!(monthName in monthRows)) {
                     monthRows[monthName] = new Number(0);
                 }
 
-            
                 monthRows[monthName] += weight;
             });
 
-            var allMonthRows = new Object();
-
-            var indexOfLastMonth = monthNames.indexOf(lastMonthName);
-            for (let i = indexOfLastMonth+1; i < monthNames.length; i++) {
-                allMonthRows[monthNames[i]] = new Number(0);
+            var allMonthRows = [];
+            var numMonths = 0;
+            if (period === "month") {
+                numMonths = time;
+            } else if (period === "year") {
+                numMonths = time * 12;
+            }
+            var indexOfFirstMonth = monthNames.indexOf(firstMonthName);
+            var monthsRemaining = numMonths - Object.keys(monthRows).length;
+            for (let i = indexOfFirstMonth-1; i >= 0; i--) {
+                if (monthsRemaining == 0) break;
+                monthsRemaining--;
+                allMonthRows.push([monthNames[i], new Number(0)]);
             }
 
-            for (let i = 0; i < monthNames.length; i++) {
-                if (!(monthNames[i] in monthRows)) {
-                    allMonthRows[monthNames[i]] = new Number(0);
-                } else {
-                    allMonthRows[monthNames[i]] = monthRows[monthNames[i]];
+            if (monthsRemaining > 0) {
+                for (let i = monthNames.length - 1; i >= monthNames.length - monthsRemaining; i--) {
+                    if (i < 0) break;
+                    allMonthRows.push([monthNames[i], new Number(0)]);
                 }
             }
 
-            res.json(allMonthRows);
+            for (const [key, value] of Object.entries(monthRows)) {
+                allMonthRows.unshift([key, value]);
+            }
 
+
+            var finalData = new Object();
+            allMonthRows.reverse().forEach(function(row) {
+                finalData[row[0]] = row[1];
+            });
+
+            res.json(finalData);
         }           
     } catch (err) {
         console.log("Error:", err);
@@ -441,41 +470,55 @@ async function filterType(res, userID, time, period, type) {
         } else {
             res.status(201);
             var rows = result.rows;
-
             var monthRows = new Object();
 
-            var lastMonthName = "";
+            var firstMonthName = "";
             rows.forEach(function(row) {
                 var date = new Date(row.Date_Logged);
                 var monthName = monthNames[date.getMonth()];
-                lastMonthName = monthName;
+                if (firstMonthName === "") firstMonthName = monthName;
                 var weight = parseFloat(row.Weight);
                 
                 if (!(monthName in monthRows)) {
                     monthRows[monthName] = new Number(0);
                 }
 
-            
                 monthRows[monthName] += weight;
             });
 
-            var allMonthRows = new Object();
-
-            var indexOfLastMonth = monthNames.indexOf(lastMonthName);
-            for (let i = indexOfLastMonth+1; i < monthNames.length; i++) {
-                allMonthRows[monthNames[i]] = new Number(0);
+            var allMonthRows = [];
+            var numMonths = 0;
+            if (period === "month") {
+                numMonths = time;
+            } else if (period === "year") {
+                numMonths = time * 12;
+            }
+            var indexOfFirstMonth = monthNames.indexOf(firstMonthName);
+            var monthsRemaining = numMonths - Object.keys(monthRows).length;
+            for (let i = indexOfFirstMonth-1; i >= 0; i--) {
+                if (monthsRemaining == 0) break;
+                monthsRemaining--;
+                allMonthRows.push([monthNames[i], new Number(0)]);
             }
 
-            for (let i = 0; i < monthNames.length; i++) {
-                if (!(monthNames[i] in monthRows)) {
-                    allMonthRows[monthNames[i]] = new Number(0);
-                } else {
-                    allMonthRows[monthNames[i]] = monthRows[monthNames[i]];
+            if (monthsRemaining > 0) {
+                for (let i = monthNames.length - 1; i >= monthNames.length - monthsRemaining; i--) {
+                    if (i < 0) break;
+                    allMonthRows.push([monthNames[i], new Number(0)]);
                 }
             }
 
-            res.json(allMonthRows);
+            for (const [key, value] of Object.entries(monthRows)) {
+                allMonthRows.unshift([key, value]);
+            }
 
+
+            var finalData = new Object();
+            allMonthRows.reverse().forEach(function(row) {
+                finalData[row[0]] = row[1];
+            });
+
+            res.json(finalData);
         }           
     } catch (err) {
         console.log("Error:", err);
@@ -495,41 +538,55 @@ async function filterSubType(res, userID, time, period, subtype) {
         } else {
             res.status(201);
             var rows = result.rows;
-
             var monthRows = new Object();
 
-            var lastMonthName = "";
+            var firstMonthName = "";
             rows.forEach(function(row) {
                 var date = new Date(row.Date_Logged);
                 var monthName = monthNames[date.getMonth()];
-                lastMonthName = monthName;
+                if (firstMonthName === "") firstMonthName = monthName;
                 var weight = parseFloat(row.Weight);
                 
                 if (!(monthName in monthRows)) {
                     monthRows[monthName] = new Number(0);
                 }
 
-            
                 monthRows[monthName] += weight;
             });
 
-            var allMonthRows = new Object();
-
-            var indexOfLastMonth = monthNames.indexOf(lastMonthName);
-            for (let i = indexOfLastMonth+1; i < monthNames.length; i++) {
-                allMonthRows[monthNames[i]] = new Number(0);
+            var allMonthRows = [];
+            var numMonths = 0;
+            if (period === "month") {
+                numMonths = time;
+            } else if (period === "year") {
+                numMonths = time * 12;
+            }
+            var indexOfFirstMonth = monthNames.indexOf(firstMonthName);
+            var monthsRemaining = numMonths - Object.keys(monthRows).length;
+            for (let i = indexOfFirstMonth-1; i >= 0; i--) {
+                if (monthsRemaining == 0) break;
+                monthsRemaining--;
+                allMonthRows.push([monthNames[i], new Number(0)]);
             }
 
-            for (let i = 0; i < monthNames.length; i++) {
-                if (!(monthNames[i] in monthRows)) {
-                    allMonthRows[monthNames[i]] = new Number(0);
-                } else {
-                    allMonthRows[monthNames[i]] = monthRows[monthNames[i]];
+            if (monthsRemaining > 0) {
+                for (let i = monthNames.length - 1; i >= monthNames.length - monthsRemaining; i--) {
+                    if (i < 0) break;
+                    allMonthRows.push([monthNames[i], new Number(0)]);
                 }
             }
 
-            res.json(allMonthRows);
+            for (const [key, value] of Object.entries(monthRows)) {
+                allMonthRows.unshift([key, value]);
+            }
 
+
+            var finalData = new Object();
+            allMonthRows.reverse().forEach(function(row) {
+                finalData[row[0]] = row[1];
+            });
+
+            res.json(finalData);
         }           
     } catch (err) {
         console.log("Error:", err);
