@@ -150,6 +150,21 @@ async getLogsSubType(foodSubType,userID,time,period){//eg Almond
   }
 }
 
+async getFoodNameType(foodName,userID,time,period){//eg Almond
+  const text = `SELECT "log"."Food_Name","log"."Weight","log"."Date_Logged" FROM "log" WHERE "log"."Food_Name" = $1 AND "log"."User_ID"= $2 AND "log"."Date_Logged" between CURRENT_DATE + (-1* $3 * INTERVAL '1 ${period}' ) and CURRENT_DATE ;`;
+  const values = []
+  
+  values.push(foodName);
+  values.push(userID);
+  values.push(time);
+  try{
+    var result=await client.query(text, values);
+    return result;
+  }catch(err){
+    throw err;
+  }
+}
+
 async getLogsSuperDuperType(userID,time,period){//eg Fruit
   const text = `select "food"."Food_Name","log"."Weight","log"."Date_Logged", "types"."Supertype" from "food" inner join "log" on "food"."Food_Name" = "log"."Food_Name" inner join "subtypes" on "food"."Subtype" = "subtypes"."Subtype" inner join "types" on "types"."Type" = "subtypes"."Type" where "log"."User_ID"= $1 AND "log"."Date_Logged" between CURRENT_DATE + (-1* $2 * INTERVAL '1 ${period}' ) and CURRENT_DATE;`;
   const values = []
@@ -190,14 +205,14 @@ async getHarvestLogsTotalWeight(userID,foodname){
 }
 
 module.exports=communicator;
-/*
 
+/*
 async function getstuff(){
   let com =new communicator;
-  let aaaa=await com.getHarvestLogsWeight('A1','Lemon');
+  let aaaa=await com.getFoodNameType('Rhubarb','A1',2,'month');
   console.log(aaaa.rows);
   await client.end();
   process.exit(1);
 }
-getstuff();*/
-
+getstuff();
+*/
