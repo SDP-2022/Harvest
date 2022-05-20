@@ -30,6 +30,8 @@ export default function BarGraphPage({navigation, route}) {
   const [categories, setCategories] = useState([]);
   const [refresh, setRefresh] = useState(true);
 
+  const [atlasItem, setAtlasItem] = useState("Apple");
+
   const produceRef = useRef({});
   const TimePeriods = [
     'One Year',
@@ -352,259 +354,300 @@ export default function BarGraphPage({navigation, route}) {
       });
   };
 
+  // This function gets the necessary data for the graph when coming from the Atlas
+  const getAtlasData = async() => {
+    return fetch('https://harvest-stalkoverflow.herokuapp.com/api/private', {
+      method: 'GET',
+      headers: {
+        Authorization: 'Bearer ' + userAccessToken,
+        RequestType: 'GetFilteredLogs',
+        userID: userID,
+        Time: '1',
+        Period: 'Year',
+        Level: 'Subtype',
+        Produce: 'Almond',
+      },
+    })
+      .then(response => response.json())
+      .then(json => {
+        console.log(json);
+        if (json.Error === 'Time param not found.') {
+          json = {};
+        }
+        return json;
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  }
+
   // This ensures that a new bar graph is rendered whenever a user makes changes
   // to the filter
   useEffect(() => {
     console.log('Refreshing');
   }, [refresh]);
 
-  return (
-    <SafeAreaView style={styles.body}>
-      <View style={styles.iconView}>
-        <TouchableOpacity onPress={navigation.openDrawer}>
-          <Image
-            style={{
-              height: 20,
-              width: 20,
-            }}
-            source={require('../assets/hamburger-icon.png')}
-          />
-        </TouchableOpacity>
+  if (typeof atlasItem === 'undefined') {
+    console.log("The atlas item is undefined")
+    return (
+      <SafeAreaView style={styles.body}>
+        <View style={styles.iconView}>
+          <TouchableOpacity onPress={navigation.openDrawer}>
+            <Image
+              style={{
+                height: 20,
+                width: 20,
+              }}
+              source={require('../assets/hamburger-icon.png')}
+            />
+          </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => setModalOpen(true)}>
-          <Image
-            style={{
-              height: 20,
-              width: 20,
-              marginRight: 20,
-            }}
-            source={require('../assets/filter.png')}
-          />
-        </TouchableOpacity>
-      </View>
-      {/*
+          <TouchableOpacity onPress={() => setModalOpen(true)}>
+            <Image
+              style={{
+                height: 20,
+                width: 20,
+                marginRight: 20,
+              }}
+              source={require('../assets/filter.png')}
+            />
+          </TouchableOpacity>
+        </View>
+        {/*
         Here a modal view is created, which will contain the contents
         of the filter
       */}
-      <Modal visible={modalOpen} animationType="fade" transparent={true}>
-        <SafeAreaView style={styles.modalView}>
-          <View>
-            <TouchableOpacity onPress={() => setModalOpen(false)}>
-              <Image
-                style={{
-                  height: 15,
-                  width: 15,
-                  marginLeft: 200,
-                  marginBottom: 40,
-                }}
-                source={require('../assets/close-icon.png')}
-              />
-            </TouchableOpacity>
-          </View>
-          <View style={styles.filterView}>
-            <Text style={styles.filterText}>Time Period:</Text>
-
-            <SelectDropdown
-              data={TimePeriods}
-              onSelect={(selectedItem, index) => {
-                console.log(selectedItem, index);
-                setTimePeriod(selectedItem);
-              }}
-              defaultButtonText={'Select an option'}
-              buttonTextAfterSelection={(selectedItem, index) => {
-                console.log('this is the date: ' + timePeriod);
-                return selectedItem;
-              }}
-              rowTextForSelection={(item, index) => {
-                return item;
-              }}
-              buttonStyle={{
-                borderWidth: 2,
-                borderColor: '#A1E8Af',
-                backgroundColor: '#fff',
-                borderRadius: 10,
-              }}
-              buttonTextStyle={{color: '#A1E8Af'}}
-              dropdownOverlayColor={'rgba(255, 255, 255, 0)'}
-              dropdownStyle={{
-                marginTop: 1,
-                borderRadius: 10,
-                backgroundColor: '#fff',
-                borderWidth: 2,
-                borderColor: '#A1E8Af',
-              }}
-              rowStyle={{
-                borderWidth: 0,
-                borderColor: '#A1E8Af',
-                backgroundColor: '#fff',
-                borderBottomWidth: 0,
-                borderTopWidth: 0,
-                marginLeft: 10,
-                marginRight: 10,
-              }}
-              rowTextStyle={{color: '#A1E8Af'}}
-            />
-          </View>
-          <View style={styles.filterView}>
-            <Text style={styles.filterText}>Level:</Text>
-            <SelectDropdown
-              data={Levels}
-              onSelect={(selectedItem, index) => {
-                console.log(selectedItem, index);
-                produceRef.current.reset();
-                setLevel(selectedItem);
-              }}
-              defaultButtonText={'Select an option'}
-              buttonTextAfterSelection={(selectedItem, index) => {
-                console.log('this is the level: ' + level);
-                return selectedItem;
-              }}
-              rowTextForSelection={(item, index) => {
-                return item;
-              }}
-              buttonStyle={{
-                borderWidth: 2,
-                borderColor: '#A1E8Af',
-                backgroundColor: '#fff',
-                borderRadius: 10,
-              }}
-              buttonTextStyle={{color: '#A1E8Af'}}
-              dropdownOverlayColor={'rgba(255, 255, 255, 0)'}
-              dropdownStyle={{
-                marginTop: 1,
-                borderRadius: 10,
-                backgroundColor: '#fff',
-                borderWidth: 2,
-                borderColor: '#A1E8Af',
-              }}
-              rowStyle={{
-                borderWidth: 0,
-                borderColor: '#A1E8Af',
-                backgroundColor: '#fff',
-                borderBottomWidth: 0,
-                borderTopWidth: 0,
-                marginLeft: 10,
-                marginRight: 10,
-              }}
-              rowTextStyle={{color: '#A1E8Af'}}
-            />
-          </View>
-          <View style={styles.filterView}>
-            <Text style={styles.filterText}>Produce:</Text>
-            <SelectDropdown
-              data={
-                level === 'Superdupertype'
-                  ? ['All']
-                  : level === 'Supertype'
-                  ? Supertypes
-                  : level === 'Type'
-                  ? Types
-                  : level === 'Subtype'
-                  ? Subtypes
-                  : level === 'Food'
-                  ? Food
-                  : ['---']
-              }
-              ref={produceRef}
-              onSelect={(selectedItem, index) => {
-                console.log(selectedItem, index);
-                setProduce(selectedItem);
-              }}
-              defaultButtonText={'Select an option'}
-              buttonTextAfterSelection={(selectedItem, index) => {
-                console.log('this is the produce: ' + produce);
-                return selectedItem;
-              }}
-              rowTextForSelection={(item, index) => {
-                return item;
-              }}
-              buttonStyle={{
-                borderWidth: 2,
-                borderColor: '#A1E8Af',
-                backgroundColor: '#fff',
-                borderRadius: 10,
-              }}
-              buttonTextStyle={{color: '#A1E8Af'}}
-              dropdownOverlayColor={'rgba(255, 255, 255, 0)'}
-              dropdownStyle={{
-                marginTop: 1,
-                borderRadius: 10,
-                backgroundColor: '#fff',
-                borderWidth: 2,
-                borderColor: '#A1E8Af',
-              }}
-              rowStyle={{
-                borderWidth: 0,
-                borderColor: '#A1E8Af',
-                backgroundColor: '#fff',
-                borderBottomWidth: 0,
-                borderTopWidth: 0,
-                marginLeft: 10,
-                marginRight: 10,
-              }}
-              rowTextStyle={{color: '#A1E8Af'}}
-            />
-          </View>
-          <View>
-            <TouchableOpacity
-              onPress={() => {
-                console.log('Filter has been applied');
-                setModalOpen(false);
-                renderBarGraph();
-                setRefresh(!refresh);
-              }}>
-              <Text style={styles.filterButton}>Apply Filter</Text>
-            </TouchableOpacity>
-          </View>
-        </SafeAreaView>
-      </Modal>
-
-      <View style={styles.graphView}>
-        {filterIsApplied && graphData.length > 0 ? (
-          <>
-            <TouchableOpacity
-              onPress={() => {
-                navigation.navigate('AtlasPage', {foodItem: produce});
-              }}>
-              <Text style={styles.textHeading}>{produce}</Text>
-            </TouchableOpacity>
-            <VictoryChart domainPadding={15}>
-              <VictoryGroup
-                offset={7.5}
-                colorScale={[
-                  '#A1E8AF',
-                  '#4A7C59',
-                  '#A5BE00',
-                  '#717744',
-                  '#245501',
-                  '#73A942',
-                  '#AAD576',
-                  '#1A4301',
-                  '#909955',
-                  '#4F772D',
-                  '#33772C',
-                  '#132A13',
-                ]}>
-                <VictoryBar
-                  categories={{x: categories}}
-                  barWidth={10}
-                  data={graphData}
+        <Modal visible={modalOpen} animationType="fade" transparent={true}>
+          <SafeAreaView style={styles.modalView}>
+            <View>
+              <TouchableOpacity onPress={() => setModalOpen(false)}>
+                <Image
+                  style={{
+                    height: 15,
+                    width: 15,
+                    marginLeft: 200,
+                    marginBottom: 40,
+                  }}
+                  source={require('../assets/close-icon.png')}
                 />
-              </VictoryGroup>
-              <VictoryAxis dependentAxis tickFormat={t => `${t}g`} />
-              <VictoryAxis
-                style={{tickLabels: {angle: 30, transform: 'translate(3, 4)'}}}
+              </TouchableOpacity>
+            </View>
+            <View style={styles.filterView}>
+              <Text style={styles.filterText}>Time Period:</Text>
+
+              <SelectDropdown
+                data={TimePeriods}
+                onSelect={(selectedItem, index) => {
+                  console.log(selectedItem, index);
+                  setTimePeriod(selectedItem);
+                }}
+                defaultButtonText={'Select an option'}
+                buttonTextAfterSelection={(selectedItem, index) => {
+                  console.log('this is the date: ' + timePeriod);
+                  return selectedItem;
+                }}
+                rowTextForSelection={(item, index) => {
+                  return item;
+                }}
+                buttonStyle={{
+                  borderWidth: 2,
+                  borderColor: '#A1E8Af',
+                  backgroundColor: '#fff',
+                  borderRadius: 10,
+                }}
+                buttonTextStyle={{color: '#A1E8Af'}}
+                dropdownOverlayColor={'rgba(255, 255, 255, 0)'}
+                dropdownStyle={{
+                  marginTop: 1,
+                  borderRadius: 10,
+                  backgroundColor: '#fff',
+                  borderWidth: 2,
+                  borderColor: '#A1E8Af',
+                }}
+                rowStyle={{
+                  borderWidth: 0,
+                  borderColor: '#A1E8Af',
+                  backgroundColor: '#fff',
+                  borderBottomWidth: 0,
+                  borderTopWidth: 0,
+                  marginLeft: 10,
+                  marginRight: 10,
+                }}
+                rowTextStyle={{color: '#A1E8Af'}}
               />
-            </VictoryChart>
-          </>
-        ) : graphData.length == 0 ? (
-          <Text>No Data to display</Text>
-        ) : (
-          <Text>Apply Filter Please</Text>
-        )}
-      </View>
-    </SafeAreaView>
-  );
+            </View>
+            <View style={styles.filterView}>
+              <Text style={styles.filterText}>Level:</Text>
+              <SelectDropdown
+                data={Levels}
+                onSelect={(selectedItem, index) => {
+                  console.log(selectedItem, index);
+                  produceRef.current.reset();
+                  setLevel(selectedItem);
+                }}
+                defaultButtonText={'Select an option'}
+                buttonTextAfterSelection={(selectedItem, index) => {
+                  console.log('this is the level: ' + level);
+                  return selectedItem;
+                }}
+                rowTextForSelection={(item, index) => {
+                  return item;
+                }}
+                buttonStyle={{
+                  borderWidth: 2,
+                  borderColor: '#A1E8Af',
+                  backgroundColor: '#fff',
+                  borderRadius: 10,
+                }}
+                buttonTextStyle={{color: '#A1E8Af'}}
+                dropdownOverlayColor={'rgba(255, 255, 255, 0)'}
+                dropdownStyle={{
+                  marginTop: 1,
+                  borderRadius: 10,
+                  backgroundColor: '#fff',
+                  borderWidth: 2,
+                  borderColor: '#A1E8Af',
+                }}
+                rowStyle={{
+                  borderWidth: 0,
+                  borderColor: '#A1E8Af',
+                  backgroundColor: '#fff',
+                  borderBottomWidth: 0,
+                  borderTopWidth: 0,
+                  marginLeft: 10,
+                  marginRight: 10,
+                }}
+                rowTextStyle={{color: '#A1E8Af'}}
+              />
+            </View>
+            <View style={styles.filterView}>
+              <Text style={styles.filterText}>Produce:</Text>
+              <SelectDropdown
+                data={
+                  level === 'Superdupertype'
+                    ? ['All']
+                    : level === 'Supertype'
+                    ? Supertypes
+                    : level === 'Type'
+                    ? Types
+                    : level === 'Subtype'
+                    ? Subtypes
+                    : level === 'Food'
+                    ? Food
+                    : ['---']
+                }
+                ref={produceRef}
+                onSelect={(selectedItem, index) => {
+                  console.log(selectedItem, index);
+                  setProduce(selectedItem);
+                }}
+                defaultButtonText={'Select an option'}
+                buttonTextAfterSelection={(selectedItem, index) => {
+                  console.log('this is the produce: ' + produce);
+                  return selectedItem;
+                }}
+                rowTextForSelection={(item, index) => {
+                  return item;
+                }}
+                buttonStyle={{
+                  borderWidth: 2,
+                  borderColor: '#A1E8Af',
+                  backgroundColor: '#fff',
+                  borderRadius: 10,
+                }}
+                buttonTextStyle={{color: '#A1E8Af'}}
+                dropdownOverlayColor={'rgba(255, 255, 255, 0)'}
+                dropdownStyle={{
+                  marginTop: 1,
+                  borderRadius: 10,
+                  backgroundColor: '#fff',
+                  borderWidth: 2,
+                  borderColor: '#A1E8Af',
+                }}
+                rowStyle={{
+                  borderWidth: 0,
+                  borderColor: '#A1E8Af',
+                  backgroundColor: '#fff',
+                  borderBottomWidth: 0,
+                  borderTopWidth: 0,
+                  marginLeft: 10,
+                  marginRight: 10,
+                }}
+                rowTextStyle={{color: '#A1E8Af'}}
+              />
+            </View>
+            <View>
+              <TouchableOpacity
+                onPress={() => {
+                  console.log('Filter has been applied');
+                  setModalOpen(false);
+                  renderBarGraph();
+                  setRefresh(!refresh);
+                }}>
+                <Text style={styles.filterButton}>Apply Filter</Text>
+              </TouchableOpacity>
+            </View>
+          </SafeAreaView>
+        </Modal>
+
+        <View style={styles.graphView}>
+          {filterIsApplied && graphData.length > 0 ? (
+            <>
+              <TouchableOpacity
+                onPress={() => {
+                  navigation.navigate('AtlasPage', {foodItem: produce});
+                }}>
+                <Text style={styles.textHeading}>{produce}</Text>
+              </TouchableOpacity>
+              <VictoryChart domainPadding={15}>
+                <VictoryGroup
+                  offset={7.5}
+                  colorScale={[
+                    '#A1E8AF',
+                    '#4A7C59',
+                    '#A5BE00',
+                    '#717744',
+                    '#245501',
+                    '#73A942',
+                    '#AAD576',
+                    '#1A4301',
+                    '#909955',
+                    '#4F772D',
+                    '#33772C',
+                    '#132A13',
+                  ]}>
+                  <VictoryBar
+                    categories={{x: categories}}
+                    barWidth={10}
+                    data={graphData}
+                  />
+                </VictoryGroup>
+                <VictoryAxis dependentAxis tickFormat={t => `${t}g`} />
+                <VictoryAxis
+                  style={{
+                    tickLabels: {angle: 30, transform: 'translate(3, 4)'},
+                  }}
+                />
+              </VictoryChart>
+            </>
+          ) : graphData.length == 0 ? (
+            <Text>No Data to display</Text>
+          ) : (
+            <Text>Apply Filter Please</Text>
+          )}
+        </View>
+      </SafeAreaView>
+    );
+  }
+  else {
+    getAtlasData();
+    console.log("The else statement is executing")
+    return (
+      <SafeAreaView>
+        <Text>Hello World</Text>
+      </SafeAreaView>
+    );
+  }
 }
 
 const styles = StyleSheet.create({
