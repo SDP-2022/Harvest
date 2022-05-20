@@ -15,6 +15,7 @@ import {
   useColorScheme,
   View,
   TouchableOpacity,
+  Image
 } from 'react-native';
 
 import {
@@ -25,6 +26,7 @@ import {
   Button,
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
+import { color } from 'react-native-reanimated';
 
 const ACCESS_TOKEN = '@save_token';
 
@@ -112,6 +114,106 @@ export default function AtlasPage({navigation, route}) {
         EmptyResultComponent={<Text style={{ padding: 10, fontSize: 15 }}>Oops ¯\_(ツ)_/¯</Text>}
       />
       </View>
+      <View>
+      <Image style = {styles.imageStyle}
+      source={{
+        uri: 'https://i.ibb.co/C5Vh9GQ/apple-fruit.jpg',
+        method: 'GET'
+      }}
+      />
+      </View>
+      <Text style={{ 
+        fontSize: 30,
+        top: 40,
+        fontWeight: "bold",
+        color:"#808080",
+        alignSelf:"center"
+      }}> Apple
+      </Text>
+      <View>
+      <Text style={{ 
+        fontSize: 20,
+        top: 50,
+        color:"#808080",
+        }}> Planting information:
+        </Text>
+      <Text style={{ 
+        fontSize: 18,
+        top: 60,
+        color:"#808080",
+        }}> When to sow:
+        </Text>
+        <Text style={{ 
+        fontSize: 18,
+        top: 60,
+        color:"#808080",
+        }}> When to plant:
+        </Text>
+        <Text style={{ 
+        fontSize: 18,
+        top: 60,
+        color:"#808080",
+        }}> When to harvest:
+        </Text>
+        <Text style={{ 
+        fontSize: 18,
+        top: 60,
+        color:"#808080",
+        }}> How much sunglight {"\n "}
+         needed:
+        </Text>
+        <Text style={{ 
+        fontSize: 18,
+        top: 60,
+        color:"#808080",
+        }}> Needed pH of soil:
+        </Text>
+        <Text style={{ 
+        fontSize: 20,
+        top: -120,
+        color:"#808080",
+        alignSelf:"center",
+        left:80,
+        }}> User information:
+        </Text>
+        <Text style={{ 
+        fontSize: 18,
+        top: -100,
+        color:"#808080",
+        alignSelf:"center",
+        left:82,
+        }}> You have harvested {"\n "}
+        x grams of Apple {"\n"} in one year.
+        </Text>
+      <View style = {styles.buttonView}> 
+       <TouchableOpacity style = {styles.button}>
+         <Text style = {styles.text}>View Graph</Text>
+       </TouchableOpacity>
+      </View>
+      </View>
+      <View>
+        <View
+        style={{
+        borderBottomColor: '#A1E8AF',
+        borderBottomWidth: 1.5,
+        marginLeft:30,
+        marginRight:30,
+        top:-220,
+        }}
+        ></View>
+        <View
+        style={{
+        height: '100%',
+        width: 1.5,
+        backgroundColor: '#A1E8AF',
+        alignSelf: "center",
+        top: -210,
+        right:5
+        }}
+        ></View>
+      </View>
+      
+      
     </SafeAreaView>
   );
 }
@@ -128,16 +230,29 @@ const styles = StyleSheet.create({
   },
   text: {
     color: '#000',
-    fontSize: 25,
+    fontSize: 20,
+  },
+  imageStyle:{
+    width: 180, 
+    height: 200,
+    alignSelf:'center',
+    top:30
   },
   button: {
     margin: 15,
     padding: 15,
-    width: 300,
+    width: 150,
+    height:55,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 30,
     backgroundColor: '#A1E8AF',
+  },
+  buttonView: { 
+    flex: 1,
+    alignItems: 'center',
+    top:-90,
+    left:90
   },
   suggestionsListContainerStyle:{
     flex:1,
