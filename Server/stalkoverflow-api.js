@@ -55,6 +55,12 @@ class StalkOverflowAPI {
             case 'GetFilteredLogs':
                 await this.#getFilteredLog(req, res);
                 return;
+            case 'GetAtlas':
+                await this.#getAtlas(req, res);
+                return;
+            case 'GetLogsTotalWeight':
+                await this.#getLogsTotalWeight(req, res);
+                return;
         }
 
         res.status(404);
@@ -294,7 +300,7 @@ class StalkOverflowAPI {
             if (!(typeof userID === 'string')) throw new Error("Invalid UserID format.");
             if (!(typeof time === 'number') || !Number.isInteger(time))  throw new Error("Invalid Time format.");
             if (!(typeof period === 'string') || !["day", "month", "year"].includes(period.toLowerCase())) throw new Error("Invalid Period format.");
-            if (!(typeof level === 'string') || !["supertype", "type", "subtype", "superdupertype"].includes(level.toLowerCase())) throw new Error("Invalid Level format.");
+            if (!(typeof level === 'string') || !["foodname", "supertype", "type", "subtype", "superdupertype"].includes(level.toLowerCase())) throw new Error("Invalid Level format.");
             if (!(typeof produce === 'string')) throw new Error("Invalid Produce format.");
 
             level = level.toLowerCase()
@@ -313,6 +319,84 @@ class StalkOverflowAPI {
             var filteredResult = await filterType(res, userID, time, period, produce);
         } else if (level === "subtype") {
             var filteredResult = await filterSubType(res, userID, time, period, produce);
+        } else if (level === "foodname") {
+            var filteredResult = await filterFoodName(res, userID, time, period, produce);
+        }
+    }
+
+    async #getAtlas(req, res) {
+        var foodName;
+
+        try {
+            if (areWeTestingWithJest()) {
+                if(!(foodName = req.headers["FoodName"])) throw new Error("FoodName param not found.");
+            } else {
+                if(!(foodName = req.get("FoodName"))) throw new Error("FoodName param not found.");
+            }
+
+            if (!(typeof foodName === 'string')) throw new Error("Invalid FoodName format.");
+        } catch (err) {
+            console.log(err.message);
+            res.status(400);
+            return res.json({Error : err.message});
+        }
+
+        // Send to database and check for errors
+        try {
+            var result = await dbCom.getAllAtlas(foodName);
+            console.log("Result:", result);
+
+            if (result.rowCount == 0) {
+                res.status(418);
+                return res.json({});
+            } else {
+                res.status(201);
+                res.json(result.rows[0]);
+            }           
+        } catch (err) {
+            console.log("Error:", err);
+            res.status(500);
+            return res.json({Error : err.detail});
+        }
+    }
+
+    async #getLogsTotalWeight(req, res) {
+        var userID;
+        var foodName;
+
+        try {
+            if (areWeTestingWithJest()) {
+                if(!(userID = req.headers["UserID"])) throw new Error("UserID param not found.");
+                if(!(foodName = req.headers["FoodName"])) throw new Error("FoodName param not found.");
+            } else {
+                if(!(userID = req.get("UserID"))) throw new Error("UserID param not found.");
+                if(!(foodName = req.get("FoodName"))) throw new Error("FoodName param not found.");
+            }
+
+            if (!(typeof userID === 'string')) throw new Error("Invalid UserID format.");
+            if (!(typeof foodName === 'string')) throw new Error("Invalid FoodName format.");
+        } catch (err) {
+            console.log(err.message);
+            res.status(400);
+            return res.json({Error : err.message});
+        }
+
+        // Send to database and check for errors
+        try {
+            var result = await dbCom.getHarvestLogsTotalWeight(userID, foodName);
+            console.log("Result:", result);
+
+            if (result.rowCount == 0) {
+                res.status(418);
+                return res.json({});
+            } else {
+                res.status(201);
+                res.json(result.rows[0]);
+            }           
+        } catch (err) {
+            console.log("Error:", err);
+            res.status(500);
+            return res.json({Error : err.detail});
         }
     }
 
@@ -580,6 +664,73 @@ async function filterSubType(res, userID, time, period, subtype) {
                 allMonthRows.unshift([key, value]);
             }
 
+
+            var finalData = new Object();
+            allMonthRows.reverse().forEach(function(row) {
+                finalData[row[0]] = row[1];
+            });
+
+            res.json(finalData);
+        }           
+    } catch (err) {
+        console.log("Error:", err);
+        res.status(500);
+        return res.json({Error : err.detail});
+    }
+}
+
+async function filterFoodName(res, userID, time, period, foodName) {
+    try {
+        var result = await dbCom.getLogsFoodNameType(foodName, userID, time, period);
+        console.log("Result:", result);
+
+        if (result.rowCount == 0) {
+            res.status(418);
+            return res.json({});
+        } else {
+            res.status(201);
+            var rows = result.rows;
+            var monthRows = new Object();
+
+            var firstMonthName = "";
+            rows.forEach(function(row) {
+                var date = new Date(row.Date_Logged);
+                var monthName = monthNames[date.getMonth()];
+                if (firstMonthName === "") firstMonthName = monthName;
+                var weight = parseFloat(row.Weight);
+                
+                if (!(monthName in monthRows)) {
+                    monthRows[monthName] = new Number(0);
+                }
+
+                monthRows[monthName] += weight;
+            });
+
+            var allMonthRows = [];
+            var numMonths = 0;
+            if (period === "month") {
+                numMonths = time;
+            } else if (period === "year") {
+                numMonths = time * 12;
+            }
+            var indexOfFirstMonth = monthNames.indexOf(firstMonthName);
+            var monthsRemaining = numMonths - Object.keys(monthRows).length;
+            for (let i = indexOfFirstMonth-1; i >= 0; i--) {
+                if (monthsRemaining == 0) break;
+                monthsRemaining--;
+                allMonthRows.push([monthNames[i], new Number(0)]);
+            }
+
+            if (monthsRemaining > 0) {
+                for (let i = monthNames.length - 1; i >= monthNames.length - monthsRemaining; i--) {
+                    if (i < 0) break;
+                    allMonthRows.push([monthNames[i], new Number(0)]);
+                }
+            }
+
+            for (const [key, value] of Object.entries(monthRows)) {
+                allMonthRows.unshift([key, value]);
+            }
 
             var finalData = new Object();
             allMonthRows.reverse().forEach(function(row) {

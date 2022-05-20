@@ -150,7 +150,7 @@ async getLogsSubType(foodSubType,userID,time,period){//eg Almond
   }
 }
 
-async getFoodNameType(foodName,userID,time,period){//eg Almond
+async getLogsFoodNameType(foodName,userID,time,period){//eg Almond
   const text = `SELECT "log"."Food_Name","log"."Weight","log"."Date_Logged" FROM "log" WHERE "log"."Food_Name" = $1 AND "log"."User_ID"= $2 AND "log"."Date_Logged" between CURRENT_DATE + (-1* $3 * INTERVAL '1 ${period}' ) and CURRENT_DATE ;`;
   const values = []
   
