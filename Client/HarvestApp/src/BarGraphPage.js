@@ -402,6 +402,8 @@ export default function BarGraphPage({navigation, route}) {
   }, [refresh]);
 
   if (typeof atlasItem === 'undefined') {
+    {console.log(foodType + " - This is the produce from the atlas")}
+    {console.log(userAccessToken + " - This is the user access token")}
     console.log('The atlas item is undefined');
     return (
       <SafeAreaView style={styles.body}>
@@ -669,6 +671,8 @@ export default function BarGraphPage({navigation, route}) {
       </SafeAreaView>
     );
   } else {
+    {console.log(foodType + " - This is the produce from the atlas")}
+    {console.log(userAccessToken + " - This is the user access token")}
     return (
       <SafeAreaView style={styles.body}>
         <View style={styles.iconView}>

@@ -123,9 +123,15 @@ setPlantTime(items.Plant_Time)
 
 }
 const goToGardenPage = () => {
-  navigation.navigate('Bar', {
-    foodType: foodtype
-  });
+  navigation.navigate('GardenNavigation', {
+    screen: 'Bar Graphs',
+    params: {
+      initial: false,
+      params: {
+        userIDToken: userIDToken, userAccessToken: userAccessToken, authUsername: authUsername, userID: userID
+      }
+    }
+  })
 };
 console.disableYellowBox = true; // this code is used to block the warning messages that display on the page, they are not of any concern.
 if (!foodtype){ // this statement is used set the default page. 
