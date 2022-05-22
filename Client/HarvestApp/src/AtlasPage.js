@@ -123,13 +123,11 @@ setPlantTime(items.Plant_Time)
 
 }
 const goToGardenPage = () => {
+  console.log(foodtype + " - This is the foodtype from the atlas page")
   navigation.navigate('GardenNavigation', {
     screen: 'Bar Graphs',
     params: {
-      initial: false,
-      params: {
-        userIDToken: userIDToken, userAccessToken: userAccessToken, authUsername: authUsername, userID: userID
-      }
+      userIDToken: userIDToken, userAccessToken: userAccessToken, authUsername: authUsername, userID: userID, foodType: foodname
     }
   })
 };
@@ -137,7 +135,6 @@ console.disableYellowBox = true; // this code is used to block the warning messa
 if (!foodtype){ // this statement is used set the default page. 
   GetAtlasInformation("Almond");
 }
-  
   return (
     <SafeAreaView style={styles.body}>
        <View>
@@ -247,7 +244,10 @@ if (!foodtype){ // this statement is used set the default page.
         }}> You have harvested x grams of {foodname} in one year.
         </Text>
         <View style = {styles.buttonView}> 
-       <TouchableOpacity style = {styles.button}  onPress={goToGardenPage}> 
+       <TouchableOpacity style = {styles.button}  onPress={() => {
+         goToGardenPage();
+         console.log(foodname + " Is this blank")
+        }}> 
          <Image
          style={{
           height: 20,

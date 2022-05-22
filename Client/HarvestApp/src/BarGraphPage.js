@@ -20,7 +20,7 @@ import SelectDropdown from 'react-native-select-dropdown';
 
 export default function BarGraphPage({navigation, route}) {
   // Here, the appropriate variables and arrays are declared
-  const {userIDToken, userAccessToken, authUsername, userID} = route.params;
+  const {userIDToken, userAccessToken, authUsername, userID, foodType} = route.params;
 
   const [filterIsApplied, setFilterIsApplied] = useState(false);
   const [renderGraph, setRenderGraph] = useState(false);
@@ -31,7 +31,6 @@ export default function BarGraphPage({navigation, route}) {
 
   const [atlasItem, setAtlasItem] = useState('Apple');
   //variable passed from the foodatlas
-  const {foodType} = route.params;
 
   const produceRef = useRef({});
   const TimePeriods = [
@@ -392,6 +391,7 @@ export default function BarGraphPage({navigation, route}) {
       });
   };
 
+  const [count, setCount] = useState(0);
   // This ensures that a new bar graph is rendered whenever a user makes changes
   // to the filter
   useEffect(() => {
@@ -399,7 +399,7 @@ export default function BarGraphPage({navigation, route}) {
     if (typeof atlasItem !== 'undefined') {
       parseAtlasData();
     }
-  }, [refresh]);
+  }, [refresh, navigation]);
 
   if (typeof atlasItem === 'undefined') {
     {console.log(foodType + " - This is the produce from the atlas")}
