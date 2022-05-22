@@ -43,6 +43,7 @@ export default function AtlasPage({navigation, route}) {
   const [harvestTime, setHarvestTime] = useState("");
   const [sowTime, setSowTime] = useState("");
   const [plantTime, setPlantTime] = useState("");
+  const [harvestAmt, setHarvestAmt] = useState("");
 
 
   //This is the variable passed from the graph/chart page:
@@ -120,6 +121,25 @@ setSun(items.Sun)
 setHarvestTime(items.Harvest_Time)
 setSowTime(items.Sow_Time)
 setPlantTime(items.Plant_Time)
+
+const getHarvestTotal = await fetch("https://harvest-stalkoverflow.herokuapp.com/api/private/",{
+    method:'GET',
+    headers:{
+      'Content-type': 'application/json',
+      'Authorization' : 'Bearer '  + userAccessToken, // the authorization needed by Auth0 for the user 
+      'RequestType' : "GetLogsTotalWeight",
+      'UserID': userID,
+      'Foodname': foodname
+    },
+});
+
+const items2 = await getHarvestTotal.json();
+if(items2.sum){
+  setHarvestAmt(items2.sum);
+}
+else{
+  setHarvestAmt(0);
+}
 
 }
 const goToGardenPage = () => {
@@ -241,7 +261,7 @@ if (!foodtype){ // this statement is used set the default page.
         color:"#808080",
         textAlign:"left",
         bottom:38,
-        }}> You have harvested x grams of {foodname} in one year.
+        }}> You have harvested {harvestAmt} grams of {foodname} in one year.
         </Text>
         <View style = {styles.buttonView}> 
        <TouchableOpacity style = {styles.button}  onPress={() => {
@@ -294,7 +314,7 @@ const styles = StyleSheet.create({
   },
   buttonView: { 
     left:330,
-    bottom:330,
+    bottom:370,
   },
   suggestionsListContainerStyle:{
     flex:1,
