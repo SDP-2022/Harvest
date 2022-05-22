@@ -124,7 +124,7 @@ setPlantTime(items.Plant_Time)
 }
 const goToGardenPage = () => {
   navigation.navigate('Bar', {
-    foodtype,
+    foodType: foodtype
   });
 };
 console.disableYellowBox = true; // this code is used to block the warning messages that display on the page, they are not of any concern.
