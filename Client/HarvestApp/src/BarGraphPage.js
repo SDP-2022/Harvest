@@ -40,7 +40,7 @@ export default function BarGraphPage({navigation, route}) {
     'One Month',
     'One Week',
   ];
-  const Levels = ['Superdupertype', 'Supertype', 'Type', 'Subtype', 'Food'];
+  const Levels = ['All', 'Supertype', 'Type', 'Subtype', 'Food'];
   const Supertypes = ['Vegetable', 'Fruit', 'Herb', 'Flower'];
   const Types = [
     'Allium',
@@ -254,7 +254,15 @@ export default function BarGraphPage({navigation, route}) {
       headerPeriod = 'day';
     }
 
-    headerLevel = level;
+    if (level === "Food") {
+      headerLevel = "FoodName"
+    }
+    else if (level === "All") {
+      headerLevel = "Superdupertype"
+    } 
+    else {
+      headerLevel = level;
+    }
 
     headerProduce = produce;
 
@@ -336,11 +344,18 @@ export default function BarGraphPage({navigation, route}) {
 
     const keys = Object.keys(data);
 
+    let formatKeys = []
+
+    for (let i = 0; i < keys.length; i++) {
+      formatKeys.push(String(keys[i]))
+      formatKeys[i] = formatKeys[i].slice(0, 3)
+    }
+
     keys.forEach((key, index) => {
-      dataArr.push({x: key, y: data[key]});
+      dataArr.push({x: formatKeys[index], y: data[key]});
     });
-    setGraphData(dataArr);
-    setCategories(keys);
+    setGraphData(dataArr.reverse());
+    setCategories(formatKeys.reverse());
   };
 
   // This function will render the bar graph
@@ -364,8 +379,8 @@ export default function BarGraphPage({navigation, route}) {
         userID: userID,
         Time: '1',
         Period: 'Year',
-        Level: 'Subtype',
-        Produce: 'Almond',
+        Level: 'FoodName',
+        Produce: foodType,
       },
     })
       .then(response => response.json())
@@ -541,7 +556,7 @@ export default function BarGraphPage({navigation, route}) {
               <Text style={styles.filterText}>Produce:</Text>
               <SelectDropdown
                 data={
-                  level === 'Superdupertype'
+                  level === 'All'
                     ? ['All']
                     : level === 'Supertype'
                     ? Supertypes
@@ -632,7 +647,7 @@ export default function BarGraphPage({navigation, route}) {
                   />
                 </TouchableOpacity>
               </View>
-              <VictoryChart domainPadding={15}>
+              <VictoryChart domainPadding={15} animate={{ duration: 2000, easing: 'linear' }}>
                 <VictoryGroup
                   offset={7.5}
                   colorScale={[
@@ -809,7 +824,7 @@ export default function BarGraphPage({navigation, route}) {
               <Text style={styles.filterText}>Produce:</Text>
               <SelectDropdown
                 data={
-                  level === 'Superdupertype'
+                  level === 'All'
                     ? ['All']
                     : level === 'Supertype'
                     ? Supertypes
@@ -880,13 +895,29 @@ export default function BarGraphPage({navigation, route}) {
         <View style={styles.graphView}>
           {filterIsApplied && graphData.length > 0 ? (
             <>
-              <TouchableOpacity
-                onPress={() => {
-                  navigation.navigate('AtlasPage', {foodItem: atlasItem});
-                }}>
-                <Text style={styles.textHeading}>{foodType}</Text>
-              </TouchableOpacity>
-              <VictoryChart domainPadding={15}>
+              <View style={styles.graphTitleView}>
+                <TouchableOpacity
+                  onPress={() => {
+                    navigation.navigate('AtlasPage', {foodItem: foodType});
+                  }}>
+                  <Text style={styles.textHeading}>{foodType}</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => {
+                    navigation.navigate('AtlasPage', {foodItem: foodType});
+                  }}>
+                  <Image
+                    style={{
+                      height: 20,
+                      width: 20,
+                      marginTop: 12,
+                      marginLeft: 20,
+                    }}
+                    source={require('../assets/atlas-icon.png')}
+                  />
+                </TouchableOpacity>
+              </View>
+              <VictoryChart domainPadding={15} animate={{ duration: 2000, easing: "bounce" }}>
                 <VictoryGroup
                   offset={7.5}
                   colorScale={[
