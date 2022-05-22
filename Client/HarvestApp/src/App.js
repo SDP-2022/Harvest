@@ -11,7 +11,9 @@
  import React from 'react';
  import WelcomePage from './WelcomePage';
  import Navigation from './Navigation';
- 
+ import BarGraphPage from './BarGraphPage';
+import AtlasPage from './AtlasPage';
+
  const Stack = createNativeStackNavigator();
  
  /*
@@ -34,6 +36,14 @@
          <Stack.Screen
            name="Navigation"
            component={Navigation}
+         />
+          <Stack.Screen
+           name="Bar"
+           component={BarGraphPage}
+         />
+          <Stack.Screen
+           name="Atlas"
+           component={AtlasPage}
          />
        </Stack.Navigator>
      </NavigationContainer>

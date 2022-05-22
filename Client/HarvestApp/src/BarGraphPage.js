@@ -1,5 +1,4 @@
 import React, {useState, useRef, useEffect} from 'react';
-
 import {
   SafeAreaView,
   View,
@@ -8,6 +7,7 @@ import {
   Image,
   TouchableOpacity,
   Modal,
+
 } from 'react-native';
 
 import {
@@ -31,6 +31,10 @@ export default function BarGraphPage({navigation, route}) {
   const [refresh, setRefresh] = useState(true);
 
   const [atlasItem, setAtlasItem] = useState("Apple");
+  //variable passed from the foodatlas
+   const {foodtype} = route.params;
+
+
 
   const produceRef = useRef({});
   const TimePeriods = [
@@ -385,8 +389,9 @@ export default function BarGraphPage({navigation, route}) {
   // to the filter
   useEffect(() => {
     console.log('Refreshing');
+    
   }, [refresh]);
-
+  
   if (typeof atlasItem === 'undefined') {
     console.log("The atlas item is undefined")
     return (

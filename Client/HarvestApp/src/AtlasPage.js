@@ -122,6 +122,11 @@ setSowTime(items.Sow_Time)
 setPlantTime(items.Plant_Time)
 
 }
+const goToGardenPage = () => {
+  navigation.navigate('Bar', {
+    foodtype,
+  });
+};
 console.disableYellowBox = true; // this code is used to block the warning messages that display on the page, they are not of any concern.
 if (!foodtype){ // this statement is used set the default page. 
   GetAtlasInformation("Almond");
@@ -236,7 +241,7 @@ if (!foodtype){ // this statement is used set the default page.
         }}> You have harvested x grams of {foodname} in one year.
         </Text>
         <View style = {styles.buttonView}> 
-       <TouchableOpacity style = {styles.button}> 
+       <TouchableOpacity style = {styles.button}  onPress={goToGardenPage}> 
          <Image
          style={{
           height: 20,
