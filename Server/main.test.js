@@ -838,7 +838,7 @@ test('Get filtered harvest logs with invalid Level.', async () => {
     expect(json.Error).toEqual(`Invalid Level format.`);
 });
 
-test('Get filtered harvest logs with invalid Level.', async () => {
+test('Get filtered harvest logs with invalid Produce.', async () => {
     const RequestType = "GetFilteredLogs";
     const UserID = "A1";
     const Time = 42;
@@ -881,7 +881,7 @@ test('Get superdupertype harvest logs.', async () => {
     const json = res.json.getCall(0).args[0];
 
     expect(status).toEqual(201);
-    expect(JSON.stringify(json)).toEqual(`{"April":{"Fruit":43.36},"May":{"Vegetable":1530,"Flower":257,"Herb":354,"Fruit":1375.0900000000001}}`);
+    expect(JSON.stringify(json)).toEqual(`{"May":3516.09,"April":43.36,"March":0,"February":0,"January":0,"December":0,"November":0,"October":0,"September":0,"August":0,"July":0,"June":0}`);
 });
 
 test('Get supertype harvest logs.', async () => {
@@ -903,10 +903,8 @@ test('Get supertype harvest logs.', async () => {
     const status = res.status.getCall(0).args[0];
     const json = res.json.getCall(0).args[0];
 
-    console.log(JSON.stringify(json));
-
     expect(status).toEqual(201);
-    expect(JSON.stringify(json)).toEqual(`{"April":{"Citrus":43.36},"May":{"Stone Fruit":700,"Pome Fruit":295,"Citrus":80.09,"Nut":300}}`);
+    expect(JSON.stringify(json)).toEqual(`{"May":1375.0900000000001,"April":43.36,"March":0,"February":0,"January":0,"December":0,"November":0,"October":0,"September":0,"August":0,"July":0,"June":0}`);
 });
 
 test('Get non-existent supertype produce harvest logs.', async () => {
@@ -951,8 +949,10 @@ test('Get type harvest logs.', async () => {
     const status = res.status.getCall(0).args[0];
     const json = res.json.getCall(0).args[0];
 
+    console.log(JSON.stringify(json));
+
     expect(status).toEqual(201);
-    expect(JSON.stringify(json)).toEqual(`{"April":{"Lemon":28.59,"Lime":14.77},"May":{"Orange":70.09,"Lemon":10}}`);
+    expect(JSON.stringify(json)).toEqual(`{"May":80.09,"April":43.36,"March":0,"February":0,"January":0,"December":0,"November":0,"October":0,"September":0,"August":0,"July":0,"June":0}`);
 });
 
 test('Get non-existent type produce harvest logs.', async () => {
@@ -997,10 +997,8 @@ test('Get subtype harvest logs.', async () => {
     const status = res.status.getCall(0).args[0];
     const json = res.json.getCall(0).args[0];
 
-    console.log(JSON.stringify(json));
-
     expect(status).toEqual(201);
-    expect(JSON.stringify(json)).toEqual(`{"May":{"Orange (Valencia)":70.09}}`);
+    expect(JSON.stringify(json)).toEqual(`{"May":70.09,"April":0,"March":0,"February":0,"January":0,"December":0,"November":0,"October":0,"September":0,"August":0,"July":0,"June":0}`);
 });
 
 test('Get non-existent subtype produce harvest logs.', async () => {
