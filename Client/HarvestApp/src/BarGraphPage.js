@@ -396,12 +396,13 @@ export default function BarGraphPage({navigation, route}) {
   // to the filter
   useEffect(() => {
     console.log('Refreshing');
-    if (typeof atlasItem !== 'undefined') {
+    if (typeof foodType !== 'undefined') {
+      console.log("rerunning")
       parseAtlasData();
     }
-  }, [refresh, navigation]);
+  }, [refresh, navigation, route, foodType]);
 
-  if (typeof atlasItem === 'undefined') {
+  if (typeof foodType === 'undefined') {
     {console.log(foodType + " - This is the produce from the atlas")}
     {console.log(userAccessToken + " - This is the user access token")}
     console.log('The atlas item is undefined');
@@ -868,6 +869,7 @@ export default function BarGraphPage({navigation, route}) {
                   renderBarGraph();
                   setAtlasItem(undefined);
                   setRefresh(!refresh);
+                  navigation.setParams({foodType: undefined})
                 }}>
                 <Text style={styles.filterButton}>Apply Filter</Text>
               </TouchableOpacity>
@@ -882,7 +884,7 @@ export default function BarGraphPage({navigation, route}) {
                 onPress={() => {
                   navigation.navigate('AtlasPage', {foodItem: atlasItem});
                 }}>
-                <Text style={styles.textHeading}>{atlasItem}</Text>
+                <Text style={styles.textHeading}>{foodType}</Text>
               </TouchableOpacity>
               <VictoryChart domainPadding={15}>
                 <VictoryGroup
