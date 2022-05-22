@@ -36,11 +36,23 @@ export default function AtlasPage({navigation, route}) {
   const [remoteDataSet, setRemoteDataSet] = useState(null);
   const [loading, setLoading] = useState(false);
   const [foodtype, setFoodType] = useState("");
+  const [foodname, setFoodName] = useState("");
+  const [image, setImage] = useState("");
+  const [ph, setPH] = useState("");
+  const [sun, setSun] = useState("");
+  const [harvestTime, setHarvestTime] = useState("");
+  const [sowTime, setSowTime] = useState("");
+  const [plantTime, setPlantTime] = useState("");
+
 
   //This is the variable passed from the graph/chart page:
   const {foodItem} = route.params;
-
-  const getSuggestions = useCallback(async q => {
+  /*
+The getSuggestions method is used for the autocomplete, it will a
+GET request to receive the information from the database and display it
+in the drop-down list.
+  */
+  const getSuggestions = useCallback(async q => { 
     const filterToken = q.toLowerCase()
     //console.log('getSuggestions', filterToken)
     if (typeof q !== 'string' || q.length < 3) {
@@ -72,7 +84,6 @@ export default function AtlasPage({navigation, route}) {
         title: item.Food_Name
       }))
     setRemoteDataSet(suggestions)
-    console.log(suggestions)
     setLoading(false)
   }, [])
 
@@ -84,9 +95,37 @@ export default function AtlasPage({navigation, route}) {
   const handleSelectedChange = (value) =>{
     if(value){
       setFoodType(value.title);
+      GetAtlasInformation(value.title);
     }
   }
+/*
+The GetAtlasInformation is used to get the atlass information 
+*/
+async function GetAtlasInformation(foodname){
+  const response = await fetch("https://harvest-stalkoverflow.herokuapp.com/api/private/",{
+    method:'GET',
+    headers:{
+      'Content-type': 'application/json',
+      'Authorization' : 'Bearer '  + userAccessToken, // the authorization needed by Auth0 for the user 
+      'RequestType' : "GetAtlas",
+      'Foodname': foodname
+    },
+});
 
+const items = await response.json();
+setFoodName(items.Food_Name);
+setImage(items.Image)
+setPH(items.pH)
+setSun(items.Sun)
+setHarvestTime(items.Harvest_Time)
+setSowTime(items.Sow_Time)
+setPlantTime(items.Plant_Time)
+
+}
+console.disableYellowBox = true; // this code is used to block the warning messages that display on the page, they are not of any concern.
+if (!foodtype){ // this statement is used set the default page. 
+  GetAtlasInformation("Almond");
+}
   
   return (
     <SafeAreaView style={styles.body}>
@@ -117,7 +156,7 @@ export default function AtlasPage({navigation, route}) {
       <View>
       <Image style = {styles.imageStyle}
       source={{
-        uri: 'https://i.ibb.co/C5Vh9GQ/apple-fruit.jpg',
+        uri: image,
         method: 'GET'
       }}
       />
@@ -128,92 +167,86 @@ export default function AtlasPage({navigation, route}) {
         fontWeight: "bold",
         color:"#808080",
         alignSelf:"center"
-      }}> Apple
+      }}> {foodname}
       </Text>
       <View>
       <Text style={{ 
         fontSize: 20,
         top: 50,
+        fontWeight:"600",
+        textDecorationLine:"underline",
+        alignSelf:"center",
+        fontStyle:"italic",
         color:"#808080",
         }}> Planting information:
         </Text>
       <Text style={{ 
-        fontSize: 18,
-        top: 60,
+        fontSize: 17,
+        top: 50,
+        left:253,
+        textAlign:"left",
         color:"#808080",
-        }}> When to sow:
+        }}> When to sow:{"\n"} {sowTime}
         </Text>
         <Text style={{ 
-        fontSize: 18,
-        top: 60,
+        fontSize: 17,
+        top: 50,
+        left:253,
+        textAlign:"left",
         color:"#808080",
-        }}> When to plant:
+        }}> When to plant:{"\n"} {plantTime}
         </Text>
         <Text style={{ 
-        fontSize: 18,
-        top: 60,
+        fontSize: 17,
+        top: 50,
+        textAlign:"left",
         color:"#808080",
-        }}> When to harvest:
+        }}> When to harvest: {harvestTime}
         </Text>
         <Text style={{ 
-        fontSize: 18,
-        top: 60,
+        fontSize: 17,
+        bottom:60,
+        textAlign:"left",
         color:"#808080",
         }}> How much sunglight {"\n "}
-         needed:
+         needed: {sun}
         </Text>
         <Text style={{ 
-        fontSize: 18,
-        top: 60,
+        fontSize: 17,
+        bottom:60,
+        textAlign:"left",
         color:"#808080",
-        }}> Needed pH of soil:
+        }}> Needed pH of soil: {" \n"} {ph}
         </Text>
         <Text style={{ 
         fontSize: 20,
-        top: -120,
         color:"#808080",
+        fontWeight:"600",
+        textDecorationLine:"underline",
         alignSelf:"center",
-        left:80,
+        fontStyle:"italic",
+        bottom:40,
         }}> User information:
         </Text>
         <Text style={{ 
         fontSize: 18,
-        top: -100,
         color:"#808080",
-        alignSelf:"center",
-        left:82,
-        }}> You have harvested {"\n "}
-        x grams of Apple {"\n"} in one year.
+        textAlign:"left",
+        bottom:38,
+        }}> You have harvested x grams of {foodname} in one year.
         </Text>
-      <View style = {styles.buttonView}> 
-       <TouchableOpacity style = {styles.button}>
-         <Text style = {styles.text}>View Graph</Text>
+        <View style = {styles.buttonView}> 
+       <TouchableOpacity style = {styles.button}> 
+         <Image
+         style={{
+          height: 20,
+          width: 20,
+        }}
+         source={require('../assets/bar-graph-icon.png')}
+         />
        </TouchableOpacity>
       </View>
       </View>
-      <View>
-        <View
-        style={{
-        borderBottomColor: '#A1E8AF',
-        borderBottomWidth: 1.5,
-        marginLeft:30,
-        marginRight:30,
-        top:-220,
-        }}
-        ></View>
-        <View
-        style={{
-        height: '100%',
-        width: 1.5,
-        backgroundColor: '#A1E8AF',
-        alignSelf: "center",
-        top: -210,
-        right:5
-        }}
-        ></View>
-      </View>
-      
-      
     </SafeAreaView>
   );
 }
@@ -233,7 +266,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
   },
   imageStyle:{
-    width: 180, 
+    width: 250, 
     height: 200,
     alignSelf:'center',
     top:30
@@ -241,18 +274,16 @@ const styles = StyleSheet.create({
   button: {
     margin: 15,
     padding: 15,
-    width: 150,
-    height:55,
+    width: 50,
+    height:50,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 30,
     backgroundColor: '#A1E8AF',
   },
   buttonView: { 
-    flex: 1,
-    alignItems: 'center',
-    top:-90,
-    left:90
+    left:330,
+    bottom:330,
   },
   suggestionsListContainerStyle:{
     flex:1,

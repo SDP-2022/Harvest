@@ -93,10 +93,8 @@ const checkTextInput = () => { // this method is used to check if the fields are
         title: item.Food_Name
       }))
     setRemoteDataSet(suggestions)
-    console.log(suggestions)
     setLoading(false)
   }, [])
-
 
 
   return (
