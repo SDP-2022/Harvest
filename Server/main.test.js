@@ -1,6 +1,9 @@
 const { mockRequest, mockResponse } = require('mock-req-res')
 const api = require('./stalkoverflow-api');
 
+// Suppress logs for now lol
+console.log = function() {}
+
 // Registering
 test('Registering duplicate user.', async () => {
     const RequestType = "AddUser";
@@ -948,8 +951,6 @@ test('Get type harvest logs.', async () => {
 
     const status = res.status.getCall(0).args[0];
     const json = res.json.getCall(0).args[0];
-
-    console.log(JSON.stringify(json));
 
     expect(status).toEqual(201);
     expect(JSON.stringify(json)).toEqual(`{"May":80.09,"April":43.36,"March":0,"February":0,"January":0,"December":0,"November":0,"October":0,"September":0,"August":0,"July":0,"June":0}`);
