@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">69.91% </span>
+                <span class="strong">88.49% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>79/113</span>
+                <span class='fraction'>100/113</span>
             </div>
         
             
@@ -37,16 +37,16 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">80% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>12/15</span>
+                <span class='fraction'>15/15</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">69.91% </span>
+                <span class="strong">88.49% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>79/113</span>
+                <span class='fraction'>100/113</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line medium'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -434,15 +434,15 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -461,25 +461,25 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -651,16 +651,16 @@ async getLogsSubType(foodSubType,userID,time,period){//eg Almond
   }
 }
 &nbsp;
-<span class="fstat-no" title="function not covered" >as</span>ync getLogsFoodNameType(foodName,userID,time,period){//eg Almond
-  const text = <span class="cstat-no" title="statement not covered" >`SELECT "log"."Food_Name","log"."Weight","log"."Date_Logged" FROM "log" WHERE "log"."Food_Name" = $1 AND "log"."User_ID"= $2 AND "log"."Date_Logged" between CURRENT_DATE + (-1* $3 * INTERVAL '1 ${period}' ) and CURRENT_DATE ;`;</span>
-  const values = <span class="cstat-no" title="statement not covered" >[]</span>
+async getLogsFoodNameType(foodName,userID,time,period){//eg Almond
+  const text = `SELECT "log"."Food_Name","log"."Weight","log"."Date_Logged" FROM "log" WHERE "log"."Food_Name" = $1 AND "log"."User_ID"= $2 AND "log"."Date_Logged" between CURRENT_DATE + (-1* $3 * INTERVAL '1 ${period}' ) and CURRENT_DATE ;`;
+  const values = []
   
-<span class="cstat-no" title="statement not covered" >  values.push(foodName);</span>
-<span class="cstat-no" title="statement not covered" >  values.push(userID);</span>
-<span class="cstat-no" title="statement not covered" >  values.push(time);</span>
-<span class="cstat-no" title="statement not covered" >  try{</span>
-    var result=<span class="cstat-no" title="statement not covered" >await client.query(text, values);</span>
-<span class="cstat-no" title="statement not covered" >    return result;</span>
+  values.push(foodName);
+  values.push(userID);
+  values.push(time);
+  try{
+    var result=await client.query(text, values);
+    return result;
   }catch(err){
 <span class="cstat-no" title="statement not covered" >    throw err;</span>
   }
@@ -678,26 +678,26 @@ async getLogsSuperDuperType(userID,time,period){//eg Fruit
 <span class="cstat-no" title="statement not covered" >    throw err;</span>
   }
 }
-<span class="fstat-no" title="function not covered" >as</span>ync getAllAtlas(foodName){
-  const text = <span class="cstat-no" title="statement not covered" >`SELECT * FROM "food" where "Food_Name" = $1`;</span>
-  const values = <span class="cstat-no" title="statement not covered" >[]</span>
-<span class="cstat-no" title="statement not covered" >  values.push(foodName);</span>
+async getAllAtlas(foodName){
+  const text = `SELECT * FROM "food" where "Food_Name" = $1`;
+  const values = []
+  values.push(foodName);
   
-<span class="cstat-no" title="statement not covered" >  try{</span>
-    var result=<span class="cstat-no" title="statement not covered" >await client.query(text, values);</span>
-<span class="cstat-no" title="statement not covered" >    return result;</span>
+  try{
+    var result=await client.query(text, values);
+    return result;
   }catch(err){
 <span class="cstat-no" title="statement not covered" >    throw err;</span>
   }
 }
-<span class="fstat-no" title="function not covered" >as</span>ync getHarvestLogsTotalWeight(userID,foodname){
-  const text = <span class="cstat-no" title="statement not covered" >`SELECT SUM("Weight") FROM "log" WHERE "User_ID" = $1 AND "Food_Name" = $2 AND "Date_Logged" between CURRENT_DATE + (-1* INTERVAL '1 year') and CURRENT_DATE;`;</span>
-  const values = <span class="cstat-no" title="statement not covered" >[]</span>
-<span class="cstat-no" title="statement not covered" >  values.push(userID);</span>
-<span class="cstat-no" title="statement not covered" >  values.push(foodname);</span>
-<span class="cstat-no" title="statement not covered" >  try{</span>
-    var result=<span class="cstat-no" title="statement not covered" >await client.query(text, values);</span>
-<span class="cstat-no" title="statement not covered" >    return result;</span>
+async getHarvestLogsTotalWeight(userID,foodname){
+  const text = `SELECT SUM("Weight") FROM "log" WHERE "User_ID" = $1 AND "Food_Name" = $2 AND "Date_Logged" between CURRENT_DATE + (-1* INTERVAL '1 year') and CURRENT_DATE;`;
+  const values = []
+  values.push(userID);
+  values.push(foodname);
+  try{
+    var result=await client.query(text, values);
+    return result;
   }catch(err){
 <span class="cstat-no" title="statement not covered" >    throw err;</span>
   }
@@ -724,7 +724,7 @@ getstuff();
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at Sun May 22 2022 16:32:35 GMT+0200 (South Africa Standard Time)
+                at Sun May 22 2022 16:54:29 GMT+0200 (South Africa Standard Time)
             </div>
         <script src="prettify.js"></script>
         <script>

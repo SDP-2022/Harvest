@@ -1025,6 +1025,190 @@ test('Get non-existent subtype produce harvest logs.', async () => {
     expect(json).toEqual({});
 });
 
+test('Get foodname produce harvest logs.', async () => {
+    const RequestType = "GetFilteredLogs";
+    const UserID = "A1";
+    const Time = 32;
+    const Period = "month";
+    const Level = "foodname";
+    const Produce = "Lemon";
+
+    var req = mockRequest({
+        headers: { RequestType, UserID, Time, Period, Level, Produce},
+    });
+
+    var res = mockResponse();
+
+    await api.parseGETRequest(req, res);
+
+    const status = res.status.getCall(0).args[0];
+    const json = res.json.getCall(0).args[0];
+
+    expect(status).toEqual(201);
+    expect(JSON.stringify(json)).toEqual(`{"May":10,"April":28.59,"March":0,"February":0,"January":0,"December":0,"November":0,"October":0,"September":0,"August":0,"July":0,"June":0}`);
+});
+
+test('Get non-existent foodname produce harvest logs.', async () => {
+    const RequestType = "GetFilteredLogs";
+    const UserID = "A1";
+    const Time = 32;
+    const Period = "month";
+    const Level = "foodname";
+    const Produce = "SuckThisLemon";
+
+    var req = mockRequest({
+        headers: { RequestType, UserID, Time, Period, Level, Produce},
+    });
+
+    var res = mockResponse();
+
+    await api.parseGETRequest(req, res);
+
+    const status = res.status.getCall(0).args[0];
+    const json = res.json.getCall(0).args[0];
+
+    expect(status).toEqual(418);
+    expect(json).toEqual({});
+});
+
+test('Get logs total weight for foodname.', async () => {
+    const RequestType = "GetLogsTotalWeight";
+    const UserID = "A1";
+    const FoodName = "Lemon";
+
+    var req = mockRequest({
+        headers: { RequestType, UserID, FoodName},
+    });
+
+    var res = mockResponse();
+
+    await api.parseGETRequest(req, res);
+
+    const status = res.status.getCall(0).args[0];
+    const json = res.json.getCall(0).args[0];
+
+    console.log(JSON.stringify(json))
+
+    expect(status).toEqual(201);
+    expect(JSON.stringify(json)).toEqual(`{"sum":"38.59"}`);
+});
+
+test('Get logs total weight for foodname with no UserID.', async () => {
+    const RequestType = "GetLogsTotalWeight";
+    const UserID = "A1";
+    const FoodName = "Lemon";
+
+    var req = mockRequest({
+        headers: { RequestType, FoodName},
+    });
+
+    var res = mockResponse();
+
+    await api.parseGETRequest(req, res);
+
+    const status = res.status.getCall(0).args[0];
+    const json = res.json.getCall(0).args[0];
+
+    expect(status).toEqual(400);
+    expect(JSON.stringify(json)).toEqual(`{"Error":"UserID param not found."}`);
+});
+
+test('Get logs total weight for foodname with no FoodName.', async () => {
+    const RequestType = "GetLogsTotalWeight";
+    const UserID = "A1";
+    const FoodName = "Lemon";
+
+    var req = mockRequest({
+        headers: { RequestType, UserID},
+    });
+
+    var res = mockResponse();
+
+    await api.parseGETRequest(req, res);
+
+    const status = res.status.getCall(0).args[0];
+    const json = res.json.getCall(0).args[0];
+
+    expect(status).toEqual(400);
+    expect(JSON.stringify(json)).toEqual(`{"Error":"FoodName param not found."}`);
+});
+
+test('Get Atlas Page Data.', async () => {
+    const RequestType = "GetAtlas";
+    const FoodName = "Lemon";
+
+    var req = mockRequest({
+        headers: { RequestType, FoodName},
+    });
+
+    var res = mockResponse();
+
+    await api.parseGETRequest(req, res);
+
+    const status = res.status.getCall(0).args[0];
+    const json = res.json.getCall(0).args[0];
+
+    expect(status).toEqual(201);
+    expect(JSON.stringify(json)).toEqual(`{"Food_Name":"Lemon","Description":"When life gives you lemons, plant the seeds and grow more! This citrus fruit is known for its distinct yellow colour and sour taste. Rich in vitamin C, lemons are perfect in lemonade, in a salad dressing","Image":"https://www.checkers.co.za/medias/10603101KG-20190726-Media-checkers515Wx515H?context=bWFzdGVyfGltYWdlc3wyMTQzODZ8aW1hZ2UvcG5nfGltYWdlcy9oNDIvaDFhLzg4NjAxNDU1NDkzNDIucG5nfDViN2EyMzFkOTRiODlhODdlMDllOWE0MWExZTY5YmM5YjA3NGY4ZDA5ZGIxYWEyODRlOWEwZjZlNTBjMTIzMzU","Calories":113,"pH":"Neutral","Sun":"Full Sun","Harvest_Time":"Winter","Sow_Time":"N/A","Plant_Time":"Early Spring","Subtype":"Lemon"}`);
+});
+
+test('Get Atlas Page Data with no FoodName.', async () => {
+    const RequestType = "GetAtlas";
+    const FoodName = "Lemon";
+
+    var req = mockRequest({
+        headers: { RequestType},
+    });
+
+    var res = mockResponse();
+
+    await api.parseGETRequest(req, res);
+
+    const status = res.status.getCall(0).args[0];
+    const json = res.json.getCall(0).args[0];
+
+    expect(status).toEqual(400);
+    expect(JSON.stringify(json)).toEqual(`{"Error":"FoodName param not found."}`);
+});
+
+test('Get Atlas Page Data with invalid FoodName.', async () => {
+    const RequestType = "GetAtlas";
+    const FoodName = 420;
+
+    var req = mockRequest({
+        headers: { RequestType, FoodName},
+    });
+
+    var res = mockResponse();
+
+    await api.parseGETRequest(req, res);
+
+    const status = res.status.getCall(0).args[0];
+    const json = res.json.getCall(0).args[0];
+
+    expect(status).toEqual(400);
+    expect(JSON.stringify(json)).toEqual(`{"Error":"Invalid FoodName format."}`);
+});
+
+test('Get Atlas Page Data for non-existent FoodName.', async () => {
+    const RequestType = "GetAtlas";
+    const FoodName = "420";
+
+    var req = mockRequest({
+        headers: { RequestType, FoodName},
+    });
+
+    var res = mockResponse();
+
+    await api.parseGETRequest(req, res);
+
+    const status = res.status.getCall(0).args[0];
+    const json = res.json.getCall(0).args[0];
+
+    expect(status).toEqual(418);
+    expect(json).toEqual({});
+});
+
 test('Invalid POST request type.', async () => {
     const RequestType = "Lmao";
     const UserID = "A1";
