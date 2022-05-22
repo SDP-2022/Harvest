@@ -37,14 +37,6 @@ import AtlasPage from './AtlasPage';
            name="Navigation"
            component={Navigation}
          />
-          <Stack.Screen
-           name="Bar"
-           component={BarGraphPage}
-         />
-          <Stack.Screen
-           name="Atlas"
-           component={AtlasPage}
-         />
        </Stack.Navigator>
      </NavigationContainer>
      
