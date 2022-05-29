@@ -53,6 +53,7 @@ async logUser(userID){
 }
 
 //userID String, food String
+//`SELECT SUM("Weight") FROM "log" WHERE "User_ID" = $1 AND "Food_Name" = $2`
 async getWeight(userID,food){
   const text = `SELECT SUM("Weight") FROM "log" WHERE "User_ID" = $1 AND "Food_Name" = $2`;
   const values = []
@@ -65,9 +66,33 @@ async getWeight(userID,food){
     throw err;
   }
 }
+async getWeightOneLog(logID,food){
+  const text = `SELECT SUM("Weight") FROM "log" WHERE "Log_ID" = $1 AND "Food_Name" = $2`;
+  const values = []
+  values.push(logID);
+  values.push(food);
+  try{
+    var result=await client.query(text, values);
+    return result;
+  }catch(err){
+    throw err;
+  }
+}
+//SELECT "Food_Name","Date_Logged","Weight", "Username" FROM "log" inner join "userlog" on log."Log_ID" = userlog."log_id" inner join "accounts" on accounts."User_ID" = userlog."user_id" WHERE "Log_ID" = '1';
+async getHarvestLogs(logID){
+  const text = `SELECT "Food_Name","Date_Logged","Weight" FROM "log" WHERE "Log_ID"=$1`;
+  const values = []
+  values.push(logID);
+  try{
+    var result=await client.query(text, values);
+    return result;
+  }catch(err){
+    throw err;
+  }
+}
 
-async getHarvestLogs(userID){
-  const text = `SELECT "Food_Name","Date_Logged","Weight" FROM "log" WHERE "User_ID" = $1`;
+async getLogNames(userID){
+  const text = `SELECT "Log_Name","log_id" FROM "userlog" WHERE "user_id" = $1`;
   const values = []
   values.push(userID);
   try{
@@ -79,12 +104,13 @@ async getHarvestLogs(userID){
 }
 
  
-async addLog(userID,Food_Name,Weight){
-  const text = `INSERT INTO "log"("User_ID","Food_Name","Date_Logged","Weight") values($1,$2,CURRENT_DATE,$3) RETURNING *`;
+async addLog(userID,Food_Name,Weight,logID){
+  const text = `INSERT INTO "log"("User_ID","Food_Name","Date_Logged","Weight","Log_ID") values($1,$2,CURRENT_DATE,$3,$4) RETURNING *`;
   const values = []
   values.push(userID);
   values.push(Food_Name);
   values.push(Weight);
+  values.push(logID);
   
   
   try{
@@ -107,7 +133,7 @@ async getAllFood(){
     throw err;
   }
 }
-
+//////////////////////////////////////////////////////////////////////////////////////////////
 async getLogsType(foodType,userID,time,period){//eg Nut
   const text = `select "food"."Food_Name","log"."Weight","log"."Date_Logged", "food"."Subtype" from "food" inner join "log" on "food"."Food_Name" = "log"."Food_Name" inner join "subtypes" on "food"."Subtype" = "subtypes"."Subtype" where "subtypes"."Type" = $1 and log."User_ID" = $2 AND "log"."Date_Logged" between CURRENT_DATE + (-1* $3 * INTERVAL '1 ${period}' ) and CURRENT_DATE;`;
   const values = []
@@ -177,6 +203,82 @@ async getLogsSuperDuperType(userID,time,period){//eg Fruit
     throw err;
   }
 }
+//////////////////////////////////////////////////////////////////////////////////////////////
+async getLogsTypeOneLog(foodType,userID,time,period,logId){//eg Nut
+  const text = `select "food"."Food_Name","log"."Weight","log"."Date_Logged", "food"."Subtype" from "food" inner join "log" on "food"."Food_Name" = "log"."Food_Name" inner join "subtypes" on "food"."Subtype" = "subtypes"."Subtype" where "subtypes"."Type" = $1 and log."User_ID" = $2 AND "log"."Date_Logged" between CURRENT_DATE + (-1* $3 * INTERVAL '1 ${period}' ) and CURRENT_DATE AND "log"."Log_ID"=$4;`;
+  const values = []
+  values.push(foodType);
+  values.push(userID);
+  values.push(time);
+  values.push(logId);
+  try{
+    var result=await client.query(text, values);
+    return result;
+  }catch(err){
+    throw err;
+  }
+}
+async getLogsSuperTypeOneLog(foodSuperType,userID,time,period,logId){//eg Fruit
+  const text = `select "food"."Food_Name","log"."Weight","log"."Date_Logged", "subtypes"."Type" from "food" inner join "log" on "food"."Food_Name" = "log"."Food_Name" inner join "subtypes" on "food"."Subtype" = "subtypes"."Subtype" inner join "types" on "types"."Type" = "subtypes"."Type" where "types"."Supertype" = $1 and "log"."User_ID"= $2 AND "log"."Date_Logged" between CURRENT_DATE + (-1* $3 * INTERVAL '1 ${period}' ) and CURRENT_DATE AND "log"."Log_ID"=$4;`;
+  const values = []
+  values.push(foodSuperType);
+  values.push(userID);
+  values.push(time);
+  values.push(logId);
+  try{
+    var result=await client.query(text, values);
+    return result;
+  }catch(err){
+    throw err;
+  }
+}
+
+async getLogsSubTypeOneLog(foodSubType,userID,time,period,logId){//eg Almond
+  const text = `SELECT "food"."Food_Name","log"."Weight","log"."Date_Logged" FROM "food" inner join "log" on "food"."Food_Name" = "log"."Food_Name" WHERE "food"."Subtype" = $1 AND "log"."User_ID"= $2 AND "log"."Date_Logged" between CURRENT_DATE + (-1* $3 * INTERVAL '1 ${period}' ) and CURRENT_DATE AND "log"."Log_ID"=$4;`;
+  const values = []
+  
+  values.push(foodSubType);
+  values.push(userID);
+  values.push(time);
+  values.push(logId);
+  try{
+    var result=await client.query(text, values);
+    return result;
+  }catch(err){
+    throw err;
+  }
+}
+
+async getFoodNameTypeOneLog(foodName,userID,time,period,logId){//eg Almond
+  const text = `SELECT "log"."Food_Name","log"."Weight","log"."Date_Logged" FROM "log" WHERE "log"."Food_Name" = $1 AND "log"."User_ID"= $2 AND "log"."Date_Logged" between CURRENT_DATE + (-1* $3 * INTERVAL '1 ${period}' ) and CURRENT_DATE AND "log"."Log_ID"=$4;`;
+  const values = []
+  
+  values.push(foodName);
+  values.push(userID);
+  values.push(time);
+  values.push(logId);
+  try{
+    var result=await client.query(text, values);
+    return result;
+  }catch(err){
+    throw err;
+  }
+}
+
+async getLogsSuperDuperTypeOneLog(userID,time,period,logId){//eg Fruit
+  const text = `select "food"."Food_Name","log"."Weight","log"."Date_Logged", "types"."Supertype" from "food" inner join "log" on "food"."Food_Name" = "log"."Food_Name" inner join "subtypes" on "food"."Subtype" = "subtypes"."Subtype" inner join "types" on "types"."Type" = "subtypes"."Type" where "log"."User_ID"= $1 AND "log"."Date_Logged" between CURRENT_DATE + (-1* $2 * INTERVAL '1 ${period}' ) and CURRENT_DATE AND "log"."Log_ID"=$3;`;
+  const values = []
+  values.push(userID);
+  values.push(time);
+  values.push(logId);
+  try{
+    var result=await client.query(text, values);
+    return result;
+  }catch(err){
+    throw err;
+  }
+}
+////////////////////////////////////////////////////////////////////////////////
 async getAllAtlas(foodName){
   const text = `SELECT * FROM "food" where "Food_Name" = $1`;
   const values = []
@@ -201,6 +303,19 @@ async getHarvestLogsTotalWeight(userID,foodname){
     throw err;
   }
 }
+async getHarvestLogsTotalWeightOneLog(userID,foodname,logID){
+  const text = `SELECT SUM("Weight") FROM "log" WHERE "User_ID" = $1 AND "Food_Name" = $2 AND "Date_Logged" between CURRENT_DATE + (-1* INTERVAL '1 year') and CURRENT_DATE AND "Log_ID"=$3;`;
+  const values = []
+  values.push(userID);
+  values.push(foodname);
+  values.push(logID);
+  try{
+    var result=await client.query(text, values);
+    return result;
+  }catch(err){
+    throw err;
+  }
+}
 
 }
 
@@ -209,10 +324,11 @@ module.exports=communicator;
 /*
 async function getstuff(){
   let com =new communicator;
-  let aaaa=await com.getFoodNameType('Rhubarb','A1',2,'month');
+  let aaaa=await com.getHarvestLogsTotalWeightOneLog('A1','Lime',7);
   console.log(aaaa.rows);
   await client.end();
   process.exit(1);
 }
 getstuff();
+
 */
