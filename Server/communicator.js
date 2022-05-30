@@ -79,7 +79,19 @@ async getWeightOneLog(logID,food){
   }
 }
 //SELECT "Food_Name","Date_Logged","Weight", "Username" FROM "log" inner join "userlog" on log."Log_ID" = userlog."log_id" inner join "accounts" on accounts."User_ID" = userlog."user_id" WHERE "Log_ID" = '1';
-async getHarvestLogs(logID){
+async getHarvestLogs(userID){
+  const text = `SELECT "Food_Name","Date_Logged","Weight" FROM "log" WHERE "User_ID"=$1`;
+  const values = []
+  values.push(userID);
+  try{
+    var result=await client.query(text, values);
+    return result;
+  }catch(err){
+    throw err;
+  }
+}
+
+async getHarvestLogsOneLog(logID){
   const text = `SELECT "Food_Name","Date_Logged","Weight" FROM "log" WHERE "Log_ID"=$1`;
   const values = []
   values.push(logID);
@@ -111,6 +123,21 @@ async addLog(userID,Food_Name,Weight,logID){
   values.push(Food_Name);
   values.push(Weight);
   values.push(logID);
+  
+  
+  try{
+    var result=await client.query(text, values);
+    return result;
+  }catch(err){
+    throw err;
+  }
+}
+
+async createLog(userID,logName){
+  const text = `INSERT INTO "userlog"("user_id","Log_Name") values($1,$2) RETURNING *`;
+  const values = []
+  values.push(userID);
+  values.push(logName);
   
   
   try{
@@ -324,7 +351,7 @@ module.exports=communicator;
 /*
 async function getstuff(){
   let com =new communicator;
-  let aaaa=await com.getHarvestLogsTotalWeightOneLog('A1','Lime',7);
+  let aaaa=await com.createLog('A1','Eden');
   console.log(aaaa.rows);
   await client.end();
   process.exit(1);
