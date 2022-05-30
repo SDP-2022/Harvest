@@ -33,7 +33,6 @@ export default function BarGraphPage({navigation, route}) {
   //variable passed from the foodatlas
 
   const produceRef = useRef({});
-  const Logs = ['Backyard', 'Indoor Garden', 'Rooftop Garden', 'Second Home'];
   const TimePeriods = [
     'One Year',
     'Six Months',
@@ -408,10 +407,46 @@ export default function BarGraphPage({navigation, route}) {
       });
   };
 
+  const [Logs, setLogs] = useState(null);
+  const [logData, setLogData] = useState(null);
+  
+  const getUserLogs = async () => {
+    return fetch('https://harvest-stalkoverflow.herokuapp.com/api/private', {
+      method: 'GET',
+      headers: {
+        Authorization: 'Bearer ' + userAccessToken,
+        RequestType: 'GetLogNames',
+        userID: userID,
+      },
+    })
+      .then(response => response.json())
+      .then(json => {
+        return json;
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  };
+
+  const parseLogJson = () => (
+    getUserLogs()
+    .then((json) => {
+      let logList = [];
+      for (let i = 0; i < json.length; i++) {
+        logList.push(json[i].Log_Name)
+      } 
+      setLogs(logList);
+      setLogData(json)
+    })
+  )
+
   const [count, setCount] = useState(0);
   // This ensures that a new bar graph is rendered whenever a user makes changes
   // to the filter
   useEffect(() => {
+
+    parseLogJson();
+
     console.log('Refreshing');
     if (typeof foodType !== 'undefined') {
       console.log("rerunning")

@@ -26,7 +26,6 @@ export default function PieChartPage({navigation, route}) {
   const [refresh, setRefresh] = useState(true);
 
   const produceRef = useRef({});
-  const Logs = ['Backyard', 'Indoor Garden', 'Rooftop Garden', 'Second Home'];
   const TimePeriods = [
     'One Year',
     'Six Months',
@@ -359,7 +358,41 @@ export default function PieChartPage({navigation, route}) {
       });
   };
 
+  const [Logs, setLogs] = useState(null);
+  const [logData, setLogData] = useState(null);
+  
+  const getUserLogs = async () => {
+    return fetch('https://harvest-stalkoverflow.herokuapp.com/api/private', {
+      method: 'GET',
+      headers: {
+        Authorization: 'Bearer ' + userAccessToken,
+        RequestType: 'GetLogNames',
+        userID: userID,
+      },
+    })
+      .then(response => response.json())
+      .then(json => {
+        return json;
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  };
+
+  const parseLogJson = () => (
+    getUserLogs()
+    .then((json) => {
+      let logList = [];
+      for (let i = 0; i < json.length; i++) {
+        logList.push(json[i].Log_Name)
+      } 
+      setLogs(logList);
+      setLogData(json)
+    })
+  )
+
   useEffect(() => {
+    parseLogJson();
     console.log('Refreshing');
   }, [refresh]);
 
