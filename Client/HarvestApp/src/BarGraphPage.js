@@ -33,6 +33,7 @@ export default function BarGraphPage({navigation, route}) {
   //variable passed from the foodatlas
 
   const produceRef = useRef({});
+  const Logs = ['Backyard', 'Indoor Garden', 'Rooftop Garden', 'Second Home'];
   const TimePeriods = [
     'One Year',
     'Six Months',
@@ -228,6 +229,7 @@ export default function BarGraphPage({navigation, route}) {
     'Zucchini (Green)',
   ];
 
+  const [currLog, setCurrLog] = useState(null);
   const [timePeriod, setTimePeriod] = useState(null);
   const [level, setLevel] = useState(null);
   const [produce, setProduce] = useState(null);
@@ -463,6 +465,49 @@ export default function BarGraphPage({navigation, route}) {
                   source={require('../assets/close-icon.png')}
                 />
               </TouchableOpacity>
+            </View>
+            <View style={styles.filterView}>
+              <Text style={styles.filterText}>Log:</Text>
+
+              <SelectDropdown
+                data={Logs}
+                onSelect={(selectedItem, index) => {
+                  console.log(selectedItem, index);
+                  setCurrLog(selectedItem);
+                }}
+                defaultButtonText={'Select an option'}
+                buttonTextAfterSelection={(selectedItem, index) => {
+                  return selectedItem;
+                }}
+                rowTextForSelection={(item, index) => {
+                  return item;
+                }}
+                buttonStyle={{
+                  borderWidth: 2,
+                  borderColor: '#A1E8Af',
+                  backgroundColor: '#fff',
+                  borderRadius: 10,
+                }}
+                buttonTextStyle={{color: '#A1E8Af'}}
+                dropdownOverlayColor={'rgba(255, 255, 255, 0)'}
+                dropdownStyle={{
+                  marginTop: 1,
+                  borderRadius: 10,
+                  backgroundColor: '#fff',
+                  borderWidth: 2,
+                  borderColor: '#A1E8Af',
+                }}
+                rowStyle={{
+                  borderWidth: 0,
+                  borderColor: '#A1E8Af',
+                  backgroundColor: '#fff',
+                  borderBottomWidth: 0,
+                  borderTopWidth: 0,
+                  marginLeft: 10,
+                  marginRight: 10,
+                }}
+                rowTextStyle={{color: '#A1E8Af'}}
+              />
             </View>
             <View style={styles.filterView}>
               <Text style={styles.filterText}>Time Period:</Text>
@@ -1043,10 +1088,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#fff',
-    height: 500,
+    height: 600,
     width: 300,
     borderRadius: 30,
-    marginTop: '50%',
+    marginTop: '30%',
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
