@@ -114,7 +114,6 @@ async getLogNames(userID){
     throw err;
   }
 }
-
  
 async addLog(userID,Food_Name,Weight,logID){
   const text = `INSERT INTO "log"("User_ID","Food_Name","Date_Logged","Weight","Log_ID") values($1,$2,CURRENT_DATE,$3,$4) RETURNING *`;
@@ -123,7 +122,6 @@ async addLog(userID,Food_Name,Weight,logID){
   values.push(Food_Name);
   values.push(Weight);
   values.push(logID);
-  
   
   try{
     var result=await client.query(text, values);
@@ -276,7 +274,7 @@ async getLogsSubTypeOneLog(foodSubType,userID,time,period,logId){//eg Almond
   }
 }
 
-async getFoodNameTypeOneLog(foodName,userID,time,period,logId){//eg Almond
+async getLogsFoodNameTypeOneLog(foodName,userID,time,period,logId){//eg Almond
   const text = `SELECT "log"."Food_Name","log"."Weight","log"."Date_Logged" FROM "log" WHERE "log"."Food_Name" = $1 AND "log"."User_ID"= $2 AND "log"."Date_Logged" between CURRENT_DATE + (-1* $3 * INTERVAL '1 ${period}' ) and CURRENT_DATE AND "log"."Log_ID"=$4;`;
   const values = []
   

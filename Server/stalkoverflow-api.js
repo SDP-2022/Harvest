@@ -27,6 +27,9 @@ class StalkOverflowAPI {
             case 'AddFoodLog':
                 await this.#addLog(req.body, res);
                 return;
+            case 'CreateLog':
+                await this.#createLog(req.body, res);
+                return;
         }
 
         res.status(404);
@@ -60,6 +63,9 @@ class StalkOverflowAPI {
                 return;
             case 'GetLogsTotalWeight':
                 await this.#getLogsTotalWeight(req, res);
+                return;
+            case 'GetLogNames':
+                await this.#getLogNames(req, res);
                 return;
         }
 
@@ -139,14 +145,17 @@ class StalkOverflowAPI {
         var userID;
         var foodName;
         var weight;
+        var logID;
 
         try {
             if(!(userID = body.UserID)) throw new Error("UserID not found.");
             if(!(foodName = body.FoodName)) throw new Error("FoodName param not found.");
             if(!(weight = body.Weight)) throw new Error("Weight param not found.");
+            if(!(logID = body.LogID)) throw new Error("LogID param not found.");
 
             if (!(typeof userID === 'string')) throw new Error("Invalid UserID format.");
             if (!(typeof foodName === 'string')) throw new Error("Invalid FoodName format.");
+            if (!(typeof logID === 'string')) throw new Error("Invalid LogID format.");
             if ( !(typeof weight === 'number') || (!isFloat(weight) && !Number.isInteger(weight)) ) throw new Error("Invalid Weight format.");
         } catch (err) {
             console.log(err.message);
@@ -156,7 +165,7 @@ class StalkOverflowAPI {
 
         // Send to database and check for errors
         try {
-            var result = await dbCom.addLog(userID, foodName, weight);
+            var result = await dbCom.addLog(userID, foodName, weight, logID);
             console.log("Result:", result);
 
             if (result.rowCount == 0) {
@@ -173,18 +182,56 @@ class StalkOverflowAPI {
         }
     }
 
+    async #createLog(body, res) {
+        var userID;
+        var logName;
+
+        try {
+            if(!(userID = body.UserID)) throw new Error("UserID not found.");
+            if(!(logName = body.LogName)) throw new Error("LogName not found.");
+
+            if (!(typeof userID === 'string')) throw new Error("Invalid UserID format.");
+            if (!(typeof logName === 'string')) throw new Error("Invalid LogName format.");
+        } catch (err) {
+            console.log(err.message);
+            res.status(400);
+            return res.json({Error : err.message});
+        }
+
+        // Send to database and check for errors
+        try {
+            var result = await dbCom.createLog(userID, logName);
+            console.log("Result:", result);
+
+            if (result.rowCount == 0) {
+                res.status(418);
+                return res.json({});
+            } else {
+                res.status(201);
+                return res.send("Success");
+            }           
+        } catch (err) {
+            console.log("Error:", err);
+            res.status(500);
+            return res.json({Error : err.detail});
+        }
+    }
+
     // GET REQUESTS
     async #getFoodTotalWeight(req, res) {
         var userID;
         var foodName;
+        var logID;
 
         try {
             if (areWeTestingWithJest()) {
                 if(!(userID = req.headers["UserID"])) throw new Error("UserID param not found.");
                 if(!(foodName = req.headers["FoodName"])) throw new Error("FoodName param not found.");
+                logID = req.headers["LogID"]
             } else {
                 if(!(userID = req.get("UserID"))) throw new Error("UserID param not found.");
                 if(!(foodName = req.get("FoodName"))) throw new Error("FoodName param not found.");
+                logID = req.get("LogID")
             }
 
             if (!(typeof userID === 'string')) throw new Error("Invalid UserID format.");
@@ -197,7 +244,12 @@ class StalkOverflowAPI {
 
         // Send to database and check for errors
         try {
-            var result = await dbCom.getWeight(userID, foodName);
+            var result;
+            if (logID == null) {
+                result = await dbCom.getWeight(userID, foodName);
+            } else {
+                result = await dbCom.getWeightOneLog(userID, foodName, logID);
+            }
             console.log("Result:", result);
 
             var weight = result.rows[0].sum;
@@ -221,12 +273,15 @@ class StalkOverflowAPI {
 
     async #getHarvestLog(req, res) {
         var userID;
+        var logID;
 
         try {
             if (areWeTestingWithJest()) {
                 if(!(userID = req.headers["UserID"])) throw new Error("UserID param not found.");
+                logID = req.headers["LogID"]
             } else {
                 if(!(userID = req.get("UserID"))) throw new Error("UserID param not found.");
+                logID = req.get("LogID")
             }
 
             if (!(typeof userID === 'string')) throw new Error("Invalid UserID format.");
@@ -238,7 +293,12 @@ class StalkOverflowAPI {
 
         // Send to database and check for errors
         try {
-            var result = await dbCom.getHarvestLogs(userID);
+            var result;
+            if (logID == null) {
+                result = await dbCom.getHarvestLogs(userID);
+            } else {
+                result = await dbCom.getHarvestLogsOneLog(logID);
+            }
             console.log("Result:", result);
 
             if (result.rowCount == 0) {
@@ -280,6 +340,7 @@ class StalkOverflowAPI {
         var period;
         var level;
         var produce;
+        var logID;
 
         // Check all the header stuff
         try {
@@ -289,12 +350,14 @@ class StalkOverflowAPI {
                 if(!(period = req.headers["Period"])) throw new Error("Period param not found.");
                 if(!(level = req.headers["Level"])) throw new Error("Level param not found.");
                 if(!(produce = req.headers["Produce"])) throw new Error("Produce param not found.");
+                logID = req.headers["LogID"]
             } else {
                 if(!(userID = req.get("UserID"))) throw new Error("UserID param not found.");
                 if(!(time = parseInt(req.get("Time")))) throw new Error("Time param not found.");
                 if(!(period = req.get("Period"))) throw new Error("Period param not found.");
                 if(!(level = req.get("Level"))) throw new Error("Level param not found.");
                 if(!(produce = req.get("Produce"))) throw new Error("Produce param not found.");
+                logID = req.get("LogID")
             }
 
             if (!(typeof userID === 'string')) throw new Error("Invalid UserID format.");
@@ -312,15 +375,15 @@ class StalkOverflowAPI {
         }
 
         if (level === "superdupertype") {
-            var filteredResult = await filterSuperDuperType(res, userID, time, period);
+            var filteredResult = await filterSuperDuperType(res, userID, time, period, logID);
         } else if (level === "supertype") {
-            var filteredResult = await filterSuperType(res, userID, time, period, produce);
+            var filteredResult = await filterSuperType(res, userID, time, period, produce, logID);
         } else if (level === "type") {
-            var filteredResult = await filterType(res, userID, time, period, produce);
+            var filteredResult = await filterType(res, userID, time, period, produce, logID);
         } else if (level === "subtype") {
-            var filteredResult = await filterSubType(res, userID, time, period, produce);
+            var filteredResult = await filterSubType(res, userID, time, period, produce, logID);
         } else if (level === "foodname") {
-            var filteredResult = await filterFoodName(res, userID, time, period, produce);
+            var filteredResult = await filterFoodName(res, userID, time, period, produce, logID);
         }
     }
 
@@ -363,14 +426,17 @@ class StalkOverflowAPI {
     async #getLogsTotalWeight(req, res) {
         var userID;
         var foodName;
+        var logID;
 
         try {
             if (areWeTestingWithJest()) {
                 if(!(userID = req.headers["UserID"])) throw new Error("UserID param not found.");
                 if(!(foodName = req.headers["FoodName"])) throw new Error("FoodName param not found.");
+                logID = req.headers["LogID"]
             } else {
                 if(!(userID = req.get("UserID"))) throw new Error("UserID param not found.");
                 if(!(foodName = req.get("FoodName"))) throw new Error("FoodName param not found.");
+                logID = req.get("LogID")
             }
 
             if (!(typeof userID === 'string')) throw new Error("Invalid UserID format.");
@@ -383,7 +449,13 @@ class StalkOverflowAPI {
 
         // Send to database and check for errors
         try {
-            var result = await dbCom.getHarvestLogsTotalWeight(userID, foodName);
+            var result;
+            if (logID == null) {
+                result = await dbCom.getHarvestLogsTotalWeight(userID, foodName);
+            } else {
+                result = await dbCom.getHarvestLogsTotalWeightOneLog(userID, foodName, logID);
+            }
+            
             console.log("Result:", result);
 
             if (result.rowCount == 0) {
@@ -400,6 +472,43 @@ class StalkOverflowAPI {
         }
     }
 
+    async #getLogNames(req, res) {
+        var userID;
+
+        try {
+            if (areWeTestingWithJest()) {
+                if(!(userID = req.headers["UserID"])) throw new Error("UserID param not found.");
+            } else {
+                if(!(userID = req.get("UserID"))) throw new Error("UserID param not found.");
+            }
+
+            if (!(typeof userID === 'string')) throw new Error("Invalid UserID format.");
+        } catch (err) {
+            console.log(err.message);
+            res.status(400);
+            return res.json({Error : err.message});
+        }
+
+        // Send to database and check for errors
+        try {
+            var result = await dbCom.getLogNames(userID);
+            
+            console.log("Result:", result);
+
+            if (result.rowCount == 0) {
+                res.status(418);
+                return res.json({});
+            } else {
+                res.status(201);
+                res.json(result.rows);
+            }           
+        } catch (err) {
+            console.log("Error:", err);
+            res.status(500);
+            return res.json({Error : err.detail});
+        }
+    }
+
     async endClient() {
         await dbCom.endClient();
     }
@@ -407,9 +516,14 @@ class StalkOverflowAPI {
 
 const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
-async function filterSuperDuperType(res, userID, time, period) {
+async function filterSuperDuperType(res, userID, time, period, logID) {
     try {
-        var result = await dbCom.getLogsSuperDuperType(userID, time, period);
+        var result;
+        if (logID == null) {
+            result = await dbCom.getLogsSuperDuperType(userID, time, period);
+        } else {
+            result = await dbCom.getLogsSuperDuperType(userID, time, period, logID);
+        }
         console.log("Result:", result);
 
         if (result.rowCount == 0) {
@@ -461,9 +575,14 @@ async function filterSuperDuperType(res, userID, time, period) {
     }
 }
 
-async function filterSuperType(res, userID, time, period, superType) {
+async function filterSuperType(res, userID, time, period, superType, logID) {
     try {
-        var result = await dbCom.getLogsSuperType(superType, userID, time, period);
+        var result;
+        if (logID == null) {
+            result = await dbCom.getLogsSuperType(superType, userID, time, period);
+        } else {
+            result = await dbCom.getLogsSuperTypeOneLog(superType, userID, time, period, logID);
+        }
         console.log("Result:", result);
 
         if (result.rowCount == 0) {
@@ -515,9 +634,14 @@ async function filterSuperType(res, userID, time, period, superType) {
     }
 }
 
-async function filterType(res, userID, time, period, type) {
+async function filterType(res, userID, time, period, type, logID) {
     try {
-        var result = await dbCom.getLogsType(type, userID, time, period);
+        var result;
+        if (logID == null) {
+            result = await dbCom.getLogsType(type, userID, time, period);
+        } else {
+            result = await dbCom.getLogsTypeOneLog(type, userID, time, period, logID);
+        }
         console.log("Result:", result);
 
         if (result.rowCount == 0) {
@@ -569,9 +693,14 @@ async function filterType(res, userID, time, period, type) {
     }
 }
 
-async function filterSubType(res, userID, time, period, subtype) {
+async function filterSubType(res, userID, time, period, subtype, logID) {
     try {
-        var result = await dbCom.getLogsSubType(subtype, userID, time, period);
+        var result;
+        if (logID == null) {
+            result = await dbCom.getLogsSubType(subtype, userID, time, period);
+        } else {
+            result = await dbCom.getLogsSubTypeOneLog(subtype, userID, time, period, logID);
+        }
         console.log("Result:", result);
 
         if (result.rowCount == 0) {
@@ -623,9 +752,14 @@ async function filterSubType(res, userID, time, period, subtype) {
     }
 }
 
-async function filterFoodName(res, userID, time, period, foodName) {
+async function filterFoodName(res, userID, time, period, foodName, logID) {
     try {
-        var result = await dbCom.getLogsFoodNameType(foodName, userID, time, period);
+        var result;
+        if (logID == null) {
+            result = await dbCom.getLogsFoodNameType(foodName, userID, time, period);
+        } else {
+            result = await dbCom.getLogsFoodNameTypeOneLog(foodName, userID, time, period, logID);
+        }
         console.log("Result:", result);
 
         if (result.rowCount == 0) {
