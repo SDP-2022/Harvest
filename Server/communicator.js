@@ -114,6 +114,7 @@ async getLogNames(userID){
     throw err;
   }
 }
+
  
 async addLog(userID,Food_Name,Weight,logID){
   const text = `INSERT INTO "log"("User_ID","Food_Name","Date_Logged","Weight","Log_ID") values($1,$2,CURRENT_DATE,$3,$4) RETURNING *`;
@@ -122,6 +123,7 @@ async addLog(userID,Food_Name,Weight,logID){
   values.push(Food_Name);
   values.push(Weight);
   values.push(logID);
+  
   
   try{
     var result=await client.query(text, values);
@@ -460,7 +462,7 @@ async getLogsSuperDuperTypeGroupOneLog(userID,time,period,logId){
 
 module.exports=communicator;
 
-
+/*
 async function getstuff(){
   let com =new communicator;
   let aaaa=await com.getLogsSuperDuperTypeGroupOneLog('A1',1,'year',7);
@@ -469,4 +471,4 @@ async function getstuff(){
   process.exit(1);
 }
 getstuff();
-
+*/
