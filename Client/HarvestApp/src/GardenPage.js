@@ -30,6 +30,7 @@ export default function GardenPage({navigation, route}) {
   const [CreatelogName, setCreatelogName] = useState("");
   const [logName, setlogName] = useState("");
   const [LogLen, setLogLen] = useState(0);
+  const[userLogID, setuserLogID] = useState("");
   // This function is used for testing
   const getVar = async () => {
     return fetch('https://harvest-stalkoverflow.herokuapp.com/api/private/', {
@@ -48,13 +49,14 @@ export default function GardenPage({navigation, route}) {
   };
 
   // This function gets the log for the current user
-  const getLog = async () => {
+  const getLog = async (logID) => {
     return fetch('https://harvest-stalkoverflow.herokuapp.com/api/private/', {
       method: 'GET',
       headers: {
         Authorization: 'Bearer ' + userAccessToken,
         RequestType: 'GetHarvestLogs',
         UserID: userID,
+        LogID: logID
       },
     })
       .then(response => response.json())
@@ -204,8 +206,10 @@ const checkLogInput = () => { // this method is used to check if the fields are 
       let logList = [];
       for (let i = 0; i < json.length; i++) {
         let log = json[i].Log_Name;
+        let key = json[i].log_id;
         let object = {
         log_name : log,
+        log_id: key
         };
         logList.push(object);
       } 
@@ -214,15 +218,17 @@ const checkLogInput = () => { // this method is used to check if the fields are 
       
     
   }
+  function getHarvest(logID){
+      getLog(logID).then(json => {
+        setLoading(false);
+        setFood(formatFood(json));
+        setFoodLen(Object.keys(json).length);
+        setRefresh(false);
+      });
+  }
   // This ensures the appropriate functions run when the screen is accessed
   useEffect(() => {
-    getLog().then(json => {
-      setLoading(false);
-      setFood(formatFood(json));
-      setFoodLen(Object.keys(json).length);
-      setRefresh(false);
-    });
-   getLogName().then(json =>{
+    getLogName().then(json =>{
       setLoading(false);
       setlogName(parseLogName(json));
       setLogLen(Object.keys(json).length);
@@ -320,12 +326,6 @@ const checkLogInput = () => { // this method is used to check if the fields are 
       </SafeAreaView>
     );
   } else if (Loading == false && LogLen > 0) {
-    {
-      console.log(Food);
-    }
-    {
-      console.log(Food[2]);
-    }
     return (
       <SafeAreaView style={styles.body}>
         <View style={styles.burgerView}>
@@ -399,7 +399,10 @@ const checkLogInput = () => { // this method is used to check if the fields are 
           data = {logName}
           renderItem={({item}) => (
             <View style={styles.foodView}>
-              <TouchableOpacity onPress={() => setModalOpen(true)}>
+              <TouchableOpacity onPress={() => {
+                setModalOpen(true);
+                getHarvest(item.log_id)
+              }}>
               <Text style={styles.foodViewName}>{item.log_name}</Text>
               </TouchableOpacity>
           </View>
@@ -436,7 +439,7 @@ const checkLogInput = () => { // this method is used to check if the fields are 
               showsVerticalScrollIndicator={false}
               ListHeaderComponent={() => (
               <View style={styles.header}>
-                <Text style={styles.text}>User 's Garden:</Text>
+                <Text style={styles.text}>Your Garden:</Text>
               </View>
               )}
               style={styles.list}
