@@ -225,9 +225,43 @@ export default function PieChartPage({navigation, route}) {
   const [produce, setProduce] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
 
+  const [Logs, setLogs] = useState(null);
+  const [logData, setLogData] = useState(null);
+  
+  const getUserLogs = async () => {
+    return fetch('https://harvest-stalkoverflow.herokuapp.com/api/private', {
+      method: 'GET',
+      headers: {
+        Authorization: 'Bearer ' + userAccessToken,
+        RequestType: 'GetLogNames',
+        userID: userID,
+      },
+    })
+      .then(response => response.json())
+      .then(json => {
+        return json;
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  };
+
+  const parseLogJson = () => (
+    getUserLogs()
+    .then((json) => {
+      let logList = [];
+      logList.push("All")
+      for (let i = 0; i < json.length; i++) {
+        logList.push(json[i].Log_Name)
+      } 
+      setLogs(logList);
+      setLogData(json)
+    })
+  )
+
   // This function requests data from the API to generate the graph
   const getData = async () => {
-    let headerLevel, headerTime, headerPeriod, headerProduce;
+    let headerLevel, headerTime, headerPeriod, headerProduce, headerLog;
 
     if (timePeriod === 'One Year') {
       headerTime = 1;
@@ -256,6 +290,14 @@ export default function PieChartPage({navigation, route}) {
       headerLevel = level;
     }
 
+    if (currLog === "All") {
+      headerLog = null;
+    }
+    else {
+      let container = logData.filter((item)=>{return item.Log_Name === 'Home'});
+      headerLog = container[0].log_id
+    }
+
     headerProduce = produce;
 
     return fetch('https://harvest-stalkoverflow.herokuapp.com/api/private', {
@@ -268,6 +310,7 @@ export default function PieChartPage({navigation, route}) {
         Period: headerPeriod,
         Level: headerLevel,
         Produce: headerProduce,
+        LogID: headerLog
       },
     })
       .then(response => response.json())
@@ -281,53 +324,6 @@ export default function PieChartPage({navigation, route}) {
       .catch(error => {
         console.log(error);
       });
-  };
-
-  // This is some data that can be used for testing
-  // User selects supertype
-  let newTestData_0 = {
-    Jan: 50,
-    Feb: 0,
-    Mar: 0,
-    Apr: 0,
-    May: 3,
-    Jun: 0,
-    Jul: 2,
-    Aug: 0,
-    Sep: 0,
-    Oct: 2,
-    Nov: 2,
-    Dec: 0,
-  };
-
-  // User selects type
-  let newTestData_1 = {
-    January: 50,
-    February: 60,
-    March: 10,
-    April: 34,
-    May: 23,
-    June: 21,
-  };
-
-  // User selects subtype
-  let newTestData_2 = {
-    January: 50,
-    February: 60,
-    March: 10,
-    April: 34,
-    May: 23,
-    June: 21,
-  };
-
-  // User selects food
-  let newTestData_3 = {
-    January: 50,
-    February: 78,
-    March: 10,
-    April: 123,
-    May: 65,
-    June: 111,
   };
 
   // This function will process the data returned from the API
@@ -357,39 +353,6 @@ export default function PieChartPage({navigation, route}) {
         setFilterIsApplied(true);
       });
   };
-
-  const [Logs, setLogs] = useState(null);
-  const [logData, setLogData] = useState(null);
-  
-  const getUserLogs = async () => {
-    return fetch('https://harvest-stalkoverflow.herokuapp.com/api/private', {
-      method: 'GET',
-      headers: {
-        Authorization: 'Bearer ' + userAccessToken,
-        RequestType: 'GetLogNames',
-        userID: userID,
-      },
-    })
-      .then(response => response.json())
-      .then(json => {
-        return json;
-      })
-      .catch(error => {
-        console.log(error);
-      });
-  };
-
-  const parseLogJson = () => (
-    getUserLogs()
-    .then((json) => {
-      let logList = [];
-      for (let i = 0; i < json.length; i++) {
-        logList.push(json[i].Log_Name)
-      } 
-      setLogs(logList);
-      setLogData(json)
-    })
-  )
 
   useEffect(() => {
     parseLogJson();

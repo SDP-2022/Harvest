@@ -234,9 +234,44 @@ export default function BarGraphPage({navigation, route}) {
   const [produce, setProduce] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
 
+  const [Logs, setLogs] = useState(null);
+  const [logData, setLogData] = useState(null);
+  
+  const getUserLogs = async () => {
+    return fetch('https://harvest-stalkoverflow.herokuapp.com/api/private', {
+      method: 'GET',
+      headers: {
+        Authorization: 'Bearer ' + userAccessToken,
+        RequestType: 'GetLogNames',
+        userID: userID,
+      },
+    })
+      .then(response => response.json())
+      .then(json => {
+        console.log(json)
+        return json;
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  };
+
+  const parseLogJson = () => (
+    getUserLogs()
+    .then((json) => {
+      let logList = [];
+      logList.push("All")
+      for (let i = 0; i < json.length; i++) {
+        logList.push(json[i].Log_Name)
+      } 
+      setLogs(logList);
+      setLogData(json)
+    })
+  )
+
   // This function requests data from the API to generate the graph
   const getData = async () => {
-    let headerLevel, headerTime, headerPeriod, headerProduce;
+    let headerLevel, headerTime, headerPeriod, headerProduce, headerLog;
 
     if (timePeriod === 'One Year') {
       headerTime = 1;
@@ -267,6 +302,14 @@ export default function BarGraphPage({navigation, route}) {
 
     headerProduce = produce;
 
+    if (currLog === "All") {
+      headerLog = null;
+    }
+    else {
+      let container = logData.filter((item)=>{return item.Log_Name === 'Home'});
+      headerLog = container[0].log_id
+    }
+
     return fetch('https://harvest-stalkoverflow.herokuapp.com/api/private', {
       method: 'GET',
       headers: {
@@ -277,11 +320,11 @@ export default function BarGraphPage({navigation, route}) {
         Period: headerPeriod,
         Level: headerLevel,
         Produce: headerProduce,
+        LogID: headerLog,
       },
     })
       .then(response => response.json())
       .then(json => {
-        console.log(json);
         if (json.Error === 'Time param not found.') {
           json = {};
         }
@@ -290,53 +333,6 @@ export default function BarGraphPage({navigation, route}) {
       .catch(error => {
         console.log(error);
       });
-  };
-
-  // This is some data that can be used for testing
-  // User selects supertype
-  let newTestData_0 = {
-    Jan: 50,
-    Feb: 0,
-    Mar: 0,
-    Apr: 0,
-    May: 3,
-    Jun: 0,
-    Jul: 2,
-    Aug: 0,
-    Sep: 0,
-    Oct: 2,
-    Nov: 2,
-    Dec: 0,
-  };
-
-  // User selects type
-  let newTestData_1 = {
-    January: 50,
-    February: 60,
-    March: 10,
-    April: 34,
-    May: 23,
-    June: 21,
-  };
-
-  // User selects subtype
-  let newTestData_2 = {
-    January: 50,
-    February: 60,
-    March: 10,
-    April: 34,
-    May: 23,
-    June: 21,
-  };
-
-  // User selects food
-  let newTestData_3 = {
-    January: 50,
-    February: 78,
-    March: 10,
-    April: 123,
-    May: 65,
-    June: 111,
   };
 
   // This function will process the data returned from the API
@@ -407,39 +403,6 @@ export default function BarGraphPage({navigation, route}) {
       });
   };
 
-  const [Logs, setLogs] = useState(null);
-  const [logData, setLogData] = useState(null);
-  
-  const getUserLogs = async () => {
-    return fetch('https://harvest-stalkoverflow.herokuapp.com/api/private', {
-      method: 'GET',
-      headers: {
-        Authorization: 'Bearer ' + userAccessToken,
-        RequestType: 'GetLogNames',
-        userID: userID,
-      },
-    })
-      .then(response => response.json())
-      .then(json => {
-        return json;
-      })
-      .catch(error => {
-        console.log(error);
-      });
-  };
-
-  const parseLogJson = () => (
-    getUserLogs()
-    .then((json) => {
-      let logList = [];
-      for (let i = 0; i < json.length; i++) {
-        logList.push(json[i].Log_Name)
-      } 
-      setLogs(logList);
-      setLogData(json)
-    })
-  )
-
   const [count, setCount] = useState(0);
   // This ensures that a new bar graph is rendered whenever a user makes changes
   // to the filter
@@ -455,9 +418,6 @@ export default function BarGraphPage({navigation, route}) {
   }, [refresh, navigation, route, foodType]);
 
   if (typeof foodType === 'undefined') {
-    {console.log(foodType + " - This is the produce from the atlas")}
-    {console.log(userAccessToken + " - This is the user access token")}
-    console.log('The atlas item is undefined');
     return (
       <SafeAreaView style={styles.body}>
         <View style={styles.iconView}>
@@ -767,8 +727,6 @@ export default function BarGraphPage({navigation, route}) {
       </SafeAreaView>
     );
   } else {
-    {console.log(foodType + " - This is the produce from the atlas")}
-    {console.log(userAccessToken + " - This is the user access token")}
     return (
       <SafeAreaView style={styles.body}>
         <View style={styles.iconView}>
@@ -811,6 +769,49 @@ export default function BarGraphPage({navigation, route}) {
                   source={require('../assets/close-icon.png')}
                 />
               </TouchableOpacity>
+            </View>
+            <View style={styles.filterView}>
+              <Text style={styles.filterText}>Log:</Text>
+
+              <SelectDropdown
+                data={Logs}
+                onSelect={(selectedItem, index) => {
+                  console.log(selectedItem, index);
+                  setCurrLog(selectedItem);
+                }}
+                defaultButtonText={'Select an option'}
+                buttonTextAfterSelection={(selectedItem, index) => {
+                  return selectedItem;
+                }}
+                rowTextForSelection={(item, index) => {
+                  return item;
+                }}
+                buttonStyle={{
+                  borderWidth: 2,
+                  borderColor: '#A1E8Af',
+                  backgroundColor: '#fff',
+                  borderRadius: 10,
+                }}
+                buttonTextStyle={{color: '#A1E8Af'}}
+                dropdownOverlayColor={'rgba(255, 255, 255, 0)'}
+                dropdownStyle={{
+                  marginTop: 1,
+                  borderRadius: 10,
+                  backgroundColor: '#fff',
+                  borderWidth: 2,
+                  borderColor: '#A1E8Af',
+                }}
+                rowStyle={{
+                  borderWidth: 0,
+                  borderColor: '#A1E8Af',
+                  backgroundColor: '#fff',
+                  borderBottomWidth: 0,
+                  borderTopWidth: 0,
+                  marginLeft: 10,
+                  marginRight: 10,
+                }}
+                rowTextStyle={{color: '#A1E8Af'}}
+              />
             </View>
             <View style={styles.filterView}>
               <Text style={styles.filterText}>Time Period:</Text>
