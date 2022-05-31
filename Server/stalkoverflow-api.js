@@ -67,6 +67,9 @@ class StalkOverflowAPI {
             case 'GetLogNames':
                 await this.#getLogNames(req, res);
                 return;
+            case 'GetPiechartLogs':
+                await this.#getLogsGroupSum(req, res);
+                return
         }
 
         res.status(404);
@@ -502,6 +505,90 @@ class StalkOverflowAPI {
                 res.status(201);
                 res.json(result.rows);
             }           
+        } catch (err) {
+            console.log("Error:", err);
+            res.status(500);
+            return res.json({Error : err.detail});
+        }
+    }
+
+    async #getLogsGroupSum(req, res) {
+        var userID;
+        var time;
+        var period;
+        var level;
+        var produce;
+        var logID;
+
+        // Check all the header stuff
+        try {
+            if (areWeTestingWithJest()) {
+                if(!(userID = req.headers["UserID"])) throw new Error("UserID param not found.");
+                if(!(time = parseInt(req.headers["Time"]))) throw new Error("Time param not found.");
+                if(!(period = req.headers["Period"])) throw new Error("Period param not found.");
+                if(!(level = req.headers["Level"])) throw new Error("Level param not found.");
+                if(!(produce = req.headers["Produce"])) throw new Error("Produce param not found.");
+                logID = req.headers["LogID"]
+            } else {
+                if(!(userID = req.get("UserID"))) throw new Error("UserID param not found.");
+                if(!(time = parseInt(req.get("Time")))) throw new Error("Time param not found.");
+                if(!(period = req.get("Period"))) throw new Error("Period param not found.");
+                if(!(level = req.get("Level"))) throw new Error("Level param not found.");
+                if(!(produce = req.get("Produce"))) throw new Error("Produce param not found.");
+                logID = req.get("LogID")
+            }
+
+            if (!(typeof userID === 'string')) throw new Error("Invalid UserID format.");
+            if (!(typeof time === 'number') || !Number.isInteger(time))  throw new Error("Invalid Time format.");
+            if (!(typeof period === 'string') || !["day", "month", "year"].includes(period.toLowerCase())) throw new Error("Invalid Period format.");
+            if (!(typeof level === 'string') || !["foodname", "supertype", "type", "subtype", "superdupertype"].includes(level.toLowerCase())) throw new Error("Invalid Level format.");
+            if (!(typeof produce === 'string')) throw new Error("Invalid Produce format.");
+
+            level = level.toLowerCase()
+            period = period.toLowerCase()
+        } catch (err) {
+            console.log(err.message);
+            res.status(400);
+            return res.json({Error : err.message});
+        }
+        
+        try {
+            var result;
+            if (level === "superdupertype") {
+                if (logID == null) {
+                    result = await dbCom.getLogsSuperDuperTypeGroup(userID, time, period);
+                } else {
+                    result = await dbCom.getLogsSuperDuperTypeGroupOneLog(userID, time, period, logID);
+                }
+            } else if (level === "supertype") {
+                if (logID == null) {
+                    result = await dbCom.getLogsSuperTypeGroup(produce, userID, time, period);
+                } else {
+                    result = await dbCom.getLogsSuperTypeGroupOneLog(produce, userID, time, period, logID);
+                }
+            } else if (level === "type") {
+                if (logID == null) {
+                    result = await dbCom.getLogsTypeGroup(produce, userID, time, period);
+                } else {
+                    result = await dbCom.getLogsTypeGroupOneLog(produce, userID, time, period, logID);
+                }
+            } else if (level === "subtype") {
+                if (logID == null) {
+                    result = await dbCom.getLogsSubTypeGroup(produce, userID, time, period);
+                } else {
+                    result = await dbCom.getLogsSubTypeGroupOneLog(produce, userID, time, period, logID);
+                }
+            }
+
+            console.log("Result:", result);
+
+            if (result.rowCount == 0) {
+                res.status(418);
+                return res.json({});
+            } else {
+                res.status(201);
+                res.json(result.rows);
+            }         
         } catch (err) {
             console.log("Error:", err);
             res.status(500);
