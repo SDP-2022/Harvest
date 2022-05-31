@@ -341,19 +341,132 @@ async getHarvestLogsTotalWeightOneLog(userID,foodname,logID){
     throw err;
   }
 }
+///////////////////////////////////////////////////////////////////////
+async getLogsSubTypeGroup(foodSubType,userID,time,period){//eg Almond
+  const text = `SELECT "food"."Food_Name",sum("log"."Weight") FROM "food" inner join "log" on "food"."Food_Name" = "log"."Food_Name" WHERE "food"."Subtype" = $1 AND "log"."User_ID"= $2 AND "log"."Date_Logged" between CURRENT_DATE + (-1* $3 * INTERVAL '1 ${period}' ) and CURRENT_DATE GROUP BY  "food"."Food_Name";`;
+  const values = []
+  
+  values.push(foodSubType);
+  values.push(userID);
+  values.push(time);
+  try{
+    var result=await client.query(text, values);
+    return result;
+  }catch(err){
+    throw err;
+  }
+}
+async getLogsTypeGroup(foodType,userID,time,period){//eg Nut
+  const text = `select "food"."Subtype", sum("log"."Weight") from "food" inner join "log" on "food"."Food_Name" = "log"."Food_Name" inner join "subtypes" on "food"."Subtype" = "subtypes"."Subtype" where "subtypes"."Type" = $1 and log."User_ID" = $2 AND "log"."Date_Logged" between CURRENT_DATE + (-1* $3 * INTERVAL '1 ${period}' ) and CURRENT_DATE GROUP BY  "food"."Subtype";`;
+  const values = []
+  values.push(foodType);
+  values.push(userID);
+  values.push(time);
+  try{
+    var result=await client.query(text, values);
+    return result;
+  }catch(err){
+    throw err;
+  }
+}
 
+async getLogsSuperTypeGroup(foodSuperType,userID,time,period){//eg Fruit
+  const text = `select "subtypes"."Type",sum("log"."Weight") from "food" inner join "log" on "food"."Food_Name" = "log"."Food_Name" inner join "subtypes" on "food"."Subtype" = "subtypes"."Subtype" inner join "types" on "types"."Type" = "subtypes"."Type" where "types"."Supertype" = $1 and "log"."User_ID"= $2 AND "log"."Date_Logged" between CURRENT_DATE + (-1* $3 * INTERVAL '1 ${period}' ) and CURRENT_DATE  GROUP BY "subtypes"."Type";`;
+  const values = []
+  values.push(foodSuperType);
+  values.push(userID);
+  values.push(time);
+  try{
+    var result=await client.query(text, values);
+    return result;
+  }catch(err){
+    throw err;
+  }
+}
+
+async getLogsSuperDuperTypeGroup(userID,time,period){
+  const text = `select "types"."Supertype",sum("log"."Weight") from "food" inner join "log" on "food"."Food_Name" = "log"."Food_Name" inner join "subtypes" on "food"."Subtype" = "subtypes"."Subtype" inner join "types" on "types"."Type" = "subtypes"."Type" where "log"."User_ID"= $1 AND "log"."Date_Logged" between CURRENT_DATE + (-1* $2 * INTERVAL '1 ${period}' ) and CURRENT_DATE GROUP BY "types"."Supertype";`;
+  const values = []
+  values.push(userID);
+  values.push(time);
+  try{
+    var result=await client.query(text, values);
+    return result;
+  }catch(err){
+    throw err;
+  }
+}
+///////////////////////////////////////////////////////////////////
+async getLogsSubTypeGroupOneLog(foodSubType,userID,time,period,logId){//eg Almond
+  const text = `SELECT "food"."Food_Name",sum("log"."Weight") FROM "food" inner join "log" on "food"."Food_Name" = "log"."Food_Name" WHERE "food"."Subtype" = $1 AND "log"."User_ID"= $2 AND "log"."Date_Logged" between CURRENT_DATE + (-1* $3 * INTERVAL '1 ${period}' ) and CURRENT_DATE  AND "log"."Log_ID"=$4 GROUP BY  "food"."Food_Name";`;
+  const values = []
+  
+  values.push(foodSubType);
+  values.push(userID);
+  values.push(time);
+  values.push(logId);
+  try{
+    var result=await client.query(text, values);
+    return result;
+  }catch(err){
+    throw err;
+  }
+}
+async getLogsTypeGroupOneLog(foodType,userID,time,period,logId){//eg Nut
+  const text = `select "food"."Subtype", sum("log"."Weight") from "food" inner join "log" on "food"."Food_Name" = "log"."Food_Name" inner join "subtypes" on "food"."Subtype" = "subtypes"."Subtype" where "subtypes"."Type" = $1 and log."User_ID" = $2 AND "log"."Date_Logged" between CURRENT_DATE + (-1* $3 * INTERVAL '1 ${period}' ) and CURRENT_DATE AND "log"."Log_ID"=$4 GROUP BY  "food"."Subtype";`;
+  const values = []
+  values.push(foodType);
+  values.push(userID);
+  values.push(time);
+  values.push(logId);
+  try{
+    var result=await client.query(text, values);
+    return result;
+  }catch(err){
+    throw err;
+  }
+}
+
+async getLogsSuperTypeGroupOneLog(foodSuperType,userID,time,period,logId){//eg Fruit
+  const text = `select "subtypes"."Type",sum("log"."Weight") from "food" inner join "log" on "food"."Food_Name" = "log"."Food_Name" inner join "subtypes" on "food"."Subtype" = "subtypes"."Subtype" inner join "types" on "types"."Type" = "subtypes"."Type" where "types"."Supertype" = $1 and "log"."User_ID"= $2 AND "log"."Date_Logged" between CURRENT_DATE + (-1* $3 * INTERVAL '1 ${period}' ) and CURRENT_DATE AND "log"."Log_ID"=$4 GROUP BY "subtypes"."Type";`;
+  const values = []
+  values.push(foodSuperType);
+  values.push(userID);
+  values.push(time);
+  values.push(logId);
+  try{
+    var result=await client.query(text, values);
+    return result;
+  }catch(err){
+    throw err;
+  }
+}
+
+async getLogsSuperDuperTypeGroupOneLog(userID,time,period,logId){
+  const text = `select "types"."Supertype",sum("log"."Weight") from "food" inner join "log" on "food"."Food_Name" = "log"."Food_Name" inner join "subtypes" on "food"."Subtype" = "subtypes"."Subtype" inner join "types" on "types"."Type" = "subtypes"."Type" where "log"."User_ID"= $1 AND "log"."Date_Logged" between CURRENT_DATE + (-1* $2 * INTERVAL '1 ${period}' ) and CURRENT_DATE AND "log"."Log_ID"=$3 GROUP BY "types"."Supertype";`;
+  const values = []
+  values.push(userID);
+  values.push(time);
+  values.push(logId);
+  try{
+    var result=await client.query(text, values);
+    return result;
+  }catch(err){
+    throw err;
+  }
+}
+///////////////////////////////////////////////////////////////////
 }
 
 module.exports=communicator;
 
-/*
+
 async function getstuff(){
   let com =new communicator;
-  let aaaa=await com.createLog('A1','Eden');
+  let aaaa=await com.getLogsSuperDuperTypeGroupOneLog('A1',1,'year',7);
   console.log(aaaa.rows);
   await client.end();
   process.exit(1);
 }
 getstuff();
 
-*/
