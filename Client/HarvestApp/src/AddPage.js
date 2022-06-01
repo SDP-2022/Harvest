@@ -4,8 +4,8 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import React, { useState, useEffect, useCallback } from 'react'; 
 import { Text, View, SafeAreaView, StyleSheet, TouchableOpacity, TextInput} from 'react-native'; 
 import { AutocompleteDropdown } from 'react-native-autocomplete-dropdown';
-import SelectDropdown from 'react-native-select-dropdown'
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import {Dropdown} from 'react-native-element-dropdown';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 
 const ACCESS_TOKEN = '@save_token';
 
@@ -17,8 +17,9 @@ const ACCESS_TOKEN = '@save_token';
   const [loading, setLoading] = useState(false);
   const [LogName, setLogName] = useState("");
   const [logID, setLogID] = useState();
-  const logs = [];
-  const objectlogs = [];
+  const [LogInfo, setLogInfo] = useState([]);
+
+
   const submitData = async()=>{ // this code is used to make a post request to the database and save the data on the database
     fetch("https://harvest-stalkoverflow.herokuapp.com/api/private/",{
         method:'POST',
@@ -50,18 +51,9 @@ const checkTextInput = () => { // this method is used to check if the fields are
     alert("Please enter all fields")
     }
   else{
-    for(let i = 0; i < objectlogs.length; i++){
-      if(LogName == objectlogs[i].name){
-        setLogID(objectlogs[i].id);
-        submitData();
-        alert("Produce added to " + LogName);
-        break;
-      }
-      else{
-        continue;
-      }
+      submitData();
+      alert("Produce added to " + LogName);
     }
-  }
   };
 
   const handleChange = (value) => {
@@ -110,31 +102,47 @@ const checkTextInput = () => { // this method is used to check if the fields are
     setLoading(false)
   }, [])
 
-  async function getLogNames(){
-    const response = await fetch("https://harvest-stalkoverflow.herokuapp.com/api/private/",{
-    method:'GET',
-        headers:{
-          Authorization: 'Bearer ' + userAccessToken,
-          RequestType: 'GetLogNames',
-          userID: userID,
-        },
-  });
-    const items = await response.json();
-    
-      for(let i = 0; i < items.length; i++){
-        let log = items[i].Log_Name;
-        let key = items[i].log_id;
+  const getLogInfo = async () => { // this function is used to get the log names and log ids 
+    return fetch('https://harvest-stalkoverflow.herokuapp.com/api/private', {
+      method: 'GET',
+      headers: {
+        Authorization: 'Bearer ' + userAccessToken,
+        RequestType: 'GetLogNames',
+        userID: userID,
+      },
+    })
+      .then(response => response.json())
+      .then(json => {
+        return json;
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  };
+
+  const parseLogName = json => {
+      let logList = [];
+      for (let i = 0; i < json.length; i++) {
+        let name = json[i].Log_Name;
+        let id = json[i].log_id;
         let object = {
-        name : log,
-        id: key
+          log_id: id,
+          log_name : name,
         };
-        objectlogs.push(object);
-        logs.push(items[i].Log_Name);
-      }
+        logList.push(object);
+      } 
+      return logList;
+      //setlogName(logList);
   }
-  getLogNames();
+
+  useEffect(() => {
+    getLogInfo().then(json =>{
+      setLogInfo(parseLogName(json));
+   });
+  }, []);
   
-  
+  console.log(LogName)
+  console.log(logID)
 
   return (
     <SafeAreaView style = {styles.body}>
@@ -162,20 +170,27 @@ const checkTextInput = () => { // this method is used to check if the fields are
         EmptyResultComponent={<Text style={{ padding: 10, fontSize: 15 }}>Oops ¯\_(ツ)_/¯</Text>}
       />
       </View>
-      <SelectDropdown
-	      data={logs}
-        defaultButtonText = {<Text style={styles.textDropDown}>Select log</Text>}
-        buttonStyle = {styles.dropdownbuttonStyle}
-        renderDropdownIcon={isOpened => {
-          return <FontAwesome name={isOpened ? 'chevron-up' : 'chevron-down'} color={'#808080'} size={15} />;
-        }}
-        dropdownIconPosition={'right'}
-        dropdownStyle = {styles.dropdownStyle}
-        onSelect={(selectedItem, index) => {
-          setLogName(selectedItem)
-          console.log(index)
-        }}
-      />
+        <Dropdown
+          placeholder="Select log"
+          style={styles.dropdown}
+          placeholderStyle={styles.placeholderStyle}
+          selectedTextStyle={styles.selectedTextStyle}
+          inputSearchStyle={styles.inputSearchStyle}
+          containerStyle = {styles.dropdownContainerStyle}
+          iconStyle={styles.iconStyle}
+          data={LogInfo}
+          search = {false}
+          maxHeight={300}
+          labelField="log_name"
+          value={LogName}
+          onChange={item => {
+            setLogName(item.log_name);
+            setLogID(item.log_id)
+          }}
+          renderItem = {(item) => (
+            <Text>{item.log_name}</Text>
+           )}
+        />
       <TextInput style = {styles.input_bottom} placeholder = 'Weight in grams' placeholderTextColor={"#808080"} onChangeText={(value) => setWeightAmt(value)}/>
        <TouchableOpacity style = {styles.button} onPress = {() => checkTextInput()}>
          <Text style = {styles.text}>Add Item</Text>
@@ -193,16 +208,13 @@ const checkTextInput = () => { // this method is used to check if the fields are
     color: '#000',
     fontSize: 25,
   },
-  textDropDown: { 
-    color: '#808080',
-  },
   button: {
     margin: 15,
     padding: 15,
     width: 300,
     alignItems: 'center',
     alignSelf:'center',
-    top:150,
+    top:100,
     justifyContent: 'center',
     borderRadius: 30,
     backgroundColor: '#A1E8AF',
@@ -219,11 +231,6 @@ const checkTextInput = () => { // this method is used to check if the fields are
     borderRadius: 30,
     padding: 10,
   },
-  dropdownStyle:{
-    borderWidth: 1,
-    borderColor: '#A1E8AF',
-    borderRadius: 30,
-  },
   inputContainerStyle:{
     borderWidth: 1,
     marginLeft: 45,
@@ -234,15 +241,6 @@ const checkTextInput = () => { // this method is used to check if the fields are
     borderColor: '#A1E8AF',
     backgroundColor: "white",
   },
-  dropdownbuttonStyle:{
-    borderWidth: 1,
-    borderColor: '#A1E8AF',
-    borderRadius: 30,
-    backgroundColor: "white", 
-    alignSelf:"center",
-    top:180
-    
-  },
   input_bottom:{
     borderWidth: 1,
     marginLeft: 45,
@@ -250,7 +248,41 @@ const checkTextInput = () => { // this method is used to check if the fields are
     marginTop: 50,
     borderRadius: 30,
     padding: 15,
-    bottom:50,
+    bottom:30,
     borderColor: '#A1E8AF',
+  },
+  dropdown: {
+    borderWidth: 1,
+    margin: 16,
+    height: 50,
+    borderRadius:30,
+    borderColor: '#A1E8AF',
+    marginLeft:45,
+    marginRight:45,
+    padding: 15,
+    top:10
+  },
+  icon: {
+    marginRight: 5,
+  },
+  placeholderStyle: {
+    fontSize: 16,
+  },
+  selectedTextStyle: {
+    fontSize: 16,
+  },
+  iconStyle: {
+    width: 25,
+    height: 25,
+  },
+  inputSearchStyle: {
+    height: 40,
+    fontSize: 16,
+  },
+  dropdownContainerStyle: {
+    borderWidth: 1,
+    borderRadius:30,
+    borderColor: '#A1E8AF',
+    padding: 15,
   },
  });
