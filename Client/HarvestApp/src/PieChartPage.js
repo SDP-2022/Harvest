@@ -26,12 +26,8 @@ export default function PieChartPage({navigation, route}) {
   const [refresh, setRefresh] = useState(true);
 
   const produceRef = useRef({});
-  const TimePeriods = [
-    'One Year',
-    'Six Months',
-    'Three Months',
-  ];
-  const Levels = ['All', 'Supertype', 'Type', 'Subtype', 'Food'];
+  const TimePeriods = ['One Year', 'Six Months', 'Three Months'];
+  const Levels = ['All', 'Supertype', 'Type', 'Subtype'];
   const Supertypes = ['Vegetable', 'Fruit', 'Herb', 'Flower'];
   const Types = [
     'Allium',
@@ -227,7 +223,7 @@ export default function PieChartPage({navigation, route}) {
 
   const [Logs, setLogs] = useState(null);
   const [logData, setLogData] = useState(null);
-  
+
   const getUserLogs = async () => {
     return fetch('https://harvest-stalkoverflow.herokuapp.com/api/private', {
       method: 'GET',
@@ -246,18 +242,16 @@ export default function PieChartPage({navigation, route}) {
       });
   };
 
-  const parseLogJson = () => (
-    getUserLogs()
-    .then((json) => {
+  const parseLogJson = () =>
+    getUserLogs().then(json => {
       let logList = [];
-      logList.push("All")
+      logList.push('All');
       for (let i = 0; i < json.length; i++) {
-        logList.push(json[i].Log_Name)
-      } 
+        logList.push(json[i].Log_Name);
+      }
       setLogs(logList);
-      setLogData(json)
-    })
-  )
+      setLogData(json);
+    });
 
   // This function requests data from the API to generate the graph
   const getData = async () => {
@@ -280,41 +274,57 @@ export default function PieChartPage({navigation, route}) {
       headerPeriod = 'day';
     }
 
-    if (level === "Food") {
-      headerLevel = "FoodName"
-    }
-    else if (level === "All") {
-      headerLevel = "Superdupertype"
-    } 
-    else {
+    if (level === 'Food') {
+      headerLevel = 'FoodName';
+    } else if (level === 'All') {
+      headerLevel = 'Superdupertype';
+    } else {
       headerLevel = level;
     }
 
-    if (currLog === "All") {
+    if (currLog === 'All') {
       headerLog = null;
-    }
-    else {
-      let container = logData.filter((item)=>{return item.Log_Name === 'Home'});
-      headerLog = container[0].log_id
+    } else {
+      let container = logData.filter(item => {
+        return item.Log_Name === 'Home';
+      });
+      headerLog = container[0].log_id;
     }
 
     headerProduce = produce;
 
-    return fetch('https://harvest-stalkoverflow.herokuapp.com/api/private', {
-      method: 'GET',
-      headers: {
+    let headerValues;
+
+    if (currLog === 'All') {
+      headerValues = {
         Authorization: 'Bearer ' + userAccessToken,
-        RequestType: 'GetFilteredLogs',
+        RequestType: 'GetPiechartLogs',
         userID: userID,
         Time: headerTime,
         Period: headerPeriod,
         Level: headerLevel,
         Produce: headerProduce,
-        LogID: headerLog
-      },
+      };
+    } else {
+      headerValues = {
+        Authorization: 'Bearer ' + userAccessToken,
+        RequestType: 'GetPiechartLogs',
+        userID: userID,
+        Time: headerTime,
+        Period: headerPeriod,
+        Level: headerLevel,
+        Produce: headerProduce,
+        LogID: headerLog,
+      };
+    }
+
+    return fetch('https://harvest-stalkoverflow.herokuapp.com/api/private', {
+      method: 'GET',
+      headers: headerValues,
     })
       .then(response => response.json())
       .then(json => {
+        console.log('This is the json object:');
         console.log(json);
         if (json.Error === 'Time param not found.') {
           json = {};
@@ -329,15 +339,27 @@ export default function PieChartPage({navigation, route}) {
   // This function will process the data returned from the API
   const parseData = data => {
     dataArr = [];
+    let keys = [];
 
-    const keys = Object.keys(data);
-
-    keys.forEach((key, index) => {
-      if (data[key] != 0) {
-        dataArr.push({x: key, y: data[key]});
+    let keyType;
+    let keySum = 'sum';
+    for (let i = 0; i < data.length; i++) {
+      let obj = data[i];
+      for (let dataKey in obj) {
+        keyType = dataKey;
+        break;
       }
-    });
+      break;
+    }
 
+    for (let i = 0; i < data.length; i++) {
+      keys.push(data[i][keyType]);
+      dataArr.push({x: data[i][keyType], y: parseInt(data[i][keySum])});
+    }
+
+    console.log('This is the keys array:');
+    console.log(keys);
+    console.log('This is the data array');
     console.log(dataArr);
     setChartData(dataArr);
     setCategories(keys);
@@ -400,48 +422,48 @@ export default function PieChartPage({navigation, route}) {
             </TouchableOpacity>
           </View>
           <View style={styles.filterView}>
-              <Text style={styles.filterText}>Log:</Text>
+            <Text style={styles.filterText}>Log:</Text>
 
-              <SelectDropdown
-                data={Logs}
-                onSelect={(selectedItem, index) => {
-                  console.log(selectedItem, index);
-                  setCurrLog(selectedItem);
-                }}
-                defaultButtonText={'Select an option'}
-                buttonTextAfterSelection={(selectedItem, index) => {
-                  return selectedItem;
-                }}
-                rowTextForSelection={(item, index) => {
-                  return item;
-                }}
-                buttonStyle={{
-                  borderWidth: 2,
-                  borderColor: '#A1E8Af',
-                  backgroundColor: '#fff',
-                  borderRadius: 10,
-                }}
-                buttonTextStyle={{color: '#A1E8Af'}}
-                dropdownOverlayColor={'rgba(255, 255, 255, 0)'}
-                dropdownStyle={{
-                  marginTop: 1,
-                  borderRadius: 10,
-                  backgroundColor: '#fff',
-                  borderWidth: 2,
-                  borderColor: '#A1E8Af',
-                }}
-                rowStyle={{
-                  borderWidth: 0,
-                  borderColor: '#A1E8Af',
-                  backgroundColor: '#fff',
-                  borderBottomWidth: 0,
-                  borderTopWidth: 0,
-                  marginLeft: 10,
-                  marginRight: 10,
-                }}
-                rowTextStyle={{color: '#A1E8Af'}}
-              />
-            </View>
+            <SelectDropdown
+              data={Logs}
+              onSelect={(selectedItem, index) => {
+                console.log(selectedItem, index);
+                setCurrLog(selectedItem);
+              }}
+              defaultButtonText={'Select an option'}
+              buttonTextAfterSelection={(selectedItem, index) => {
+                return selectedItem;
+              }}
+              rowTextForSelection={(item, index) => {
+                return item;
+              }}
+              buttonStyle={{
+                borderWidth: 2,
+                borderColor: '#A1E8Af',
+                backgroundColor: '#fff',
+                borderRadius: 10,
+              }}
+              buttonTextStyle={{color: '#A1E8Af'}}
+              dropdownOverlayColor={'rgba(255, 255, 255, 0)'}
+              dropdownStyle={{
+                marginTop: 1,
+                borderRadius: 10,
+                backgroundColor: '#fff',
+                borderWidth: 2,
+                borderColor: '#A1E8Af',
+              }}
+              rowStyle={{
+                borderWidth: 0,
+                borderColor: '#A1E8Af',
+                backgroundColor: '#fff',
+                borderBottomWidth: 0,
+                borderTopWidth: 0,
+                marginLeft: 10,
+                marginRight: 10,
+              }}
+              rowTextStyle={{color: '#A1E8Af'}}
+            />
+          </View>
           <View style={styles.filterView}>
             <Text style={styles.filterText}>Time Period:</Text>
 
@@ -604,31 +626,12 @@ export default function PieChartPage({navigation, route}) {
         {filterIsApplied && chartData.length > 0 ? (
           <>
             <View style={styles.chartTitleView}>
-                <TouchableOpacity
-                  onPress={() => {
-                    navigation.navigate('AtlasPage', {foodItem: {produce}});
-                  }}>
-                  <Text style={styles.textHeading}>{produce}</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => {
-                    navigation.navigate('AtlasPage', {foodItem: {produce}});
-                  }}>
-                  <Image
-                    style={{
-                      height: 20,
-                      width: 20,
-                      marginTop: 6,
-                      marginLeft: 20,
-                    }}
-                    source={require('../assets/atlas-icon.png')}
-                  />
-                </TouchableOpacity>
-              </View>
+              <Text style={styles.textHeading}>{timePeriod}</Text>
+            </View>
             <VictoryPie
               labelComponent={<VictoryLabel angle={0} />}
               animate={{duration: 1000, easing: 'linear'}}
-              cornerRadius={({datum}) => datum.y * 0.01}
+              cornerRadius={({datum}) => datum.y * 0.005}
               colorScale={[
                 '#A1E8AF',
                 '#4A7C59',
