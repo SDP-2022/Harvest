@@ -251,7 +251,7 @@ class StalkOverflowAPI {
             if (logID == null) {
                 result = await dbCom.getWeight(userID, foodName);
             } else {
-                result = await dbCom.getWeightOneLog(userID, foodName, logID);
+                result = await dbCom.getWeightOneLog(logID, foodName);
             }
             console.log("Result:", result);
 
@@ -609,7 +609,7 @@ async function filterSuperDuperType(res, userID, time, period, logID) {
         if (logID == null) {
             result = await dbCom.getLogsSuperDuperType(userID, time, period);
         } else {
-            result = await dbCom.getLogsSuperDuperType(userID, time, period, logID);
+            result = await dbCom.getLogsSuperDuperTypeOneLog(userID, time, period, logID);
         }
         console.log("Result:", result);
 
