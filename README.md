@@ -39,7 +39,7 @@
 (https://harvest-stalkoverflow.herokuapp.com/)
 
 ### Website Available:
-[Stalk Oveflow](http://salmaan.one)
+[Stalk Overflow](http://salmaan.one)
 - Domain to be changed to stalk-overflow.com (or similar)
 
 
