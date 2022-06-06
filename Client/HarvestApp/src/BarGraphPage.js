@@ -306,7 +306,7 @@ export default function BarGraphPage({navigation, route}) {
       headerLog = null;
     }
     else {
-      let container = logData.filter((item)=>{return item.Log_Name === 'Home'});
+      let container = logData.filter((item)=>{return item.Log_Name === currLog});
       headerLog = container[0].log_id
     }
 
