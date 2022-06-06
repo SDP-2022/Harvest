@@ -11,6 +11,8 @@ import {
   Image,
   ActivityIndicator,
   RefreshControl,
+  Modal,
+  TextInput,
 } from 'react-native';
 
 const ACCESS_TOKEN = '@save_token';
@@ -23,7 +25,12 @@ export default function GardenPage({navigation, route}) {
   const [Loading, setLoading] = useState(true);
   const [Refresh, setRefresh] = useState(false);
   const [Data, setData] = useState([{key: 1, text: 'text'}]);
-
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalLog, setModalLog] = useState(false);
+  const [CreatelogName, setCreatelogName] = useState("");
+  const [logName, setlogName] = useState("");
+  const [LogLen, setLogLen] = useState(0);
+  const[userLogID, setuserLogID] = useState("");
   // This function is used for testing
   const getVar = async () => {
     return fetch('https://harvest-stalkoverflow.herokuapp.com/api/private/', {
@@ -42,13 +49,14 @@ export default function GardenPage({navigation, route}) {
   };
 
   // This function gets the log for the current user
-  const getLog = async () => {
+  const getLog = async (logID) => {
     return fetch('https://harvest-stalkoverflow.herokuapp.com/api/private/', {
       method: 'GET',
       headers: {
         Authorization: 'Bearer ' + userAccessToken,
         RequestType: 'GetHarvestLogs',
         UserID: userID,
+        LogID: logID
       },
     })
       .then(response => response.json())
@@ -139,14 +147,93 @@ export default function GardenPage({navigation, route}) {
       });
   };
 
+ const submitLogName = async()=>{ // this code is used to make a post request to the database and save the data on the database
+  fetch("https://harvest-stalkoverflow.herokuapp.com/api/private/",{
+      method:'POST',
+      headers:{
+        'Content-type': 'application/json',
+        'Authorization' : 'Bearer '  + userAccessToken, // the authorization needed by Auth0 for the user 
+        'RequestType' : "CreateLog" 
+      },
+      body:JSON.stringify({
+        UserID : userID,
+        LogName : CreatelogName,  
+      })
+  })
+  .then(res=>res.text())
+  .then(text=>{
+      console.log(text)
+      console.log("Success")
+  })
+  .catch(error=>{
+    console.log(error)
+    console.log("Failure")
+});
+}
+const checkLogInput = () => { // this method is used to check if the fields are empty, if they are the process will not go through
+  if(!CreatelogName.trim()){
+    alert("Please enter all fields")
+    }
+  else{
+    submitLogName();
+    alert("New log created.");
+  }
+};
+
+  const handleChange = (value) => {
+    setCreatelogName(value);
+  }
+
+  const getLogName = async () => {
+    return fetch('https://harvest-stalkoverflow.herokuapp.com/api/private', {
+      method: 'GET',
+      headers: {
+        Authorization: 'Bearer ' + userAccessToken,
+        RequestType: 'GetLogNames',
+        userID: userID,
+      },
+    })
+      .then(response => response.json())
+      .then(json => {
+        return json;
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  };
+
+  const parseLogName = json => {
+      let logList = [];
+      for (let i = 0; i < json.length; i++) {
+        let log = json[i].Log_Name;
+        let key = json[i].log_id;
+        let object = {
+        log_name : log,
+        log_id: key
+        };
+        logList.push(object);
+      } 
+      return logList;
+      //setlogName(logList);
+      
+    
+  }
+  function getHarvest(logID){
+      getLog(logID).then(json => {
+        setLoading(false);
+        setFood(formatFood(json));
+        setFoodLen(Object.keys(json).length);
+        setRefresh(false);
+      });
+  }
   // This ensures the appropriate functions run when the screen is accessed
   useEffect(() => {
-    getLog().then(json => {
+    getLogName().then(json =>{
       setLoading(false);
-      setFood(formatFood(json));
-      setFoodLen(Object.keys(json).length);
+      setlogName(parseLogName(json));
+      setLogLen(Object.keys(json).length);
       setRefresh(false);
-    });
+   });
   }, [Refresh]);
 
   if (Loading == true) {
@@ -155,7 +242,7 @@ export default function GardenPage({navigation, route}) {
         <ActivityIndicator size="large" color="#A1E8Af" />
       </SafeAreaView>
     );
-  } else if (Loading == false && FoodLen == 0) {
+  } else if (Loading == false && LogLen == 0) {
     return (
       <SafeAreaView style={styles.body}>
         <View style={styles.burgerView}>
@@ -168,7 +255,48 @@ export default function GardenPage({navigation, route}) {
               source={require('../assets/hamburger-icon.png')}
             />
           </TouchableOpacity>
+
+          {/* button to open a create  log page */}
+          <TouchableOpacity onPress={() => setModalOpen(true)}>
+            <Image
+              style={{
+                height: 30,
+                width: 30,
+                marginLeft: 330,
+                marginBottom:10,
+              }}
+              source={require('../assets/plus-+-64.png')}
+            />
+          </TouchableOpacity>
         </View>
+
+         {/* page for creating a new log */}
+        <Modal visible={modalLog} animationType="fade" transparent={false}>
+          <SafeAreaView style={styles.ModalLog}>
+            
+            <View style={{marginLeft:15,marginTop:15}}>
+              <TouchableOpacity onPress={() => setModalLog(false)}>
+                <Image
+                  style={{
+                    height: 20,
+                    width: 20,
+                  }}
+                  source={require('../assets/back.png')}
+                />
+              </TouchableOpacity>
+            </View>
+            <Text style={{fontSize:20, marginLeft:90,color:'black'}}>Add New Log</Text>
+            <TextInput style = {{ borderWidth: 1, marginLeft: 45, marginRight:45, marginTop: 30, borderRadius: 30, padding: 10,
+                 borderColor: '#A1E8AF'}} placeholder = 'Log name' placeholderTextColor={"#808080"} 
+                 onChangeText={(value) => handleChange(value)}/>
+           
+            <View style={{marginLeft:110, marginTop:30}}>
+              <TouchableOpacity>
+                <Text style={{fontSize:15}}>Create Log</Text>
+              </TouchableOpacity>
+            </View>
+          </SafeAreaView>
+        </Modal>
 
         <FlatList
           refreshControl={
@@ -184,7 +312,7 @@ export default function GardenPage({navigation, route}) {
           data={Data}
           ListHeaderComponent={() => (
             <View style={styles.header}>
-              <Text style={styles.text}>Your Garden is Empty</Text>
+              <Text style={styles.text}>Your log is Empty</Text>
               <Text style={styles.text}>¯\_(ツ)_/¯</Text>
             </View>
           )}
@@ -197,13 +325,7 @@ export default function GardenPage({navigation, route}) {
         />
       </SafeAreaView>
     );
-  } else if (Loading == false && FoodLen > 0) {
-    {
-      console.log(Food);
-    }
-    {
-      console.log(Food[2]);
-    }
+  } else if (Loading == false && LogLen > 0) {
     return (
       <SafeAreaView style={styles.body}>
         <View style={styles.burgerView}>
@@ -216,10 +338,50 @@ export default function GardenPage({navigation, route}) {
               source={require('../assets/hamburger-icon.png')}
             />
           </TouchableOpacity>
+
+          {/* button to open a create  log page */}
+          <TouchableOpacity onPress={() => setModalLog(true)}>
+            <Image
+              style={{
+                height: 30,
+                width: 30,
+                marginLeft: 330,
+              }}
+              source={require('../assets/plus-+-64.png')}
+            />
+          </TouchableOpacity>
         </View>
 
-        <SectionList
-          refreshControl={
+        {/* page for creating a new log */}
+        <Modal visible={modalLog} animationType="fade" transparent={false}>
+          <SafeAreaView style={styles.ModalLog}>
+            <View style={{marginLeft:15,marginTop:15}}>
+              <TouchableOpacity onPress={() => setModalLog(false)}>
+                <Image
+                  style={{
+                    height: 20,
+                    width: 20,
+                  }}
+                  source={require('../assets/back.png')}
+                />
+              </TouchableOpacity>
+            </View>
+            <Text style={{fontSize:20, marginLeft:80,color:'black'}}>Create New Log</Text>
+            <TextInput style = {{ borderWidth: 1, marginLeft: 45, marginRight:45, marginTop: 30, borderRadius: 30, padding: 10,
+                 borderColor: '#A1E8AF'}} placeholder = 'Log name' placeholderTextColor={"#808080"}
+                 onChangeText={(value) => handleChange(value)} />
+           
+            <View style={{marginLeft:110, marginTop:30}}>
+              <TouchableOpacity  onPress = {() => checkLogInput()}>
+                <Text style={{fontSize:15}}>Create Log</Text>
+              </TouchableOpacity>
+            </View>
+          </SafeAreaView>
+        </Modal>
+
+      {/* display multiple log names */}
+        <FlatList
+           refreshControl={
             <RefreshControl
               refreshing={Refresh}
               onRefresh={() => {
@@ -227,34 +389,83 @@ export default function GardenPage({navigation, route}) {
               }}
             />
           }
+          style={{marginTop:50}}
           showsVerticalScrollIndicator={false}
           ListHeaderComponent={() => (
             <View style={styles.header}>
-              <Text style={styles.text}>Your Garden:</Text>
+              <Text style={styles.text}>Logs :</Text>
             </View>
           )}
-          style={styles.list}
-          stickySectionHeadersEnabled={false}
-          sections={Food}
-          keyExtractor={(item, index) => item + index}
+          data = {logName}
           renderItem={({item}) => (
             <View style={styles.foodView}>
-              <Text style={styles.foodViewName}>{item.FoodName}</Text>
-              <Text style={styles.foodViewWeight}>{item.Weight}g</Text>
+              <TouchableOpacity onPress={() => {
+                setModalOpen(true);
+                getHarvest(item.log_id)
+              }}>
+              <Text style={styles.foodViewName}>{item.log_name}</Text>
+              </TouchableOpacity>
+          </View>
+          )}
+          >
+          </FlatList>
+
+        {/* display details of the log */}
+        <Modal visible={modalOpen} animationType="fade" transparent={true}>
+          <SafeAreaView style={styles.modalView}>
+            <View>
+              <TouchableOpacity onPress={() => setModalOpen(false)}>
+                <Image
+                  style={{
+                    height: 20,
+                    width: 20,
+                    marginRight: 320,
+                    marginBottom: 30,
+                    marginTop: 20,
+                  }}
+                  source={require('../assets/back.png')}
+                />
+              </TouchableOpacity>
             </View>
-          )}
-          renderSectionHeader={({section: {title}}) => (
-            <>
-              {new Date().toDateString() === title.toDateString() ? (
-                <Text style={styles.sectionHeader}>Today</Text>
-              ) : new Date().toDateString() - 1 === title.toDateString() ? (
-                <Text style={styles.sectionHeader}>Yesterday</Text>
-              ) : (
-                <Text style={styles.sectionHeader}>{title.toDateString()}</Text>
+            <SectionList
+              refreshControl={
+              <RefreshControl
+                refreshing={Refresh}
+                onRefresh={() => {
+                setRefresh(true);
+              }}
+              />
+              }
+              showsVerticalScrollIndicator={false}
+              ListHeaderComponent={() => (
+              <View style={styles.header}>
+                <Text style={styles.text}>Your Garden:</Text>
+              </View>
               )}
-            </>
-          )}
-        />
+              style={styles.list}
+              stickySectionHeadersEnabled={false}
+              sections={Food}
+              keyExtractor={(item, index) => item + index}
+              renderItem={({item}) => (
+              <View style={styles.foodView}>
+                <Text style={styles.foodViewName}>{item.FoodName}</Text>
+                <Text style={styles.foodViewWeight}>{item.Weight}g</Text>
+              </View>
+              )}
+              renderSectionHeader={({section: {title}}) => (
+              <>
+                {new Date().toDateString() === title.toDateString() ? (
+                  <Text style={styles.sectionHeader}>Today</Text>
+                ) : new Date().toDateString() - 1 === title.toDateString() ? (
+                  <Text style={styles.sectionHeader}>Yesterday</Text>
+                ) : (
+                <Text style={styles.sectionHeader}>{title.toDateString()}</Text>
+                )}
+              </>
+              )}
+            /> 
+          </SafeAreaView>
+        </Modal>
       </SafeAreaView>
     );
   }
@@ -314,5 +525,44 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 15,
     marginBottom: 15,
+  },
+  modalView: {
+    //alignSelf: 'center',
+    //justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    //height: 500,
+    //width: 300,
+    flex:1,
+    borderRadius: 30,
+    //marginTop: '50%',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 0.5,
+    },
+    shadowOpacity: 0.4,
+    shadowRadius: 3,
+    elevation: 5,
+  },
+  ModalLog: {
+    alignSelf: 'center',
+    //justifyContent: 'center',
+    //alignItems: 'center',
+    backgroundColor: '#fff',
+    //height: 100,
+    width: 300,
+    flex:1,
+    borderRadius: 30,
+    marginTop: '10%',
+    marginBottom: '50%',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 0.5,
+    },
+    shadowOpacity: 0.4,
+    shadowRadius: 3,
+    elevation: 5,
   },
 });

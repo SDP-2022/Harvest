@@ -5,6 +5,7 @@ const api = require('./stalkoverflow-api');
 console.log = function() {}
 
 // Registering
+
 test('Registering duplicate user.', async () => {
     const RequestType = "AddUser";
     const UserID = "A1";
@@ -246,10 +247,11 @@ test('Add invalid harvest log.', async () => {
     const UserID = "A1";
     const FoodName = "Car";
     const Weight = 420;
+    const LogID = "7";
 
     var req = mockRequest({
         headers: { RequestType },
-        body: {UserID, FoodName, Weight}
+        body: {UserID, FoodName, Weight, LogID}
     });
 
     var res = mockResponse();
@@ -334,10 +336,11 @@ test('Add harvest log with invalid UserID.', async () => {
     const UserID = 42;
     const FoodName = "Car";
     const Weight = 420;
+    const LogID = "7";
 
     var req = mockRequest({
         headers: { RequestType },
-        body: {UserID, FoodName, Weight}
+        body: {UserID, FoodName, Weight, LogID}
     });
 
     var res = mockResponse();
@@ -356,10 +359,11 @@ test('Add harvest log with invalid FoodName.', async () => {
     const UserID = "A1";
     const FoodName = 42;
     const Weight = 420;
+    const LogID = "7";
 
     var req = mockRequest({
         headers: { RequestType },
-        body: {UserID, FoodName, Weight}
+        body: {UserID, FoodName, Weight, LogID}
     });
 
     var res = mockResponse();
@@ -378,10 +382,11 @@ test('Add harvest log with invalid Weight.', async () => {
     const UserID = "A1";
     const FoodName = "Car";
     const Weight = "Jeff Bezos";
+    const LogID = "7";
 
     var req = mockRequest({
         headers: { RequestType },
-        body: {UserID, FoodName, Weight}
+        body: {UserID, FoodName, Weight, LogID}
     });
 
     var res = mockResponse();
@@ -413,7 +418,27 @@ test('Get all harvest logs of a user.', async () => {
     const json = res.json.getCall(0).args[0];
 
     expect(status).toEqual(201);
-    expect(json.length).toEqual(36);
+    expect(json.length).toEqual(47);
+});
+
+test('Get all harvest logs of a log.', async () => {
+    const RequestType = "GetHarvestLogs";
+    const UserID = "A1";
+    const LogID = "7";
+
+    var req = mockRequest({
+        headers: { RequestType, UserID, LogID },
+    });
+
+    var res = mockResponse();
+
+    await api.parseGETRequest(req, res);
+
+    const status = res.status.getCall(0).args[0];
+    const json = res.json.getCall(0).args[0];
+
+    expect(status).toEqual(201);
+    expect(json.length).toEqual(8);
 });
 
 test('Get all harvest logs without UserID.', async () => {
@@ -474,7 +499,7 @@ test('Get all harvest logs of nonexistent user.', async () => {
 });
 
 // Get total weight
-test('Get total weight of a certain food.', async () => {
+test('Get total weight of a certain food, all logs.', async () => {
     const RequestType = "GetFoodTotalWeight";
     const UserID = "A1";
     const FoodName = "Lemon";
@@ -492,6 +517,27 @@ test('Get total weight of a certain food.', async () => {
 
     expect(status).toEqual(201);
     expect(json.Weight).toEqual(38.59);
+});
+
+test('Get total weight of a certain food, one log.', async () => {
+    const RequestType = "GetFoodTotalWeight";
+    const UserID = "A1";
+    const FoodName = "Lime";
+    const LogID = 7;
+
+    var req = mockRequest({
+        headers: { RequestType, UserID, FoodName, LogID },
+    });
+
+    var res = mockResponse();
+
+    await api.parseGETRequest(req, res);
+
+    const status = res.status.getCall(0).args[0];
+    const json = res.json.getCall(0).args[0];
+
+    expect(status).toEqual(201);
+    expect(json.Weight).toEqual(96);
 });
 
 test('Get total weight without UserID.', async () => {
@@ -884,7 +930,31 @@ test('Get superdupertype harvest logs.', async () => {
     const json = res.json.getCall(0).args[0];
 
     expect(status).toEqual(201);
-    expect(JSON.stringify(json)).toEqual(`{"May":3516.09,"April":43.36,"March":0,"February":0,"January":0,"December":0,"November":0,"October":0,"September":0,"August":0,"July":0,"June":0}`);
+    expect(JSON.stringify(json)).toEqual(`{"June":0,"May":4062.09,"April":43.36,"March":0,"February":0,"January":0,"December":0,"November":0,"October":0,"September":0,"August":0,"July":0}`);
+});
+
+test('Get superdupertype harvest logs for single log.', async () => {
+    const RequestType = "GetFilteredLogs";
+    const UserID = "A1";
+    const Time = 32;
+    const Period = "month";
+    const Level = "superdupertype";
+    const Produce = "HAHAHAHAHA";
+    const LogID = 7;
+
+    var req = mockRequest({
+        headers: { RequestType, UserID, Time, Period, Level, Produce, LogID},
+    });
+
+    var res = mockResponse();
+
+    await api.parseGETRequest(req, res);
+
+    const status = res.status.getCall(0).args[0];
+    const json = res.json.getCall(0).args[0];
+
+    expect(status).toEqual(201);
+    expect(JSON.stringify(json)).toEqual(`{"June":0,"May":246,"April":0,"March":0,"February":0,"January":0,"December":0,"November":0,"October":0,"September":0,"August":0,"July":0}`);
 });
 
 test('Get supertype harvest logs.', async () => {
@@ -907,7 +977,31 @@ test('Get supertype harvest logs.', async () => {
     const json = res.json.getCall(0).args[0];
 
     expect(status).toEqual(201);
-    expect(JSON.stringify(json)).toEqual(`{"May":1375.0900000000001,"April":43.36,"March":0,"February":0,"January":0,"December":0,"November":0,"October":0,"September":0,"August":0,"July":0,"June":0}`);
+    expect(JSON.stringify(json)).toEqual(`{"June":0,"May":1599.09,"April":43.36,"March":0,"February":0,"January":0,"December":0,"November":0,"October":0,"September":0,"August":0,"July":0}`);
+});
+
+test('Get supertype harvest logs for single log.', async () => {
+    const RequestType = "GetFilteredLogs";
+    const UserID = "A1";
+    const Time = 32;
+    const Period = "month";
+    const Level = "supertype";
+    const Produce = "Fruit";
+    const LogID = 7;
+
+    var req = mockRequest({
+        headers: { RequestType, UserID, Time, Period, Level, Produce, LogID},
+    });
+
+    var res = mockResponse();
+
+    await api.parseGETRequest(req, res);
+
+    const status = res.status.getCall(0).args[0];
+    const json = res.json.getCall(0).args[0];
+
+    expect(status).toEqual(201);
+    expect(JSON.stringify(json)).toEqual(`{"June":0,"May":124,"April":0,"March":0,"February":0,"January":0,"December":0,"November":0,"October":0,"September":0,"August":0,"July":0}`);
 });
 
 test('Get non-existent supertype produce harvest logs.', async () => {
@@ -953,7 +1047,31 @@ test('Get type harvest logs.', async () => {
     const json = res.json.getCall(0).args[0];
 
     expect(status).toEqual(201);
-    expect(JSON.stringify(json)).toEqual(`{"May":80.09,"April":43.36,"March":0,"February":0,"January":0,"December":0,"November":0,"October":0,"September":0,"August":0,"July":0,"June":0}`);
+    expect(JSON.stringify(json)).toEqual(`{"June":0,"May":276.09000000000003,"April":43.36,"March":0,"February":0,"January":0,"December":0,"November":0,"October":0,"September":0,"August":0,"July":0}`);
+});
+
+test('Get type harvest logs for single log.', async () => {
+    const RequestType = "GetFilteredLogs";
+    const UserID = "A1";
+    const Time = 32;
+    const Period = "month";
+    const Level = "type";
+    const Produce = "Citrus";
+    const LogID = 7;
+
+    var req = mockRequest({
+        headers: { RequestType, UserID, Time, Period, Level, Produce, LogID},
+    });
+
+    var res = mockResponse();
+
+    await api.parseGETRequest(req, res);
+
+    const status = res.status.getCall(0).args[0];
+    const json = res.json.getCall(0).args[0];
+
+    expect(status).toEqual(201);
+    expect(JSON.stringify(json)).toEqual(`{"June":0,"May":96,"April":0,"March":0,"February":0,"January":0,"December":0,"November":0,"October":0,"September":0,"August":0,"July":0}`);
 });
 
 test('Get non-existent type produce harvest logs.', async () => {
@@ -999,7 +1117,31 @@ test('Get subtype harvest logs.', async () => {
     const json = res.json.getCall(0).args[0];
 
     expect(status).toEqual(201);
-    expect(JSON.stringify(json)).toEqual(`{"May":70.09,"April":0,"March":0,"February":0,"January":0,"December":0,"November":0,"October":0,"September":0,"August":0,"July":0,"June":0}`);
+    expect(JSON.stringify(json)).toEqual(`{"June":0,"May":70.09,"April":0,"March":0,"February":0,"January":0,"December":0,"November":0,"October":0,"September":0,"August":0,"July":0}`);
+});
+
+test('Get subtype harvest logs of single log.', async () => {
+    const RequestType = "GetFilteredLogs";
+    const UserID = "A1";
+    const Time = 32;
+    const Period = "month";
+    const Level = "subtype";
+    const Produce = "Lime";
+    const LogID = 7;
+
+    var req = mockRequest({
+        headers: { RequestType, UserID, Time, Period, Level, Produce, LogID},
+    });
+
+    var res = mockResponse();
+
+    await api.parseGETRequest(req, res);
+
+    const status = res.status.getCall(0).args[0];
+    const json = res.json.getCall(0).args[0];
+
+    expect(status).toEqual(201);
+    expect(JSON.stringify(json)).toEqual(`{"June":0,"May":96,"April":0,"March":0,"February":0,"January":0,"December":0,"November":0,"October":0,"September":0,"August":0,"July":0}`);
 });
 
 test('Get non-existent subtype produce harvest logs.', async () => {
@@ -1045,7 +1187,31 @@ test('Get foodname produce harvest logs.', async () => {
     const json = res.json.getCall(0).args[0];
 
     expect(status).toEqual(201);
-    expect(JSON.stringify(json)).toEqual(`{"May":10,"April":28.59,"March":0,"February":0,"January":0,"December":0,"November":0,"October":0,"September":0,"August":0,"July":0,"June":0}`);
+    expect(JSON.stringify(json)).toEqual(`{"June":0,"May":10,"April":28.59,"March":0,"February":0,"January":0,"December":0,"November":0,"October":0,"September":0,"August":0,"July":0}`);
+});
+
+test('Get foodname produce harvest logs for single log.', async () => {
+    const RequestType = "GetFilteredLogs";
+    const UserID = "A1";
+    const Time = 32;
+    const Period = "month";
+    const Level = "foodname";
+    const Produce = "Lime";
+    const LogID = 7;
+
+    var req = mockRequest({
+        headers: { RequestType, UserID, Time, Period, Level, Produce, LogID},
+    });
+
+    var res = mockResponse();
+
+    await api.parseGETRequest(req, res);
+
+    const status = res.status.getCall(0).args[0];
+    const json = res.json.getCall(0).args[0];
+
+    expect(status).toEqual(201);
+    expect(JSON.stringify(json)).toEqual(`{"June":0,"May":96,"April":0,"March":0,"February":0,"January":0,"December":0,"November":0,"October":0,"September":0,"August":0,"July":0}`);
 });
 
 test('Get non-existent foodname produce harvest logs.', async () => {
@@ -1091,6 +1257,29 @@ test('Get logs total weight for foodname.', async () => {
 
     expect(status).toEqual(201);
     expect(JSON.stringify(json)).toEqual(`{"sum":"38.59"}`);
+});
+
+test('Get logs total weight for foodname for single log.', async () => {
+    const RequestType = "GetLogsTotalWeight";
+    const UserID = "A1";
+    const FoodName = "Lime";
+    const LogID = 7;
+
+    var req = mockRequest({
+        headers: { RequestType, UserID, FoodName, LogID},
+    });
+
+    var res = mockResponse();
+
+    await api.parseGETRequest(req, res);
+
+    const status = res.status.getCall(0).args[0];
+    const json = res.json.getCall(0).args[0];
+
+    console.log(JSON.stringify(json))
+
+    expect(status).toEqual(201);
+    expect(JSON.stringify(json)).toEqual(`{"sum":"96.00"}`);
 });
 
 test('Get logs total weight for foodname with no UserID.', async () => {
@@ -1209,6 +1398,45 @@ test('Get Atlas Page Data for non-existent FoodName.', async () => {
     expect(json).toEqual({});
 });
 
+test('Get Log Names.', async () => {
+    const RequestType = "GetLogNames";
+    const UserID = "A1";
+
+    var req = mockRequest({
+        headers: { RequestType, UserID},
+    });
+
+    var res = mockResponse();
+
+    await api.parseGETRequest(req, res);
+
+    const status = res.status.getCall(0).args[0];
+    const json = res.json.getCall(0).args[0];
+
+    expect(status).toEqual(201);
+    expect(json).toEqual([{"Log_Name": "Eden", "log_id": 22}, {"Log_Name": "My Garden", "log_id": 1}, {"Log_Name": "Plantopia", "log_id": 7}, {"Log_Name": "Unova", "log_id": 23}, {"Log_Name": "Garden of Words", "log_id": 24}]);
+});
+
+test('Create log without name.', async () => {
+    const RequestType = "CreateLog";
+    const UserID = "A1";
+
+    var req = mockRequest({
+        headers: { RequestType},
+        body : {UserID}
+    });
+
+    var res = mockResponse();
+
+    await api.parsePOSTRequest(req, res);
+
+    const status = res.status.getCall(0).args[0];
+    const json = res.json.getCall(0).args[0];
+
+    expect(status).toEqual(400);
+    expect(json.Error).toEqual("LogName not found.");
+});
+
 test('Invalid POST request type.', async () => {
     const RequestType = "Lmao";
     const UserID = "A1";
@@ -1246,6 +1474,195 @@ test('Invalid GET request type.', async () => {
 
     expect(status).toEqual(404);
     expect(json.Error).toEqual("Unknown request type.");
+});
+
+// Piechart Logs (Grouped)
+test('Get piechart logs, subtype group.', async () => {
+    const RequestType = "GetPiechartLogs";
+    const UserID = "A1";
+    const Time = 32;
+    const Period = "month";
+    const Level = "subtype";
+    const Produce = "Lime";
+
+    var req = mockRequest({
+        headers: { RequestType, UserID, Time, Period, Level, Produce},
+    });
+
+    var res = mockResponse();
+
+    await api.parseGETRequest(req, res);
+
+    const status = res.status.getCall(0).args[0];
+    const json = res.json.getCall(0).args[0];
+
+    expect(status).toEqual(201);
+    expect(JSON.stringify(json[0])).toEqual(`{"Food_Name":"Lime","sum":"210.77"}`);
+});
+
+test('Get piechart logs, subtype group for single log.', async () => {
+    const RequestType = "GetPiechartLogs";
+    const UserID = "A1";
+    const Time = 32;
+    const Period = "month";
+    const Level = "subtype";
+    const Produce = "Lime";
+    const LogID = 7;
+
+    var req = mockRequest({
+        headers: { RequestType, UserID, Time, Period, Level, Produce, LogID},
+    });
+
+    var res = mockResponse();
+
+    await api.parseGETRequest(req, res);
+
+    const status = res.status.getCall(0).args[0];
+    const json = res.json.getCall(0).args[0];
+
+    expect(status).toEqual(201);
+    expect(JSON.stringify(json[0])).toEqual(`{"Food_Name":"Lime","sum":"96.00"}`);
+});
+
+test('Get piechart logs, type group.', async () => {
+    const RequestType = "GetPiechartLogs";
+    const UserID = "A1";
+    const Time = 32;
+    const Period = "month";
+    const Level = "type";
+    const Produce = "Citrus";
+
+    var req = mockRequest({
+        headers: { RequestType, UserID, Time, Period, Level, Produce},
+    });
+
+    var res = mockResponse();
+
+    await api.parseGETRequest(req, res);
+
+    const status = res.status.getCall(0).args[0];
+    const json = res.json.getCall(0).args[0];
+
+    expect(status).toEqual(201);
+    expect(JSON.stringify(json[0])).toEqual(`{"Subtype":"Lemon","sum":"38.59"}`);
+});
+
+test('Get piechart logs, type group for single log.', async () => {
+    const RequestType = "GetPiechartLogs";
+    const UserID = "A1";
+    const Time = 32;
+    const Period = "month";
+    const Level = "type";
+    const Produce = "Citrus";
+    const LogID = 7;
+
+    var req = mockRequest({
+        headers: { RequestType, UserID, Time, Period, Level, Produce, LogID},
+    });
+
+    var res = mockResponse();
+
+    await api.parseGETRequest(req, res);
+
+    const status = res.status.getCall(0).args[0];
+    const json = res.json.getCall(0).args[0];
+
+    expect(status).toEqual(201);
+    expect(JSON.stringify(json[0])).toEqual(`{"Subtype":"Lime","sum":"96.00"}`);
+});
+
+test('Get piechart logs, supertype group.', async () => {
+    const RequestType = "GetPiechartLogs";
+    const UserID = "A1";
+    const Time = 32;
+    const Period = "month";
+    const Level = "supertype";
+    const Produce = "Fruit";
+
+    var req = mockRequest({
+        headers: { RequestType, UserID, Time, Period, Level, Produce},
+    });
+
+    var res = mockResponse();
+
+    await api.parseGETRequest(req, res);
+
+    const status = res.status.getCall(0).args[0];
+    const json = res.json.getCall(0).args[0];
+
+    expect(status).toEqual(201);
+    expect(JSON.stringify(json[0])).toEqual(`{"Type":"Citrus","sum":"319.45"}`);
+});
+
+test('Get piechart logs, supertype group for single log.', async () => {
+    const RequestType = "GetPiechartLogs";
+    const UserID = "A1";
+    const Time = 32;
+    const Period = "month";
+    const Level = "supertype";
+    const Produce = "Fruit";
+    const LogID = 7;
+
+    var req = mockRequest({
+        headers: { RequestType, UserID, Time, Period, Level, Produce, LogID},
+    });
+
+    var res = mockResponse();
+
+    await api.parseGETRequest(req, res);
+
+    const status = res.status.getCall(0).args[0];
+    const json = res.json.getCall(0).args[0];
+
+    expect(status).toEqual(201);
+    expect(JSON.stringify(json[0])).toEqual(`{"Type":"Citrus","sum":"96.00"}`);
+});
+
+test('Get piechart logs, superdupertype group.', async () => {
+    const RequestType = "GetPiechartLogs";
+    const UserID = "A1";
+    const Time = 32;
+    const Period = "month";
+    const Level = "superdupertype";
+    const Produce = "HAHA";
+
+    var req = mockRequest({
+        headers: { RequestType, UserID, Time, Period, Level, Produce},
+    });
+
+    var res = mockResponse();
+
+    await api.parseGETRequest(req, res);
+
+    const status = res.status.getCall(0).args[0];
+    const json = res.json.getCall(0).args[0];
+
+    expect(status).toEqual(201);
+    expect(JSON.stringify(json[0])).toEqual(`{"Supertype":"Vegetable","sum":"1583.00"}`);
+});
+
+test('Get piechart logs, superdupertype group fro single log.', async () => {
+    const RequestType = "GetPiechartLogs";
+    const UserID = "A1";
+    const Time = 32;
+    const Period = "month";
+    const Level = "superdupertype";
+    const Produce = "HAHA";
+    const LogID = 7;
+
+    var req = mockRequest({
+        headers: { RequestType, UserID, Time, Period, Level, Produce, LogID},
+    });
+
+    var res = mockResponse();
+
+    await api.parseGETRequest(req, res);
+
+    const status = res.status.getCall(0).args[0];
+    const json = res.json.getCall(0).args[0];
+
+    expect(status).toEqual(201);
+    expect(JSON.stringify(json[0])).toEqual(`{"Supertype":"Flower","sum":"69.00"}`);
 });
 
 afterAll(async () => {
