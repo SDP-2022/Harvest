@@ -1,0 +1,17 @@
+INSERT INTO public.userlog (user_id, log_id, "Log_Name") VALUES ('A1', 22, 'Eden');
+INSERT INTO public.userlog (user_id, log_id, "Log_Name") VALUES ('A1', 1, 'My Garden');
+INSERT INTO public.userlog (user_id, log_id, "Log_Name") VALUES ('A1', 7, 'Plantopia');
+INSERT INTO public.userlog (user_id, log_id, "Log_Name") VALUES ('auth0|62533535bf5af7006f6cc617', 2, 'Grassy Grassland');
+INSERT INTO public.userlog (user_id, log_id, "Log_Name") VALUES ('auth0|6283d28153955b0067086748', 3, 'Valhalla');
+INSERT INTO public.userlog (user_id, log_id, "Log_Name") VALUES ('auth0|625345bdefc16b00684785dc', 5, 'Elysium');
+INSERT INTO public.userlog (user_id, log_id, "Log_Name") VALUES ('auth0|628f6fa7eba03f0069a9c41f', 6, 'Chao Garden');
+INSERT INTO public.userlog (user_id, log_id, "Log_Name") VALUES ('auth0|6252805abee286006a6c9ab7', 4, 'Home');
+INSERT INTO public.userlog (user_id, log_id, "Log_Name") VALUES ('A1', 23, 'Unova');
+INSERT INTO public.userlog (user_id, log_id, "Log_Name") VALUES ('A1', 24, 'Garden of Words');
+INSERT INTO public.userlog (user_id, log_id, "Log_Name") VALUES ('auth0|625345bdefc16b00684785dc', 25, 'surfing');
+INSERT INTO public.userlog (user_id, log_id, "Log_Name") VALUES ('auth0|62533535bf5af7006f6cc617', 26, 'Example');
+INSERT INTO public.userlog (user_id, log_id, "Log_Name") VALUES ('auth0|62533535bf5af7006f6cc617', 27, 'Example 2');
+INSERT INTO public.userlog (user_id, log_id, "Log_Name") VALUES ('auth0|62533535bf5af7006f6cc617', 28, 'Example 3');
+INSERT INTO public.userlog (user_id, log_id, "Log_Name") VALUES ('auth0|62533535bf5af7006f6cc617', 29, 'Example 4');
+INSERT INTO public.userlog (user_id, log_id, "Log_Name") VALUES ('auth0|625345bdefc16b00684785dc', 30, 'My Garden');
+INSERT INTO public.userlog (user_id, log_id, "Log_Name") VALUES ('auth0|6252805abee286006a6c9ab7', 31, 'Second Home');

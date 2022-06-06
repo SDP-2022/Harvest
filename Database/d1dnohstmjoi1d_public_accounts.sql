@@ -1,0 +1,13 @@
+INSERT INTO public.accounts ("Username", "Email", "User_ID", "Date_Last_Accessed", "Date_Joined") VALUES ('Greg Gregory', 'greg@gmail.com', 'B67', '2022-04-09', '2022-04-09');
+INSERT INTO public.accounts ("Username", "Email", "User_ID", "Date_Last_Accessed", "Date_Joined") VALUES ('test1', 'gdrsgrdg@gmail.com', 'a6', '2022-04-09', '2022-04-09');
+INSERT INTO public.accounts ("Username", "Email", "User_ID", "Date_Last_Accessed", "Date_Joined") VALUES ('test1', 'gdrsgrdg@gmail.com', 'a12', '2022-04-09', '2022-04-09');
+INSERT INTO public.accounts ("Username", "Email", "User_ID", "Date_Last_Accessed", "Date_Joined") VALUES ('Greg Gregory', 'greg@gmail.com', 'B68', '2022-04-09', '2022-04-09');
+INSERT INTO public.accounts ("Username", "Email", "User_ID", "Date_Last_Accessed", "Date_Joined") VALUES ('Greg Julius', 'gregaaa@gmail.com', 'A10', '2022-04-09', '2022-04-09');
+INSERT INTO public.accounts ("Username", "Email", "User_ID", "Date_Last_Accessed", "Date_Joined") VALUES ('John Johnson', 'jj@jjcompany.com', 'JJ69', '2022-04-09', '2022-04-09');
+INSERT INTO public.accounts ("Username", "Email", "User_ID", "Date_Last_Accessed", "Date_Joined") VALUES ('surf_', 'surf@gmail.com', 'auth0|628f6fa7eba03f0069a9c41f', '2022-05-26', '2022-05-26');
+INSERT INTO public.accounts ("Username", "Email", "User_ID", "Date_Last_Accessed", "Date_Joined") VALUES ('surf1', 'gmgm@gmail.com', 'auth0|6283d28153955b0067086748', '2022-05-17', '2022-05-17');
+INSERT INTO public.accounts ("Username", "Email", "User_ID", "Date_Last_Accessed", "Date_Joined") VALUES ('undefined', 'harvestapp.sd@gmail.com', 'google-oauth2|102105549764479451729', '2022-04-10', '2022-04-10');
+INSERT INTO public.accounts ("Username", "Email", "User_ID", "Date_Last_Accessed", "Date_Joined") VALUES ('malvin', 'malvinmaina23@gmail.com', 'auth0|62533535bf5af7006f6cc617', '2022-06-05', '2022-04-10');
+INSERT INTO public.accounts ("Username", "Email", "User_ID", "Date_Last_Accessed", "Date_Joined") VALUES ('surf', 'harvestapp.sd@gmail.com', 'auth0|625345bdefc16b00684785dc', '2022-06-05', '2022-04-10');
+INSERT INTO public.accounts ("Username", "Email", "User_ID", "Date_Last_Accessed", "Date_Joined") VALUES ('shaariq', 'mshaariq.p@gmail.com', 'auth0|6252805abee286006a6c9ab7', '2022-06-06', '2022-04-10');
+INSERT INTO public.accounts ("Username", "Email", "User_ID", "Date_Last_Accessed", "Date_Joined") VALUES ('Zidan', 'zidan@harvest.com', 'A1', '2022-06-06', '2022-04-03');
